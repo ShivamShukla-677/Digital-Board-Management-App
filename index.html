@@ -14,8 +14,8 @@
 
     body {
       margin: 0;
-      background: #f4f7fb;
       min-height: 100vh;
+      background: #f4f7fb;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -38,8 +38,8 @@
 
     .tabs {
       display: flex;
-      margin-bottom: 25px;
       border-bottom: 1px solid #ddd;
+      margin-bottom: 25px;
     }
 
     .tab {
@@ -102,36 +102,36 @@
     }
 
     .message {
+      display: none;
       margin-top: 15px;
       padding: 12px;
       border-radius: 8px;
-      display: none;
       text-align: center;
       font-size: 14px;
     }
 
-    .success {
+    .message.success {
       display: block;
       background: #dcfce7;
       color: #166534;
     }
 
-    .error {
+    .message.error {
       display: block;
       background: #fee2e2;
       color: #991b1b;
     }
 
-    .info {
+    .message.info {
       display: block;
       background: #dbeafe;
       color: #1e40af;
     }
 
     .login-link {
+      display: none;
       text-align: center;
       margin-top: 15px;
-      display: none;
     }
 
     .login-link a {
@@ -148,13 +148,31 @@
 
   <h1>Digital Board Management</h1>
 
+  <!-- TABS -->
   <div class="tabs">
-    <div class="tab active" id="loginTab">Login</div>
-    <div class="tab" id="registerTab">Register</div>
+
+    <div
+      class="tab active"
+      id="loginTab">
+      Login
+    </div>
+
+    <div
+      class="tab"
+      id="registerTab">
+      Register
+    </div>
+
   </div>
 
-  <!-- LOGIN -->
-  <div class="form active" id="loginForm">
+
+  <!-- =========================
+       LOGIN FORM
+  ========================== -->
+
+  <div
+    class="form active"
+    id="loginForm">
 
     <label>Gmail</label>
 
@@ -162,19 +180,28 @@
       type="email"
       id="loginEmail"
       placeholder="Enter your Gmail"
+      autocomplete="email"
     >
 
     <button id="loginBtn">
       Send Verification Link
     </button>
 
-    <div id="loginMessage" class="message"></div>
+    <div
+      id="loginMessage"
+      class="message">
+    </div>
 
   </div>
 
 
-  <!-- REGISTER -->
-  <div class="form" id="registerForm">
+  <!-- =========================
+       REGISTER FORM
+  ========================== -->
+
+  <div
+    class="form"
+    id="registerForm">
 
     <label>Name</label>
 
@@ -184,13 +211,16 @@
       placeholder="Enter your name"
     >
 
+
     <label>Gmail</label>
 
     <input
       type="email"
       id="email"
       placeholder="example@gmail.com"
+      autocomplete="email"
     >
+
 
     <label>Mobile Number</label>
 
@@ -201,15 +231,25 @@
       maxlength="10"
     >
 
+
     <button id="registerBtn">
       Register & Verify Gmail
     </button>
 
-    <div id="registerMessage" class="message"></div>
 
-    <div class="login-link" id="alreadyLogin">
+    <div
+      id="registerMessage"
+      class="message">
+    </div>
+
+
+    <div
+      class="login-link"
+      id="alreadyLogin">
+
       Already registered?
       <a id="goLogin">Login here</a>
+
     </div>
 
   </div>
@@ -219,13 +259,14 @@
 
 <script type="module">
 
-  /* ===============================
+  /* =====================================================
      FIREBASE IMPORTS
-  =============================== */
+  ===================================================== */
 
   import {
     initializeApp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
 
   import {
     getAuth,
@@ -234,6 +275,7 @@
     signInWithEmailLink,
     onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
 
   import {
     getFirestore,
@@ -246,41 +288,64 @@
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-  /* ===============================
+  /* =====================================================
      FIREBASE CONFIG
-  =============================== */
+  ===================================================== */
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-    authDomain: "digital-board-acces-management.firebaseapp.com",
-    projectId: "digital-board-acces-management",
-    storageBucket: "digital-board-acces-management.firebasestorage.app",
-    messagingSenderId: "902348932290",
-    appId: "1:902348932290:web:db47f1b012bf882886675b"
+
+    apiKey:
+      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+
+    authDomain:
+      "digital-board-acces-management.firebaseapp.com",
+
+    projectId:
+      "digital-board-acces-management",
+
+    storageBucket:
+      "digital-board-acces-management.firebasestorage.app",
+
+    messagingSenderId:
+      "902348932290",
+
+    appId:
+      "1:902348932290:web:db47f1b012bf882886675b"
+
   };
 
 
-  const app = initializeApp(firebaseConfig);
+  /* =====================================================
+     INITIALIZE FIREBASE
+  ===================================================== */
 
-  const auth = getAuth(app);
+  const app =
+    initializeApp(firebaseConfig);
 
-  const db = getFirestore(app);
+
+  const auth =
+    getAuth(app);
 
 
-  /* ===============================
-     COORDINATOR EMAIL
+  const db =
+    getFirestore(app);
+
+
+  /* =====================================================
+     IMPORTANT COORDINATOR EMAIL
      
      EXACT EMAIL:
+     
      anujshivamshukla99359@gmail.com
-  =============================== */
+  ===================================================== */
 
   const COORDINATOR_EMAIL =
     "anujshivamshukla99359@gmail.com";
 
 
-  /* ===============================
+  /* =====================================================
      EMAIL LINK SETTINGS
-  =============================== */
+  ===================================================== */
 
   const actionCodeSettings = {
 
@@ -288,14 +353,15 @@
       window.location.origin +
       window.location.pathname,
 
-    handleCodeInApp: true
+    handleCodeInApp:
+      true
 
   };
 
 
-  /* ===============================
+  /* =====================================================
      ELEMENTS
-  =============================== */
+  ===================================================== */
 
   const loginTab =
     document.getElementById("loginTab");
@@ -319,53 +385,75 @@
     document.getElementById("goLogin");
 
 
-  /* ===============================
-     TAB SWITCHING
-  =============================== */
+  /* =====================================================
+     TAB: LOGIN
+  ===================================================== */
 
-  loginTab.addEventListener("click", () => {
+  loginTab.addEventListener(
+    "click",
+    () => {
 
-    loginTab.classList.add("active");
+      loginTab.classList.add("active");
 
-    registerTab.classList.remove("active");
+      registerTab.classList.remove("active");
 
-    loginForm.classList.add("active");
+      loginForm.classList.add("active");
 
-    registerForm.classList.remove("active");
+      registerForm.classList.remove("active");
 
-  });
-
-
-  registerTab.addEventListener("click", () => {
-
-    registerTab.classList.add("active");
-
-    loginTab.classList.remove("active");
-
-    registerForm.classList.add("active");
-
-    loginForm.classList.remove("active");
-
-  });
+    }
+  );
 
 
-  goLogin.addEventListener("click", () => {
+  /* =====================================================
+     TAB: REGISTER
+  ===================================================== */
 
-    loginTab.click();
+  registerTab.addEventListener(
+    "click",
+    () => {
 
-  });
+      registerTab.classList.add("active");
+
+      loginTab.classList.remove("active");
+
+      registerForm.classList.add("active");
+
+      loginForm.classList.remove("active");
+
+    }
+  );
 
 
-  /* ===============================
+  /* =====================================================
+     GO TO LOGIN
+  ===================================================== */
+
+  goLogin.addEventListener(
+    "click",
+    () => {
+
+      loginTab.click();
+
+    }
+  );
+
+
+  /* =====================================================
      MESSAGE FUNCTION
-  =============================== */
+  ===================================================== */
 
-  function showMessage(id, text, type) {
+  function showMessage(
+    id,
+    text,
+    type
+  ) {
 
     const box =
       document.getElementById(id);
 
-    box.textContent = text;
+    box.textContent =
+      text;
 
     box.className =
       "message " + type;
@@ -373,52 +461,233 @@
   }
 
 
-  /* =================================================
-     LOGIN
+  /* =====================================================
+     LOGIN BUTTON
      
-     COORDINATOR CHECK HAPPENS FIRST.
+     VERY IMPORTANT:
      
-     NO FIRESTORE CHECK FOR COORDINATOR.
-  ================================================= */
+     COORDINATOR CHECK IS FIRST.
+     
+     FIRESTORE IS NOT TOUCHED FOR COORDINATOR.
+  ===================================================== */
 
-  loginBtn.addEventListener("click", async () => {
+  loginBtn.addEventListener(
+    "click",
+    async () => {
 
-    const email =
-      document
-        .getElementById("loginEmail")
-        .value
-        .trim()
-        .toLowerCase();
-
-
-    if (!email) {
-
-      showMessage(
-        "loginMessage",
-        "Please enter your Gmail.",
-        "error"
-      );
-
-      return;
-    }
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim()
+          .toLowerCase();
 
 
-    /* ===============================================
-       COORDINATOR LOGIN
-    =============================================== */
+      /* EMPTY EMAIL */
 
-    if (email === COORDINATOR_EMAIL) {
+      if (!email) {
+
+        showMessage(
+          "loginMessage",
+          "Please enter your Gmail.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      /* =================================================
+         COORDINATOR LOGIN
+         
+         THIS MUST HAPPEN BEFORE FIRESTORE.
+      ================================================= */
+
+      if (
+        email ===
+        COORDINATOR_EMAIL
+      ) {
+
+        console.log(
+          "COORDINATOR LOGIN DETECTED"
+        );
+
+
+        try {
+
+          /* Save coordinator email */
+
+          localStorage.setItem(
+            "emailForSignIn",
+            COORDINATOR_EMAIL
+          );
+
+
+          localStorage.setItem(
+            "loginType",
+            "coordinator"
+          );
+
+
+          /* SEND VERIFICATION LINK */
+
+          await sendSignInLinkToEmail(
+            auth,
+            COORDINATOR_EMAIL,
+            actionCodeSettings
+          );
+
+
+          showMessage(
+            "loginMessage",
+            "Coordinator verification link sent. Please check your Gmail.",
+            "success"
+          );
+
+
+        } catch (error) {
+
+          console.error(
+            "COORDINATOR ERROR:",
+            error
+          );
+
+
+          showMessage(
+            "loginMessage",
+            "Unable to send verification link: " +
+            error.message,
+            "error"
+          );
+
+        }
+
+
+        /*
+          STOP HERE.
+          
+          FIRESTORE CHECK WILL NEVER RUN
+          FOR COORDINATOR.
+        */
+
+        return;
+      }
+
+
+      /* =================================================
+         NORMAL USER LOGIN
+         
+         FIRESTORE CHECK ONLY FOR NORMAL USERS.
+      ================================================= */
 
       try {
+
+        const usersRef =
+          collection(
+            db,
+            "registrationRequests"
+          );
+
+
+        const q =
+          query(
+            usersRef,
+            where(
+              "email",
+              "==",
+              email
+            )
+          );
+
+
+        const snapshot =
+          await getDocs(q);
+
+
+        /* USER NOT FOUND */
+
+        if (
+          snapshot.empty
+        ) {
+
+          showMessage(
+            "loginMessage",
+            "You are not registered. Please register first.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        let userData =
+          null;
+
+
+        snapshot.forEach(
+          (doc) => {
+
+            userData =
+              doc.data();
+
+          }
+        );
+
+
+        /* NOT APPROVED */
+
+        if (
+          userData.status !==
+          "approved"
+        ) {
+
+          if (
+            userData.status ===
+            "pending"
+          ) {
+
+            showMessage(
+              "loginMessage",
+              "Your registration is still pending approval.",
+              "info"
+            );
+
+          } else if (
+            userData.status ===
+            "rejected"
+          ) {
+
+            showMessage(
+              "loginMessage",
+              "Your registration has been rejected.",
+              "error"
+            );
+
+          } else {
+
+            showMessage(
+              "loginMessage",
+              "Your registration is not approved yet.",
+              "error"
+            );
+
+          }
+
+          return;
+        }
+
+
+        /* APPROVED USER */
 
         localStorage.setItem(
           "emailForSignIn",
           email
         );
 
+
         localStorage.setItem(
           "loginType",
-          "coordinator"
+          "user"
         );
 
 
@@ -431,7 +700,7 @@
 
         showMessage(
           "loginMessage",
-          "Coordinator verification link sent. Please check your Gmail.",
+          "Login verification link sent. Please check your Gmail.",
           "success"
         );
 
@@ -440,48 +709,57 @@
 
         console.error(error);
 
+
         showMessage(
           "loginMessage",
-          "Unable to send verification link: " +
+          "Error: " +
           error.message,
           "error"
         );
 
       }
 
-      return;
     }
+  );
 
 
-    /* ===============================================
-       NORMAL USER LOGIN
-    =============================================== */
+  /* =====================================================
+     REGISTER BUTTON
+  ===================================================== */
 
-    try {
+  registerBtn.addEventListener(
+    "click",
+    async () => {
 
-      const usersRef =
-        collection(
-          db,
-          "registrationRequests"
-        );
-
-
-      const q =
-        query(
-          usersRef,
-          where("email", "==", email)
-        );
+      const name =
+        document
+          .getElementById("name")
+          .value
+          .trim();
 
 
-      const snapshot =
-        await getDocs(q);
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim()
+          .toLowerCase();
 
 
-      if (snapshot.empty) {
+      const mobile =
+        document
+          .getElementById("mobile")
+          .value
+          .trim();
+
+
+      /* NAME */
+
+      if (!name) {
 
         showMessage(
-          "loginMessage",
-          "You are not registered. Please register first.",
+          "registerMessage",
+          "Please enter your name.",
           "error"
         );
 
@@ -489,278 +767,202 @@
       }
 
 
-      let userData = null;
+      /* GMAIL */
+
+      if (
+        !email.endsWith(
+          "@gmail.com"
+        )
+      ) {
+
+        showMessage(
+          "registerMessage",
+          "Please use a valid @gmail.com address.",
+          "error"
+        );
+
+        return;
+      }
 
 
-      snapshot.forEach(doc => {
+      /* MOBILE */
 
-        userData = doc.data();
+      if (
+        !/^[0-9]{10}$/.test(
+          mobile
+        )
+      ) {
 
-      });
+        showMessage(
+          "registerMessage",
+          "Mobile number must be exactly 10 digits.",
+          "error"
+        );
+
+        return;
+      }
 
 
-      if (userData.status !== "approved") {
+      try {
 
-        if (userData.status === "pending") {
-
-          showMessage(
-            "loginMessage",
-            "Your registration is still pending approval.",
-            "info"
+        const usersRef =
+          collection(
+            db,
+            "registrationRequests"
           );
 
-        } else if (userData.status === "rejected") {
+
+        /* CHECK DUPLICATE EMAIL */
+
+        const emailQuery =
+          query(
+            usersRef,
+            where(
+              "email",
+              "==",
+              email
+            )
+          );
+
+
+        const emailSnapshot =
+          await getDocs(
+            emailQuery
+          );
+
+
+        if (
+          !emailSnapshot.empty
+        ) {
 
           showMessage(
-            "loginMessage",
-            "Your registration has been rejected.",
+            "registerMessage",
+            "Already exists. Please login.",
             "error"
           );
 
-        } else {
 
-          showMessage(
-            "loginMessage",
-            "You are not approved yet.",
-            "error"
-          );
+          document
+            .getElementById(
+              "alreadyLogin"
+            )
+            .style.display =
+              "block";
 
+
+          return;
         }
 
-        return;
-      }
+
+        /* CHECK DUPLICATE MOBILE */
+
+        const mobileQuery =
+          query(
+            usersRef,
+            where(
+              "mobile",
+              "==",
+              mobile
+            )
+          );
 
 
-      localStorage.setItem(
-        "emailForSignIn",
-        email
-      );
-
-      localStorage.setItem(
-        "loginType",
-        "user"
-      );
+        const mobileSnapshot =
+          await getDocs(
+            mobileQuery
+          );
 
 
-      await sendSignInLinkToEmail(
-        auth,
-        email,
-        actionCodeSettings
-      );
+        if (
+          !mobileSnapshot.empty
+        ) {
+
+          showMessage(
+            "registerMessage",
+            "Already exists. Please login.",
+            "error"
+          );
 
 
-      showMessage(
-        "loginMessage",
-        "Login verification link sent. Please check your Gmail.",
-        "success"
-      );
+          document
+            .getElementById(
+              "alreadyLogin"
+            )
+            .style.display =
+              "block";
 
 
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "loginMessage",
-        "Error: " + error.message,
-        "error"
-      );
-
-    }
-
-  });
+          return;
+        }
 
 
-  /* =================================================
-     REGISTER
-  ================================================= */
+        /* SAVE TEMPORARY DATA */
 
-  registerBtn.addEventListener("click", async () => {
-
-    const name =
-      document
-        .getElementById("name")
-        .value
-        .trim();
-
-
-    const email =
-      document
-        .getElementById("email")
-        .value
-        .trim()
-        .toLowerCase();
-
-
-    const mobile =
-      document
-        .getElementById("mobile")
-        .value
-        .trim();
-
-
-    if (!name) {
-
-      showMessage(
-        "registerMessage",
-        "Please enter your name.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!email.endsWith("@gmail.com")) {
-
-      showMessage(
-        "registerMessage",
-        "Please use a valid @gmail.com address.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!/^[0-9]{10}$/.test(mobile)) {
-
-      showMessage(
-        "registerMessage",
-        "Mobile number must be exactly 10 digits.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    try {
-
-      const usersRef =
-        collection(
-          db,
-          "registrationRequests"
+        localStorage.setItem(
+          "pendingName",
+          name
         );
 
 
-      /* CHECK EMAIL */
-
-      const emailQuery =
-        query(
-          usersRef,
-          where("email", "==", email)
+        localStorage.setItem(
+          "pendingMobile",
+          mobile
         );
 
 
-      const emailSnapshot =
-        await getDocs(emailQuery);
+        localStorage.setItem(
+          "emailForSignIn",
+          email
+        );
 
 
-      if (!emailSnapshot.empty) {
+        localStorage.setItem(
+          "loginType",
+          "registration"
+        );
+
+
+        /* SEND VERIFICATION LINK */
+
+        await sendSignInLinkToEmail(
+          auth,
+          email,
+          actionCodeSettings
+        );
+
 
         showMessage(
           "registerMessage",
-          "Already exists. Please login.",
-          "error"
-        );
-
-        document
-          .getElementById("alreadyLogin")
-          .style.display = "block";
-
-        return;
-      }
-
-
-      /* CHECK MOBILE */
-
-      const mobileQuery =
-        query(
-          usersRef,
-          where("mobile", "==", mobile)
+          "Verification link sent to your Gmail. Please open the link.",
+          "success"
         );
 
 
-      const mobileSnapshot =
-        await getDocs(mobileQuery);
+      } catch (error) {
 
+        console.error(error);
 
-      if (!mobileSnapshot.empty) {
 
         showMessage(
           "registerMessage",
-          "Already exists. Please login.",
+          "Error: " +
+          error.message,
           "error"
         );
 
-        document
-          .getElementById("alreadyLogin")
-          .style.display = "block";
-
-        return;
       }
 
-
-      /* SAVE TEMP DATA */
-
-      localStorage.setItem(
-        "pendingName",
-        name
-      );
-
-      localStorage.setItem(
-        "pendingMobile",
-        mobile
-      );
-
-      localStorage.setItem(
-        "emailForSignIn",
-        email
-      );
-
-      localStorage.setItem(
-        "loginType",
-        "registration"
-      );
-
-
-      /* SEND VERIFICATION LINK */
-
-      await sendSignInLinkToEmail(
-        auth,
-        email,
-        actionCodeSettings
-      );
-
-
-      showMessage(
-        "registerMessage",
-        "Verification link sent to your Gmail. Please open the link.",
-        "success"
-      );
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "registerMessage",
-        "Error: " + error.message,
-        "error"
-      );
-
     }
+  );
 
-  });
 
-
-  /* =================================================
-     PROCESS EMAIL VERIFICATION LINK
-  ================================================= */
+  /* =====================================================
+     PROCESS EMAIL LINK
+  ===================================================== */
 
   async function processEmailLink() {
+
+    /* Not an email link */
 
     if (
       !isSignInWithEmailLink(
@@ -770,15 +972,18 @@
     ) {
 
       return;
-
     }
 
+
+    /* Get email from localStorage */
 
     let email =
       localStorage.getItem(
         "emailForSignIn"
       );
 
+
+    /* If missing, ask email */
 
     if (!email) {
 
@@ -803,10 +1008,14 @@
 
 
     email =
-      email.trim().toLowerCase();
+      email
+        .trim()
+        .toLowerCase();
 
 
     try {
+
+      /* COMPLETE EMAIL LINK LOGIN */
 
       const result =
         await signInWithEmailLink(
@@ -822,57 +1031,65 @@
           .toLowerCase();
 
 
-      /* ===============================================
+      console.log(
+        "VERIFIED EMAIL:",
+        verifiedEmail
+      );
+
+
+      /* =================================================
          COORDINATOR
          
-         DIRECT DASHBOARD
+         DIRECT DASHBOARD.
          
-         NO FIRESTORE CHECK
-      =============================================== */
+         NO FIRESTORE.
+         NO REGISTRATION CHECK.
+      ================================================= */
 
       if (
         verifiedEmail ===
         COORDINATOR_EMAIL
       ) {
 
+        console.log(
+          "COORDINATOR VERIFIED"
+        );
+
+
         localStorage.removeItem(
           "emailForSignIn"
         );
+
 
         localStorage.removeItem(
           "loginType"
         );
 
+
         localStorage.removeItem(
           "pendingName"
         );
+
 
         localStorage.removeItem(
           "pendingMobile"
         );
 
+
+        /* DIRECT DASHBOARD */
 
         window.location.replace(
           "coordinator.html"
         );
 
+
         return;
       }
 
 
-      /* ===============================================
-         REGISTRATION VERIFICATION
-      =============================================== */
-
-      const pendingName =
-        localStorage.getItem(
-          "pendingName"
-        );
-
-      const pendingMobile =
-        localStorage.getItem(
-          "pendingMobile"
-        );
+      /* =================================================
+         NORMAL REGISTRATION
+      ================================================= */
 
       const loginType =
         localStorage.getItem(
@@ -880,8 +1097,21 @@
         );
 
 
+      const pendingName =
+        localStorage.getItem(
+          "pendingName"
+        );
+
+
+      const pendingMobile =
+        localStorage.getItem(
+          "pendingMobile"
+        );
+
+
       if (
-        loginType === "registration" &&
+        loginType ===
+          "registration" &&
         pendingName &&
         pendingMobile
       ) {
@@ -922,13 +1152,16 @@
           "pendingName"
         );
 
+
         localStorage.removeItem(
           "pendingMobile"
         );
 
+
         localStorage.removeItem(
           "emailForSignIn"
         );
+
 
         localStorage.removeItem(
           "loginType"
@@ -941,17 +1174,24 @@
           "success"
         );
 
+
         return;
       }
 
 
-      /* NORMAL USER */
+      /* =================================================
+         NORMAL APPROVED USER
+      ================================================= */
 
-      if (loginType === "user") {
+      if (
+        loginType ===
+        "user"
+      ) {
 
         localStorage.removeItem(
           "emailForSignIn"
         );
+
 
         localStorage.removeItem(
           "loginType"
@@ -964,13 +1204,18 @@
           "success"
         );
 
+
         return;
       }
 
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        "EMAIL LINK ERROR:",
+        error
+      );
+
 
       showMessage(
         "loginMessage",
@@ -984,12 +1229,16 @@
   }
 
 
-  /* ===============================
+  /* =====================================================
      START EMAIL LINK PROCESSING
-  =============================== */
+  ===================================================== */
 
   processEmailLink();
 
+
+  /* =====================================================
+     AUTH STATE
+  ===================================================== */
 
   onAuthStateChanged(
     auth,
@@ -998,7 +1247,7 @@
       if (user) {
 
         console.log(
-          "Firebase user:",
+          "Firebase logged in:",
           user.email
         );
 
