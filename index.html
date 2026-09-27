@@ -22,7 +22,7 @@
     }
 
     .container {
-      width: 380px;
+      width: 420px;
       max-width: 92%;
       background: white;
       padding: 30px;
@@ -32,8 +32,8 @@
 
     h1 {
       text-align: center;
+      font-size: 24px;
       margin-bottom: 25px;
-      font-size: 25px;
     }
 
     .tabs {
@@ -45,10 +45,14 @@
       width: 50%;
       padding: 12px;
       border: none;
-      cursor: pointer;
       background: #e5e7eb;
-      color: #111827;
+      cursor: pointer;
       font-size: 15px;
+    }
+
+    .tab.active {
+      background: #2563eb;
+      color: white;
     }
 
     .tab:first-child {
@@ -57,11 +61,6 @@
 
     .tab:last-child {
       border-radius: 0 7px 7px 0;
-    }
-
-    .tab.active {
-      background: #2563eb;
-      color: white;
     }
 
     .form {
@@ -75,7 +74,7 @@
     label {
       display: block;
       margin-top: 12px;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-weight: bold;
     }
 
@@ -87,9 +86,31 @@
       font-size: 15px;
     }
 
-    input:focus {
-      outline: none;
+    .verify-title {
+      margin-top: 18px;
+      font-weight: bold;
+    }
+
+    .verify-options {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .verify-option {
+      flex: 1;
+      padding: 12px;
+      border: 2px solid #cbd5e1;
+      border-radius: 7px;
+      background: white;
+      cursor: pointer;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .verify-option.selected {
       border-color: #2563eb;
+      background: #eff6ff;
     }
 
     button.submit {
@@ -113,6 +134,7 @@
       text-align: center;
       font-size: 14px;
       font-weight: bold;
+      line-height: 1.5;
     }
 
     .error {
@@ -121,6 +143,24 @@
 
     .success {
       color: #16a34a;
+    }
+
+    .login-link {
+      margin-top: 10px;
+      text-align: center;
+      display: none;
+    }
+
+    .login-link button {
+      border: none;
+      background: none;
+      color: #2563eb;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #otpSection {
+      display: none;
     }
   </style>
 </head>
@@ -131,7 +171,7 @@
 
     <h1>Digital Board Management</h1>
 
-    <!-- LOGIN / REGISTER TABS -->
+    <!-- TABS -->
 
     <div class="tabs">
 
@@ -156,20 +196,12 @@
 
     <div class="form active" id="loginForm">
 
-      <label>Email</label>
+      <label>Gmail</label>
 
       <input
         type="email"
         id="loginEmail"
-        placeholder="Enter Gmail"
-      >
-
-      <label>Password</label>
-
-      <input
-        type="password"
-        id="loginPassword"
-        placeholder="Enter password"
+        placeholder="example@gmail.com"
       >
 
       <button
@@ -178,7 +210,10 @@
         Login
       </button>
 
-      <div id="loginMessage" class="message"></div>
+      <div
+        id="loginMessage"
+        class="message">
+      </div>
 
     </div>
 
@@ -210,34 +245,92 @@
       <input
         type="tel"
         id="mobile"
-        placeholder="10 digit mobile number"
         maxlength="10"
+        inputmode="numeric"
+        placeholder="10 digit mobile number"
       >
 
 
-      <label>Password</label>
+      <div class="verify-title">
+        Verify using
+      </div>
 
-      <input
-        type="password"
-        id="password"
-        placeholder="Create password"
-      >
+
+      <div class="verify-options">
+
+        <button
+          type="button"
+          class="verify-option selected"
+          id="emailVerify"
+          onclick="selectVerification('email')">
+          📧 Gmail
+        </button>
+
+        <button
+          type="button"
+          class="verify-option"
+          id="phoneVerify"
+          onclick="selectVerification('phone')">
+          📱 Mobile
+        </button>
+
+      </div>
 
 
       <button
         class="submit"
-        onclick="registerUser()">
-        Register
+        onclick="sendVerification()">
+        Continue
       </button>
 
-      <div id="registerMessage" class="message"></div>
+
+      <!-- OTP SECTION -->
+
+      <div id="otpSection">
+
+        <label>Enter OTP</label>
+
+        <input
+          type="text"
+          id="otp"
+          maxlength="6"
+          inputmode="numeric"
+          placeholder="Enter 6 digit OTP"
+        >
+
+        <button
+          class="submit"
+          onclick="verifyOTP()">
+          Verify OTP
+        </button>
+
+      </div>
+
+
+      <div
+        id="registerMessage"
+        class="message">
+      </div>
+
+
+      <!-- LOGIN LINK -->
+
+      <div
+        id="loginLink"
+        class="login-link">
+
+        Already registered?
+
+        <button onclick="showLogin()">
+          Please Login
+        </button>
+
+      </div>
 
     </div>
 
   </div>
 
-
-  <!-- FIREBASE -->
 
   <script type="module">
 
@@ -245,42 +338,53 @@
       from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
     import {
-      getAuth,
-      createUserWithEmailAndPassword,
-      signInWithEmailAndPassword
-    }
-      from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-
-    import {
       getFirestore,
-      doc,
-      setDoc
+      collection,
+      addDoc,
+      serverTimestamp,
+      getDocs
     }
       from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-    // FIREBASE CONFIG
+    /* FIREBASE CONFIG */
 
     const firebaseConfig = {
-      apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-      authDomain: "digital-board-acces-management.firebaseapp.com",
-      projectId: "digital-board-acces-management",
-      storageBucket: "digital-board-acces-management.firebasestorage.app",
-      messagingSenderId: "902348932290",
-      appId: "1:902348932290:web:db47f1b012bf882886675b"
+
+      apiKey:
+        "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+
+      authDomain:
+        "digital-board-acces-management.firebaseapp.com",
+
+      projectId:
+        "digital-board-acces-management",
+
+      storageBucket:
+        "digital-board-acces-management.firebasestorage.app",
+
+      messagingSenderId:
+        "902348932290",
+
+      appId:
+        "1:902348932290:web:db47f1b012bf882886675b"
+
     };
 
 
-    // START FIREBASE
-
     const app = initializeApp(firebaseConfig);
-
-    const auth = getAuth(app);
 
     const db = getFirestore(app);
 
 
-    // SWITCH TO LOGIN
+    /* DEFAULT VERIFICATION METHOD */
+
+    let verificationMethod = "email";
+
+
+    /* -------------------------
+       LOGIN TAB
+    ------------------------- */
 
     window.showLogin = function() {
 
@@ -292,6 +396,7 @@
         .getElementById("registerForm")
         .classList.remove("active");
 
+
       document
         .getElementById("loginTab")
         .classList.add("active");
@@ -300,10 +405,17 @@
         .getElementById("registerTab")
         .classList.remove("active");
 
+
+      document
+        .getElementById("loginLink")
+        .style.display = "none";
+
     };
 
 
-    // SWITCH TO REGISTER
+    /* -------------------------
+       REGISTER TAB
+    ------------------------- */
 
     window.showRegister = function() {
 
@@ -315,6 +427,7 @@
         .getElementById("loginForm")
         .classList.remove("active");
 
+
       document
         .getElementById("registerTab")
         .classList.add("active");
@@ -326,30 +439,136 @@
     };
 
 
-    // REGISTER
+    /* -------------------------
+       VERIFICATION SELECTION
+    ------------------------- */
 
-    window.registerUser = async function() {
+    window.selectVerification = function(method) {
+
+      verificationMethod = method;
+
+
+      document
+        .getElementById("emailVerify")
+        .classList.remove("selected");
+
+      document
+        .getElementById("phoneVerify")
+        .classList.remove("selected");
+
+
+      if (method === "email") {
+
+        document
+          .getElementById("emailVerify")
+          .classList.add("selected");
+
+      }
+
+      else {
+
+        document
+          .getElementById("phoneVerify")
+          .classList.add("selected");
+
+      }
+
+    };
+
+
+    /* -------------------------
+       DUPLICATE CHECK
+    ------------------------- */
+
+    async function checkAlreadyExists(email, mobile) {
+
+      const snapshot = await getDocs(
+        collection(db, "registrationRequests")
+      );
+
+
+      let emailExists = false;
+      let mobileExists = false;
+
+
+      snapshot.forEach((doc) => {
+
+        const data = doc.data();
+
+
+        if (
+          data.email &&
+          data.email.toLowerCase() === email.toLowerCase()
+        ) {
+
+          emailExists = true;
+
+        }
+
+
+        if (
+          data.mobile &&
+          data.mobile === mobile
+        ) {
+
+          mobileExists = true;
+
+        }
+
+      });
+
+
+      return {
+        emailExists,
+        mobileExists
+      };
+
+    }
+
+
+    /* -------------------------
+       SEND VERIFICATION
+    ------------------------- */
+
+    window.sendVerification = async function() {
 
       const name =
-        document.getElementById("name").value.trim();
+        document
+          .getElementById("name")
+          .value
+          .trim();
+
 
       const email =
-        document.getElementById("email").value.trim();
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
 
       const mobile =
-        document.getElementById("mobile").value.trim();
+        document
+          .getElementById("mobile")
+          .value
+          .trim();
 
-      const password =
-        document.getElementById("password").value;
 
       const message =
         document.getElementById("registerMessage");
 
 
+      const loginLink =
+        document.getElementById("loginLink");
+
+
       message.className = "message";
 
+      message.innerText = "";
 
-      // NAME CHECK
+      loginLink.style.display = "none";
+
+
+      /* NAME CHECK */
 
       if (name === "") {
 
@@ -359,12 +578,15 @@
           "⚠️ Please enter your name.";
 
         return;
+
       }
 
 
-      // GMAIL CHECK
+      /* GMAIL CHECK */
 
-      if (!email.toLowerCase().endsWith("@gmail.com")) {
+      if (
+        !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
+      ) {
 
         message.classList.add("error");
 
@@ -372,10 +594,11 @@
           "⚠️ Please enter a valid Gmail ending with @gmail.com.";
 
         return;
+
       }
 
 
-      // MOBILE CHECK
+      /* MOBILE CHECK */
 
       if (!/^[0-9]{10}$/.test(mobile)) {
 
@@ -385,167 +608,194 @@
           "⚠️ Mobile number must contain exactly 10 digits.";
 
         return;
+
       }
 
 
-      // PASSWORD CHECK
-
-      if (password.length < 6) {
-
-        message.classList.add("error");
-
-        message.innerText =
-          "⚠️ Password must contain at least 6 characters.";
-
-        return;
-      }
-
-
-      message.innerText = "Creating account...";
-
+      /* DUPLICATE CHECK */
 
       try {
 
-        const userCredential =
-          await createUserWithEmailAndPassword(
-            auth,
-            email,
-            password
-          );
-
-
-        const user =
-          userCredential.user;
-
-
-        // SAVE USER DATA
-
-        await setDoc(
-          doc(db, "users", user.uid),
-          {
-            name: name,
-            email: email,
-            mobile: mobile,
-            status: "pending",
-            createdAt: new Date()
-          }
-        );
-
-
-        message.classList.add("success");
-
         message.innerText =
-          "✅ Registration successful! Waiting for coordinator approval.";
+          "Checking registration details...";
 
+
+        const exists =
+          await checkAlreadyExists(email, mobile);
+
+
+        if (
+          exists.emailExists ||
+          exists.mobileExists
+        ) {
+
+          message.className =
+            "message error";
+
+
+          if (
+            exists.emailExists &&
+            exists.mobileExists
+          ) {
+
+            message.innerText =
+              "⚠️ Gmail and mobile number already exist. Please login.";
+
+          }
+
+          else if (exists.emailExists) {
+
+            message.innerText =
+              "⚠️ Gmail already exists. Please login.";
+
+          }
+
+          else {
+
+            message.innerText =
+              "⚠️ Mobile number already exists. Please login.";
+
+          }
+
+
+          loginLink.style.display =
+            "block";
+
+
+          return;
+
+        }
+
+
+        /* NO DUPLICATE */
 
         document
-          .getElementById("name")
-          .value = "";
-
-        document
-          .getElementById("email")
-          .value = "";
-
-        document
-          .getElementById("mobile")
-          .value = "";
-
-        document
-          .getElementById("password")
-          .value = "";
+          .getElementById("otpSection")
+          .style.display = "block";
 
 
-      } catch (error) {
+        message.className =
+          "message success";
+
+
+        if (verificationMethod === "email") {
+
+          message.innerText =
+            "📧 Gmail verification selected. Real email verification will be connected next.";
+
+        }
+
+        else {
+
+          message.innerText =
+            "📱 Mobile verification selected. Real SMS OTP will be connected next.";
+
+        }
+
+      }
+
+      catch (error) {
 
         console.error(error);
 
-        message.classList.add("error");
+        message.className =
+          "message error";
 
-        if (error.code === "auth/email-already-in-use") {
-
-          message.innerText =
-            "⚠️ This Gmail is already registered.";
-
-        } else {
-
-          message.innerText =
-            "⚠️ " + error.message;
-        }
+        message.innerText =
+          "⚠️ Unable to check registration. Please try again.";
 
       }
 
     };
 
 
-    // LOGIN
+    /* -------------------------
+       VERIFY OTP
+    ------------------------- */
+
+    window.verifyOTP = async function() {
+
+      const otp =
+        document
+          .getElementById("otp")
+          .value
+          .trim();
+
+
+      const message =
+        document.getElementById("registerMessage");
+
+
+      if (!/^[0-9]{6}$/.test(otp)) {
+
+        message.className =
+          "message error";
+
+        message.innerText =
+          "⚠️ Please enter a valid 6 digit OTP.";
+
+        return;
+
+      }
+
+
+      /*
+        IMPORTANT:
+
+        Real Firebase OTP verification
+        will be connected here.
+
+        We are NOT accepting this OTP as
+        real verification yet.
+      */
+
+
+      message.className =
+        "message error";
+
+      message.innerText =
+        "⚠️ Real OTP verification is not connected yet.";
+
+    };
+
+
+    /* -------------------------
+       LOGIN
+    ------------------------- */
 
     window.loginUser = async function() {
 
       const email =
-        document.getElementById("loginEmail").value.trim();
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim();
 
-      const password =
-        document.getElementById("loginPassword").value;
 
       const message =
         document.getElementById("loginMessage");
 
 
-      message.className = "message";
+      if (
+        !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
+      ) {
 
-
-      // GMAIL CHECK
-
-      if (!email.toLowerCase().endsWith("@gmail.com")) {
-
-        message.classList.add("error");
+        message.className =
+          "message error";
 
         message.innerText =
           "⚠️ Please enter a valid Gmail.";
 
         return;
-      }
-
-
-      if (password === "") {
-
-        message.classList.add("error");
-
-        message.innerText =
-          "⚠️ Please enter your password.";
-
-        return;
-      }
-
-
-      message.innerText = "Logging in...";
-
-
-      try {
-
-        await signInWithEmailAndPassword(
-          auth,
-          email,
-          password
-        );
-
-
-        message.classList.add("success");
-
-        message.innerText =
-          "✅ Login successful!";
-
-
-      } catch (error) {
-
-        console.error(error);
-
-        message.classList.add("error");
-
-        message.innerText =
-          "⚠️ Invalid Gmail or password.";
 
       }
+
+
+      message.className =
+        "message success";
+
+      message.innerText =
+        "Login verification will be connected next.";
 
     };
 
