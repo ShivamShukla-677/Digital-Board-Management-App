@@ -15,8 +15,14 @@
       font-family: Inter, Arial, sans-serif;
     }
 
+    html,
     body {
+      width: 100%;
+      min-height: 100%;
       margin: 0;
+    }
+
+    body {
       min-height: 100vh;
       background:
         radial-gradient(
@@ -325,21 +331,39 @@
 
       inset: 0;
 
-      background: #020617;
+      width: 100vw;
+      height: 100vh;
+
+      background: #000;
 
       z-index: 9999;
+
+      overflow: hidden;
     }
 
 
+    /* =====================================
+       FULL SCREEN SHARED VIDEO
+    ===================================== */
+
     #remoteVideo {
 
-      width: 100%;
+      position: absolute;
 
-      height: 100%;
+      top: 0;
+      left: 0;
 
-      object-fit: contain;
+      width: 100vw;
+      height: 100vh;
 
-      background: #020617;
+      max-width: none;
+      max-height: none;
+
+      object-fit: cover;
+
+      background: #000;
+
+      display: block;
     }
 
 
@@ -531,15 +555,10 @@
 <body>
 
 
-<!-- =====================================
-     BOARD HOME
-===================================== -->
-
 <div
   class="board"
   id="mainBoard"
 >
-
 
   <div class="brand">
 
@@ -567,8 +586,6 @@
   </div>
 
 
-  <!-- BOARD CODE -->
-
   <div class="code-section">
 
     <div class="code-label">
@@ -585,8 +602,6 @@
   </div>
 
 
-  <!-- QR -->
-
   <div class="qr-section">
 
     <div id="qrcode"></div>
@@ -602,8 +617,6 @@
 
   </div>
 
-
-  <!-- STATUS -->
 
   <div
     class="status-box"
@@ -623,18 +636,12 @@
     Digital Board Management System • College Project
   </div>
 
-
 </div>
 
-
-<!-- =====================================
-     LIVE SCREEN
-===================================== -->
 
 <div
   id="screenContainer"
 >
-
 
   <video
     id="remoteVideo"
@@ -678,7 +685,6 @@
 
   </div>
 
-
 </div>
 
 
@@ -706,10 +712,6 @@
   } from
   "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
-
-  /* =========================================
-     FIREBASE
-  ========================================= */
 
   const firebaseConfig = {
 
@@ -744,10 +746,6 @@
     getFirestore(app);
 
 
-  /* =========================================
-     SETTINGS
-  ========================================= */
-
   const CHARACTERS =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -767,10 +765,6 @@
 
   let pendingCandidates = [];
 
-
-  /* =========================================
-     STATUS
-  ========================================= */
 
   function setStatus(
     message,
@@ -835,10 +829,6 @@
   }
 
 
-  /* =========================================
-     RANDOM CODE
-  ========================================= */
-
   function generateRandomCode() {
 
     let code = "";
@@ -867,10 +857,6 @@
 
   }
 
-
-  /* =========================================
-     CHECK OLD CODES
-  ========================================= */
 
   async function codeExists(
     code
@@ -920,10 +906,6 @@
   }
 
 
-  /* =========================================
-     CREATE UNIQUE CODE
-  ========================================= */
-
   async function createUniqueCode() {
 
     while (true) {
@@ -949,10 +931,6 @@
   }
 
 
-  /* =========================================
-     CREATE BOARD
-  ========================================= */
-
   async function createBoardCode() {
 
     try {
@@ -965,10 +943,6 @@
       const newCode =
         await createUniqueCode();
 
-
-      /*
-       OLD CODE
-      */
 
       const oldCode =
         localStorage.getItem(
@@ -1005,11 +979,6 @@
         }
 
 
-        /*
-         Permanently remember
-         old board code.
-        */
-
         await setDoc(
 
           doc(
@@ -1032,10 +1001,6 @@
 
       }
 
-
-      /*
-       SAVE NEW CODE
-      */
 
       await setDoc(
 
@@ -1113,10 +1078,6 @@
   }
 
 
-  /* =========================================
-     SAME QR
-  ========================================= */
-
   function createQRCode() {
 
     const qrContainer =
@@ -1154,10 +1115,6 @@
   }
 
 
-  /* =========================================
-     WEBRTC
-  ========================================= */
-
   const rtcConfig = {
 
     iceServers: [
@@ -1171,10 +1128,6 @@
 
   };
 
-
-  /* =========================================
-     BOARD LISTENER
-  ========================================= */
 
   function startBoardListener(
     code
@@ -1220,18 +1173,6 @@
             snapshot.data();
 
 
-          /*
-           IMPORTANT FIX:
-
-           index.html creates session
-           with status = "active".
-
-           Earlier board.html was
-           waiting only for "sharing".
-
-           Now both are accepted.
-          */
-
           if (
             data.offer &&
             (
@@ -1262,10 +1203,6 @@
 
   }
 
-
-  /* =========================================
-     ADD PENDING ICE
-  ========================================= */
 
   async function addPendingCandidates() {
 
@@ -1310,21 +1247,12 @@
   }
 
 
-  /* =========================================
-     RECEIVE OFFER
-  ========================================= */
-
   async function receiveOffer(
     code,
     offerData
   ) {
 
     try {
-
-      /*
-       Avoid creating
-       duplicate connections.
-      */
 
       if (
         peerConnection &&
@@ -1366,10 +1294,6 @@
         );
 
 
-      /* =====================================
-         REMOTE SCREEN
-      ===================================== */
-
       peerConnection.ontrack =
         function(event) {
 
@@ -1409,10 +1333,6 @@
 
         };
 
-
-      /* =====================================
-         TEACHER ICE
-      ===================================== */
 
       const candidateQuery =
         collection(
@@ -1461,12 +1381,6 @@
                 );
 
 
-              /*
-               If remote description
-               is not ready yet,
-               temporarily store candidate.
-              */
-
               if (
                 !remoteDescriptionSet
               ) {
@@ -1505,10 +1419,6 @@
 
         );
 
-
-      /* =====================================
-         BOARD ICE
-      ===================================== */
 
       peerConnection.onicecandidate =
         async function(event) {
@@ -1554,10 +1464,6 @@
       );
 
 
-      /* =====================================
-         SET OFFER
-      ===================================== */
-
       await peerConnection
         .setRemoteDescription(
 
@@ -1572,17 +1478,8 @@
         true;
 
 
-      /*
-       Add candidates that arrived
-       before remote description.
-      */
-
       await addPendingCandidates();
 
-
-      /* =====================================
-         CREATE ANSWER
-      ===================================== */
 
       const answer =
         await peerConnection
@@ -1594,10 +1491,6 @@
           answer
         );
 
-
-      /* =====================================
-         SAVE ANSWER
-      ===================================== */
 
       await updateDoc(
 
@@ -1652,10 +1545,6 @@
 
   }
 
-
-  /* =========================================
-     STOP BOARD SCREEN
-  ========================================= */
 
   function stopBoardScreen() {
 
@@ -1721,10 +1610,6 @@
 
   }
 
-
-  /* =========================================
-     START
-  ========================================= */
 
   createQRCode();
 
