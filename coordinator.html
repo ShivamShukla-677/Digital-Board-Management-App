@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Coordinator Login</title>
+
+  <title>Coordinator Dashboard</title>
 
   <style>
     * {
@@ -13,391 +14,580 @@
 
     body {
       margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
       background: #f4f6f8;
+      color: #222;
     }
 
-    .box {
-      width: 100%;
-      max-width: 420px;
-      background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.12);
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-
-    p {
-      text-align: center;
-      color: #666;
-    }
-
-    input {
-      width: 100%;
-      padding: 13px;
-      margin-top: 15px;
-      border: 1px solid #ccc;
-      border-radius: 7px;
-      font-size: 15px;
-    }
-
-    button {
-      width: 100%;
-      padding: 13px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 7px;
+    header {
       background: #2563eb;
       color: white;
-      font-size: 16px;
-      cursor: pointer;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
     }
 
-    button:hover {
-      background: #1d4ed8;
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    #logoutBtn {
+      background: white;
+      color: #2563eb;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+
+    .welcome {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    }
+
+    .table-box {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th,
+    td {
+      padding: 13px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+
+    th {
+      background: #f1f5f9;
+    }
+
+    .status {
+      padding: 6px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: bold;
+      display: inline-block;
+    }
+
+    .pending {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .approved {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .rejected {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .action-btn {
+      border: none;
+      padding: 8px 11px;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      margin: 2px;
+    }
+
+    .approve {
+      background: #16a34a;
+    }
+
+    .reject {
+      background: #dc2626;
+    }
+
+    .delete {
+      background: #475569;
+    }
+
+    .action-btn:hover {
+      opacity: 0.85;
     }
 
     .message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 7px;
-      text-align: center;
       display: none;
+      padding: 13px;
+      margin-bottom: 20px;
+      border-radius: 8px;
     }
 
     .success {
+      display: block;
       background: #dcfce7;
       color: #166534;
     }
 
     .error {
+      display: block;
       background: #fee2e2;
       color: #991b1b;
     }
 
-    .dashboard {
-      display: none;
+    .empty {
+      text-align: center;
+      padding: 30px;
+      color: #666;
     }
 
-    .logout {
-      background: #dc2626;
+    .loading {
+      text-align: center;
+      padding: 30px;
     }
   </style>
 </head>
 
 <body>
 
-<div class="box">
-
-  <!-- LOGIN -->
-  <div id="loginBox">
-
-    <h1>Coordinator Login</h1>
-
-    <p>Authorized Coordinator Gmail only</p>
-
-    <input
-      type="email"
-      id="coordinatorEmail"
-      placeholder="Coordinator Gmail"
-    >
-
-    <button id="loginBtn">
-      Send Verification Link
-    </button>
-
-    <div id="message" class="message"></div>
-
-  </div>
-
-
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="dashboard">
+  <header>
 
     <h1>Coordinator Dashboard</h1>
 
-    <p id="welcome"></p>
-
-    <hr>
-
-    <p>Dashboard is ready.</p>
-
-    <button class="logout" id="logoutBtn">
+    <button id="logoutBtn">
       Logout
     </button>
 
-  </div>
+  </header>
 
-</div>
+
+  <div class="container">
+
+    <div class="welcome">
+
+      <h2>Welcome Coordinator</h2>
+
+      <p id="coordinatorEmail"></p>
+
+    </div>
+
+
+    <div id="message" class="message"></div>
+
+
+    <div class="table-box">
+
+      <h2>Registration Requests</h2>
+
+      <div id="loading" class="loading">
+        Loading registrations...
+      </div>
+
+      <table id="registrationTable" style="display:none;">
+
+        <thead>
+
+          <tr>
+            <th>Name</th>
+            <th>Gmail</th>
+            <th>Mobile</th>
+            <th>Verification</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+
+        </thead>
+
+        <tbody id="registrationBody"></tbody>
+
+      </table>
+
+
+      <div
+        id="emptyMessage"
+        class="empty"
+        style="display:none;"
+      >
+        No registration requests found.
+      </div>
+
+    </div>
+
+  </div>
 
 
 <script type="module">
 
-  import { initializeApp }
+  import {
+    initializeApp
+  }
   from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
 
   import {
     getAuth,
-    sendSignInLinkToEmail,
-    isSignInWithEmailLink,
-    signInWithEmailLink,
     onAuthStateChanged,
     signOut
   }
   from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
-  // =========================
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    updateDoc,
+    deleteDoc,
+    doc
+  }
+  from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+  // ==========================================
   // FIREBASE CONFIG
-  // =========================
+  // ==========================================
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-    authDomain: "digital-board-acces-management.firebaseapp.com",
-    projectId: "digital-board-acces-management",
-    storageBucket: "digital-board-acces-management.firebasestorage.app",
-    messagingSenderId: "902348932290",
-    appId: "1:902348932290:web:db47f1b012bf882886675b"
+
+    apiKey:
+      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+
+    authDomain:
+      "digital-board-acces-management.firebaseapp.com",
+
+    projectId:
+      "digital-board-acces-management",
+
+    storageBucket:
+      "digital-board-acces-management.firebasestorage.app",
+
+    messagingSenderId:
+      "902348932290",
+
+    appId:
+      "1:902348932290:web:db47f1b012bf882886675b"
+
   };
 
 
-  const app = initializeApp(firebaseConfig);
+  const app =
+    initializeApp(firebaseConfig);
 
-  const auth = getAuth(app);
+
+  const auth =
+    getAuth(app);
 
 
-  // =========================
+  const db =
+    getFirestore(app);
+
+
+  // ==========================================
   // AUTHORIZED COORDINATOR
-  // =========================
+  // ==========================================
 
   const COORDINATOR_EMAIL =
     "anujshivamshukla@gmail.com";
 
 
-  // =========================
+  // ==========================================
   // ELEMENTS
-  // =========================
+  // ==========================================
 
-  const loginBox =
-    document.getElementById("loginBox");
+  const coordinatorEmail =
+    document.getElementById(
+      "coordinatorEmail"
+    );
 
-  const dashboard =
-    document.getElementById("dashboard");
-
-  const emailInput =
-    document.getElementById("coordinatorEmail");
-
-  const loginBtn =
-    document.getElementById("loginBtn");
-
-  const message =
-    document.getElementById("message");
-
-  const welcome =
-    document.getElementById("welcome");
 
   const logoutBtn =
-    document.getElementById("logoutBtn");
+    document.getElementById(
+      "logoutBtn"
+    );
 
 
-  // =========================
-  // MESSAGE
-  // =========================
+  const registrationBody =
+    document.getElementById(
+      "registrationBody"
+    );
 
-  function showMessage(text, type) {
 
-    message.textContent = text;
+  const registrationTable =
+    document.getElementById(
+      "registrationTable"
+    );
+
+
+  const loading =
+    document.getElementById(
+      "loading"
+    );
+
+
+  const emptyMessage =
+    document.getElementById(
+      "emptyMessage"
+    );
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  // ==========================================
+  // SHOW MESSAGE
+  // ==========================================
+
+  function showMessage(
+    text,
+    type
+  ) {
+
+    message.textContent =
+      text;
 
     message.className =
       "message " + type;
 
-    message.style.display = "block";
-
   }
 
 
-  // =========================
-  // SEND LOGIN LINK
-  // =========================
+  // ==========================================
+  // AUTH CHECK
+  // ==========================================
 
-  loginBtn.addEventListener("click", async () => {
+  onAuthStateChanged(
+    auth,
+    async (user) => {
 
-    const email =
-      emailInput.value.trim().toLowerCase();
+      if (!user) {
 
-
-    if (email !== COORDINATOR_EMAIL) {
-
-      showMessage(
-        "This Gmail is not authorized as Coordinator.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    loginBtn.disabled = true;
-
-    loginBtn.textContent =
-      "Sending...";
-
-
-    try {
-
-      const actionCodeSettings = {
-
-        url:
-          window.location.origin +
-          window.location.pathname,
-
-        handleCodeInApp: true
-
-      };
-
-
-      await sendSignInLinkToEmail(
-        auth,
-        email,
-        actionCodeSettings
-      );
-
-
-      localStorage.setItem(
-        "coordinatorEmail",
-        email
-      );
-
-
-      showMessage(
-        "Verification link Gmail par bhej diya gaya hai.",
-        "success"
-      );
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "Unable to send verification link: " +
-        error.message,
-        "error"
-      );
-
-    }
-
-
-    loginBtn.disabled = false;
-
-    loginBtn.textContent =
-      "Send Verification Link";
-
-  });
-
-
-  // =========================
-  // VERIFY EMAIL LINK
-  // =========================
-
-  async function verifyCoordinator() {
-
-    if (
-      !isSignInWithEmailLink(
-        auth,
-        window.location.href
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    const email =
-      localStorage.getItem(
-        "coordinatorEmail"
-      );
-
-
-    if (!email) {
-
-      showMessage(
-        "Coordinator email not found.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    if (
-      email.toLowerCase() !==
-      COORDINATOR_EMAIL
-    ) {
-
-      showMessage(
-        "Unauthorized Coordinator.",
-        "error"
-      );
-
-      return;
-
-    }
-
-
-    try {
-
-      const result =
-        await signInWithEmailLink(
-          auth,
-          email,
-          window.location.href
-        );
-
-
-      if (
-        result.user.email.toLowerCase() !==
-        COORDINATOR_EMAIL
-      ) {
-
-        await signOut(auth);
-
-        showMessage(
-          "Unauthorized account.",
-          "error"
-        );
+        window.location.href =
+          "index.html";
 
         return;
 
       }
 
 
-      localStorage.removeItem(
-        "coordinatorEmail"
+      const email =
+        (
+          user.email || ""
+        ).toLowerCase();
+
+
+      if (
+        email !==
+        COORDINATOR_EMAIL
+      ) {
+
+        await signOut(auth);
+
+        window.location.href =
+          "index.html";
+
+        return;
+
+      }
+
+
+      coordinatorEmail.textContent =
+        email;
+
+
+      loadRegistrations();
+
+    }
+  );
+
+
+  // ==========================================
+  // LOAD REGISTRATIONS
+  // ==========================================
+
+  async function loadRegistrations() {
+
+    loading.style.display =
+      "block";
+
+    registrationTable.style.display =
+      "none";
+
+    emptyMessage.style.display =
+      "none";
+
+
+    registrationBody.innerHTML =
+      "";
+
+
+    try {
+
+      const snapshot =
+        await getDocs(
+          collection(
+            db,
+            "registrationRequests"
+          )
+        );
+
+
+      loading.style.display =
+        "none";
+
+
+      if (
+        snapshot.empty
+      ) {
+
+        emptyMessage.style.display =
+          "block";
+
+        return;
+
+      }
+
+
+      registrationTable.style.display =
+        "table";
+
+
+      snapshot.forEach(
+        (registrationDoc) => {
+
+          const data =
+            registrationDoc.data();
+
+
+          const row =
+            document.createElement(
+              "tr"
+            );
+
+
+          const status =
+            data.status ||
+            "pending";
+
+
+          row.innerHTML = `
+
+            <td>
+              ${escapeHtml(data.name || "")}
+            </td>
+
+            <td>
+              ${escapeHtml(data.email || "")}
+            </td>
+
+            <td>
+              ${escapeHtml(data.mobile || "")}
+            </td>
+
+            <td>
+              ${escapeHtml(data.verifiedBy || "")}
+            </td>
+
+            <td>
+              <span class="status ${status}">
+                ${status}
+              </span>
+            </td>
+
+            <td>
+
+              <button
+                class="action-btn approve"
+                data-id="${registrationDoc.id}"
+                data-action="approve"
+              >
+                Approve
+              </button>
+
+              <button
+                class="action-btn reject"
+                data-id="${registrationDoc.id}"
+                data-action="reject"
+              >
+                Reject
+              </button>
+
+              <button
+                class="action-btn delete"
+                data-id="${registrationDoc.id}"
+                data-action="delete"
+              >
+                Delete
+              </button>
+
+            </td>
+
+          `;
+
+
+          registrationBody.appendChild(
+            row
+          );
+
+        }
       );
 
 
-      showDashboard(
-        result.user.email
-      );
+      // BUTTON EVENTS
+
+      document
+        .querySelectorAll(".action-btn")
+        .forEach(
+          (button) => {
+
+            button.addEventListener(
+              "click",
+              () => {
+
+                const id =
+                  button.dataset.id;
+
+                const action =
+                  button.dataset.action;
+
+
+                handleAction(
+                  id,
+                  action
+                );
+
+              }
+            );
+
+          }
+        );
 
 
     } catch (error) {
 
       console.error(error);
 
+      loading.style.display =
+        "none";
+
       showMessage(
-        "Verification failed: " +
+        "Unable to load registrations: " +
         error.message,
         "error"
       );
@@ -407,60 +597,167 @@
   }
 
 
-  // =========================
-  // SHOW DASHBOARD
-  // =========================
+  // ==========================================
+  // APPROVE / REJECT / DELETE
+  // ==========================================
 
-  function showDashboard(email) {
+  async function handleAction(
+    id,
+    action
+  ) {
 
-    loginBox.style.display =
-      "none";
+    try {
 
-    dashboard.style.display =
-      "block";
+      const registrationRef =
+        doc(
+          db,
+          "registrationRequests",
+          id
+        );
 
-    welcome.textContent =
-      "Welcome, Coordinator (" +
-      email +
-      ")";
+
+      // APPROVE
+
+      if (
+        action ===
+        "approve"
+      ) {
+
+        await updateDoc(
+          registrationRef,
+          {
+            status:
+              "approved"
+          }
+        );
+
+
+        showMessage(
+          "Registration approved successfully.",
+          "success"
+        );
+
+      }
+
+
+      // REJECT
+
+      if (
+        action ===
+        "reject"
+      ) {
+
+        await updateDoc(
+          registrationRef,
+          {
+            status:
+              "rejected"
+          }
+        );
+
+
+        showMessage(
+          "Registration rejected.",
+          "success"
+        );
+
+      }
+
+
+      // DELETE
+
+      if (
+        action ===
+        "delete"
+      ) {
+
+        const confirmDelete =
+          confirm(
+            "Are you sure you want to delete this registration?"
+          );
+
+
+        if (!confirmDelete) {
+
+          return;
+
+        }
+
+
+        await deleteDoc(
+          registrationRef
+        );
+
+
+        showMessage(
+          "Registration deleted successfully.",
+          "success"
+        );
+
+      }
+
+
+      // REFRESH
+
+      await loadRegistrations();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Action failed: " +
+        error.message,
+        "error"
+      );
+
+    }
 
   }
 
 
-  // =========================
-  // CHECK LOGIN
-  // =========================
+  // ==========================================
+  // HTML ESCAPE
+  // ==========================================
 
-  onAuthStateChanged(
-    auth,
-    (user) => {
+  function escapeHtml(
+    value
+  ) {
 
-      if (!user) return;
+    return String(value)
+
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+
+      .replace(
+        /</g,
+        "&lt;"
+      )
+
+      .replace(
+        />/g,
+        "&gt;"
+      )
+
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
 
 
-      if (
-        user.email &&
-        user.email.toLowerCase() ===
-        COORDINATOR_EMAIL
-      ) {
-
-        showDashboard(
-          user.email
-        );
-
-      } else {
-
-        signOut(auth);
-
-      }
-
-    }
-  );
-
-
-  // =========================
+  // ==========================================
   // LOGOUT
-  // =========================
+  // ==========================================
 
   logoutBtn.addEventListener(
     "click",
@@ -468,19 +765,11 @@
 
       await signOut(auth);
 
-      dashboard.style.display =
-        "none";
-
-      loginBox.style.display =
-        "block";
-
-      emailInput.value = "";
+      window.location.href =
+        "index.html";
 
     }
   );
-
-
-  verifyCoordinator();
 
 </script>
 
