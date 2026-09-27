@@ -30,6 +30,11 @@
       margin-bottom: 25px;
     }
 
+    h2 {
+      text-align: center;
+      margin-top: 10px;
+    }
+
     .tabs {
       display: flex;
       margin-bottom: 20px;
@@ -75,6 +80,22 @@
       color: white;
       font-size: 16px;
       cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .stop-btn {
+      background: #dc3545;
+    }
+
+    .board-section {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+    }
+
+    .board-section.active {
+      display: block;
     }
 
     .message {
@@ -122,6 +143,7 @@
     <button id="loginTab" class="tab active">Login</button>
     <button id="registerTab" class="tab">Register</button>
   </div>
+
 
   <!-- LOGIN -->
   <div id="loginForm" class="form active">
@@ -172,6 +194,44 @@
     <span id="goLogin" class="link">
       Already registered? Login
     </span>
+
+  </div>
+
+
+  <!-- BOARD ACCESS -->
+  <div id="boardSection" class="board-section">
+
+    <h2>Board Access</h2>
+
+    <input
+      type="text"
+      id="boardCode"
+      placeholder="Enter 6 Character Board Code"
+      maxlength="6"
+      autocomplete="off"
+    >
+
+    <button id="checkBoardBtn" class="main-btn">
+      Check Board Code
+    </button>
+
+    <div id="boardMessage" class="message"></div>
+
+    <button
+      id="shareBtn"
+      class="main-btn"
+      style="display:none;"
+    >
+      Screen Share
+    </button>
+
+    <button
+      id="stopShareBtn"
+      class="main-btn stop-btn"
+      style="display:none;"
+    >
+      Stop Sharing
+    </button>
 
   </div>
 
@@ -233,15 +293,20 @@
   const COORDINATOR_URL =
     "https://shivamshukla-677.github.io/Digital-Board-Management-App/coordinator.html";
 
-
   const HOME_URL =
     "https://shivamshukla-677.github.io/Digital-Board-Management-App/";
-
 
   const actionCodeSettings = {
     url: HOME_URL,
     handleCodeInApp: true
   };
+
+
+  /* ==============================
+     SCREEN SHARE STREAM
+  ============================== */
+
+  let screenStream = null;
 
 
   /* ==============================
@@ -508,10 +573,7 @@
 
       try {
 
-        /*
-         IMPORTANT:
-         Coordinator check happens FIRST.
-        */
+        /* COORDINATOR */
 
         if (email === COORDINATOR_EMAIL) {
 
@@ -689,9 +751,7 @@
 
       if (!email) {
 
-        alert(
-          "Gmail is required."
-        );
+        alert("Gmail is required.");
 
         return;
 
@@ -724,18 +784,14 @@
       );
 
 
-      /* =================================
+      /* ==============================
          COORDINATOR
-      ================================= */
+      ============================== */
 
       if (
         verifiedEmail ===
         COORDINATOR_EMAIL
       ) {
-
-        /*
-         Clear old temporary data
-        */
 
         localStorage.removeItem(
           "emailForSignIn"
@@ -754,10 +810,6 @@
         );
 
 
-        /*
-         DIRECT COORDINATOR URL
-        */
-
         window.location.replace(
           COORDINATOR_URL
         );
@@ -767,9 +819,9 @@
       }
 
 
-      /* =================================
-         NORMAL USER REGISTRATION
-      ================================= */
+      /* ==============================
+         REGISTRATION
+      ============================== */
 
       const loginType =
         localStorage.getItem(
@@ -856,9 +908,85 @@
       }
 
 
-      alert(
-        "Login successful."
+      /* ==============================
+         NORMAL USER LOGIN
+      ============================== */
+
+      const userQuery = query(
+        collection(db, "registrationRequests"),
+        where("email", "==", verifiedEmail)
       );
+
+      const userResult =
+        await getDocs(userQuery);
+
+
+      if (userResult.empty) {
+
+        alert(
+          "Registration not found."
+        );
+
+        return;
+
+      }
+
+
+      let userData = null;
+
+      userResult.forEach(function(doc) {
+
+        userData = doc.data();
+
+      });
+
+
+      if (userData.status !== "approved") {
+
+        alert(
+          "Your account is not approved."
+        );
+
+        return;
+
+      }
+
+
+      /*
+       APPROVED USER
+       SHOW BOARD ACCESS
+      */
+
+      document.getElementById(
+        "loginForm"
+      ).style.display = "none";
+
+      document.getElementById(
+        "registerForm"
+      ).style.display = "none";
+
+      document.querySelector(
+        ".tabs"
+      ).style.display = "none";
+
+
+      document.getElementById(
+        "boardSection"
+      ).classList.add("active");
+
+
+      message(
+        "boardMessage",
+        "Login successful. Enter the 6-character Board Code.",
+        "info"
+      );
+
+
+      localStorage.setItem(
+        "approvedUserEmail",
+        verifiedEmail
+      );
+
 
     }
 
@@ -879,6 +1007,248 @@
 
   }
 
+
+  /* ==============================
+     BOARD CODE CHECK
+  ============================== */
+
+  document.getElementById(
+    "checkBoardBtn"
+  ).onclick = async function () {
+
+    const code =
+      document.getElementById(
+        "boardCode"
+      ).value.trim().toUpperCase();
+
+
+    if (!/^[A-Z0-9]{6}$/.test(code)) {
+
+      message(
+        "boardMessage",
+        "Board Code must be exactly 6 characters.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    try {
+
+      message(
+        "boardMessage",
+        "Checking Board Code...",
+        "info"
+      );
+
+
+      const boardQuery = query(
+        collection(db, "boards"),
+        where("boardCode", "==", code)
+      );
+
+
+      const boardResult =
+        await getDocs(boardQuery);
+
+
+      if (boardResult.empty) {
+
+        message(
+          "boardMessage",
+          "Invalid Board Code. Please enter the code shown on the board.",
+          "error"
+        );
+
+        document.getElementById(
+          "shareBtn"
+        ).style.display = "none";
+
+        return;
+
+      }
+
+
+      let validBoard = false;
+
+
+      boardResult.forEach(function(doc) {
+
+        const data = doc.data();
+
+        if (
+          data.boardCode === code &&
+          data.status === "available"
+        ) {
+
+          validBoard = true;
+
+        }
+
+      });
+
+
+      if (!validBoard) {
+
+        message(
+          "boardMessage",
+          "This Board Code is not available.",
+          "error"
+        );
+
+        document.getElementById(
+          "shareBtn"
+        ).style.display = "none";
+
+        return;
+
+      }
+
+
+      message(
+        "boardMessage",
+        "Board Code matched successfully.",
+        "success"
+      );
+
+
+      document.getElementById(
+        "shareBtn"
+      ).style.display = "block";
+
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      message(
+        "boardMessage",
+        "Error checking Board Code: " + error.message,
+        "error"
+      );
+
+    }
+
+  };
+
+
+  /* ==============================
+     SCREEN SHARE
+  ============================== */
+
+  document.getElementById(
+    "shareBtn"
+  ).onclick = async function () {
+
+    try {
+
+      screenStream =
+        await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: true
+        });
+
+
+      message(
+        "boardMessage",
+        "Screen sharing started.",
+        "success"
+      );
+
+
+      document.getElementById(
+        "shareBtn"
+      ).style.display = "none";
+
+
+      document.getElementById(
+        "stopShareBtn"
+      ).style.display = "block";
+
+
+      const videoTrack =
+        screenStream.getVideoTracks()[0];
+
+
+      videoTrack.onended = function () {
+
+        stopScreenShare();
+
+      };
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      message(
+        "boardMessage",
+        "Screen sharing was cancelled or could not start.",
+        "error"
+      );
+
+    }
+
+  };
+
+
+  /* ==============================
+     STOP SCREEN SHARE
+  ============================== */
+
+  function stopScreenShare() {
+
+    if (screenStream) {
+
+      screenStream
+        .getTracks()
+        .forEach(function(track) {
+
+          track.stop();
+
+        });
+
+      screenStream = null;
+
+    }
+
+
+    document.getElementById(
+      "stopShareBtn"
+    ).style.display = "none";
+
+
+    document.getElementById(
+      "shareBtn"
+    ).style.display = "block";
+
+
+    message(
+      "boardMessage",
+      "Screen sharing stopped.",
+      "info"
+    );
+
+  }
+
+
+  document.getElementById(
+    "stopShareBtn"
+  ).onclick = function () {
+
+    stopScreenShare();
+
+  };
+
+
+  /* ==============================
+     START
+  ============================== */
 
   processEmailLink();
 
