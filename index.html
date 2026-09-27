@@ -162,512 +162,599 @@
     #otpSection {
       display: none;
     }
+
+    #recaptcha-container {
+      margin-top: 15px;
+    }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="container">
 
-    <h1>Digital Board Management</h1>
+  <h1>Digital Board Management</h1>
 
-    <!-- TABS -->
+  <!-- TABS -->
 
-    <div class="tabs">
+  <div class="tabs">
 
-      <button
-        class="tab active"
-        id="loginTab"
-        onclick="showLogin()">
-        Login
-      </button>
+    <button
+      class="tab active"
+      id="loginTab"
+      onclick="showLogin()">
+      Login
+    </button>
 
-      <button
-        class="tab"
-        id="registerTab"
-        onclick="showRegister()">
-        Register
-      </button>
+    <button
+      class="tab"
+      id="registerTab"
+      onclick="showRegister()">
+      Register
+    </button>
 
-    </div>
-
-
-    <!-- LOGIN FORM -->
-
-    <div class="form active" id="loginForm">
-
-      <label>Gmail</label>
-
-      <input
-        type="email"
-        id="loginEmail"
-        placeholder="example@gmail.com"
-      >
-
-      <button
-        class="submit"
-        onclick="loginUser()">
-        Login
-      </button>
-
-      <div
-        id="loginMessage"
-        class="message">
-      </div>
-
-    </div>
+  </div>
 
 
-    <!-- REGISTER FORM -->
+  <!-- LOGIN -->
 
-    <div class="form" id="registerForm">
+  <div class="form active" id="loginForm">
 
-      <label>Full Name</label>
+    <label>Gmail</label>
 
-      <input
-        type="text"
-        id="name"
-        placeholder="Enter your full name"
-      >
+    <input
+      type="email"
+      id="loginEmail"
+      placeholder="example@gmail.com">
 
+    <button
+      class="submit"
+      onclick="loginUser()">
+      Login
+    </button>
 
-      <label>Gmail</label>
-
-      <input
-        type="email"
-        id="email"
-        placeholder="example@gmail.com"
-      >
-
-
-      <label>Mobile Number</label>
-
-      <input
-        type="tel"
-        id="mobile"
-        maxlength="10"
-        inputmode="numeric"
-        placeholder="10 digit mobile number"
-      >
-
-
-      <div class="verify-title">
-        Verify using
-      </div>
-
-
-      <div class="verify-options">
-
-        <button
-          type="button"
-          class="verify-option selected"
-          id="emailVerify"
-          onclick="selectVerification('email')">
-          📧 Gmail
-        </button>
-
-        <button
-          type="button"
-          class="verify-option"
-          id="phoneVerify"
-          onclick="selectVerification('phone')">
-          📱 Mobile
-        </button>
-
-      </div>
-
-
-      <button
-        class="submit"
-        onclick="sendVerification()">
-        Continue
-      </button>
-
-
-      <!-- OTP SECTION -->
-
-      <div id="otpSection">
-
-        <label>Enter OTP</label>
-
-        <input
-          type="text"
-          id="otp"
-          maxlength="6"
-          inputmode="numeric"
-          placeholder="Enter 6 digit OTP"
-        >
-
-        <button
-          class="submit"
-          onclick="verifyOTP()">
-          Verify OTP
-        </button>
-
-      </div>
-
-
-      <div
-        id="registerMessage"
-        class="message">
-      </div>
-
-
-      <!-- LOGIN LINK -->
-
-      <div
-        id="loginLink"
-        class="login-link">
-
-        Already registered?
-
-        <button onclick="showLogin()">
-          Please Login
-        </button>
-
-      </div>
-
+    <div
+      id="loginMessage"
+      class="message">
     </div>
 
   </div>
 
 
-  <script type="module">
+  <!-- REGISTER -->
 
-    import { initializeApp }
-      from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  <div class="form" id="registerForm">
 
-    import {
-      getFirestore,
-      collection,
-      addDoc,
-      serverTimestamp,
-      getDocs
-    }
-      from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+    <label>Full Name</label>
+
+    <input
+      type="text"
+      id="name"
+      placeholder="Enter your full name">
 
 
-    /* FIREBASE CONFIG */
+    <label>Gmail</label>
 
-    const firebaseConfig = {
-
-      apiKey:
-        "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-
-      authDomain:
-        "digital-board-acces-management.firebaseapp.com",
-
-      projectId:
-        "digital-board-acces-management",
-
-      storageBucket:
-        "digital-board-acces-management.firebasestorage.app",
-
-      messagingSenderId:
-        "902348932290",
-
-      appId:
-        "1:902348932290:web:db47f1b012bf882886675b"
-
-    };
+    <input
+      type="email"
+      id="email"
+      placeholder="example@gmail.com">
 
 
-    const app = initializeApp(firebaseConfig);
+    <label>Mobile Number</label>
 
-    const db = getFirestore(app);
-
-
-    /* DEFAULT VERIFICATION METHOD */
-
-    let verificationMethod = "email";
-
-
-    /* -------------------------
-       LOGIN TAB
-    ------------------------- */
-
-    window.showLogin = function() {
-
-      document
-        .getElementById("loginForm")
-        .classList.add("active");
-
-      document
-        .getElementById("registerForm")
-        .classList.remove("active");
+    <input
+      type="tel"
+      id="mobile"
+      maxlength="10"
+      inputmode="numeric"
+      placeholder="10 digit mobile number">
 
 
-      document
-        .getElementById("loginTab")
-        .classList.add("active");
-
-      document
-        .getElementById("registerTab")
-        .classList.remove("active");
+    <div class="verify-title">
+      Verify using
+    </div>
 
 
-      document
-        .getElementById("loginLink")
-        .style.display = "none";
+    <div class="verify-options">
 
-    };
+      <button
+        type="button"
+        class="verify-option selected"
+        id="emailVerify"
+        onclick="selectVerification('email')">
+        📧 Gmail
+      </button>
 
+      <button
+        type="button"
+        class="verify-option"
+        id="phoneVerify"
+        onclick="selectVerification('phone')">
+        📱 Mobile
+      </button>
 
-    /* -------------------------
-       REGISTER TAB
-    ------------------------- */
-
-    window.showRegister = function() {
-
-      document
-        .getElementById("registerForm")
-        .classList.add("active");
-
-      document
-        .getElementById("loginForm")
-        .classList.remove("active");
-
-
-      document
-        .getElementById("registerTab")
-        .classList.add("active");
-
-      document
-        .getElementById("loginTab")
-        .classList.remove("active");
-
-    };
+    </div>
 
 
-    /* -------------------------
-       VERIFICATION SELECTION
-    ------------------------- */
+    <button
+      class="submit"
+      onclick="startVerification()">
+      Start Verification
+    </button>
 
-    window.selectVerification = function(method) {
 
-      verificationMethod = method;
+    <!-- RECAPTCHA -->
 
+    <div id="recaptcha-container"></div>
+
+
+    <!-- OTP -->
+
+    <div id="otpSection">
+
+      <label>Enter SMS OTP</label>
+
+      <input
+        type="text"
+        id="otp"
+        maxlength="6"
+        inputmode="numeric"
+        placeholder="Enter 6 digit OTP">
+
+      <button
+        class="submit"
+        onclick="verifyPhoneOTP()">
+        Verify OTP
+      </button>
+
+    </div>
+
+
+    <div
+      id="registerMessage"
+      class="message">
+    </div>
+
+
+    <div
+      id="loginLink"
+      class="login-link">
+
+      Already registered?
+
+      <button onclick="showLogin()">
+        Please Login
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script type="module">
+
+  import { initializeApp }
+    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
+  import {
+    getFirestore,
+    collection,
+    addDoc,
+    serverTimestamp,
+    getDocs
+  }
+    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+  import {
+    getAuth,
+    RecaptchaVerifier,
+    signInWithPhoneNumber,
+    sendSignInLinkToEmail,
+    isSignInWithEmailLink,
+    signInWithEmailLink
+  }
+    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+
+  /* FIREBASE CONFIG */
+
+  const firebaseConfig = {
+
+    apiKey:
+      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+
+    authDomain:
+      "digital-board-acces-management.firebaseapp.com",
+
+    projectId:
+      "digital-board-acces-management",
+
+    storageBucket:
+      "digital-board-acces-management.firebasestorage.app",
+
+    messagingSenderId:
+      "902348932290",
+
+    appId:
+      "1:902348932290:web:db47f1b012bf882886675b"
+
+  };
+
+
+  const app = initializeApp(firebaseConfig);
+
+  const db = getFirestore(app);
+
+  const auth = getAuth(app);
+
+
+  let verificationMethod = "email";
+
+  let confirmationResult = null;
+
+  let recaptchaVerifier = null;
+
+
+  /* -------------------------
+     LOGIN TAB
+  ------------------------- */
+
+  window.showLogin = function() {
+
+    document
+      .getElementById("loginForm")
+      .classList.add("active");
+
+    document
+      .getElementById("registerForm")
+      .classList.remove("active");
+
+    document
+      .getElementById("loginTab")
+      .classList.add("active");
+
+    document
+      .getElementById("registerTab")
+      .classList.remove("active");
+
+  };
+
+
+  /* -------------------------
+     REGISTER TAB
+  ------------------------- */
+
+  window.showRegister = function() {
+
+    document
+      .getElementById("registerForm")
+      .classList.add("active");
+
+    document
+      .getElementById("loginForm")
+      .classList.remove("active");
+
+    document
+      .getElementById("registerTab")
+      .classList.add("active");
+
+    document
+      .getElementById("loginTab")
+      .classList.remove("active");
+
+  };
+
+
+  /* -------------------------
+     SELECT VERIFICATION
+  ------------------------- */
+
+  window.selectVerification = function(method) {
+
+    verificationMethod = method;
+
+    document
+      .getElementById("emailVerify")
+      .classList.remove("selected");
+
+    document
+      .getElementById("phoneVerify")
+      .classList.remove("selected");
+
+
+    if (method === "email") {
 
       document
         .getElementById("emailVerify")
-        .classList.remove("selected");
+        .classList.add("selected");
+
+    } else {
 
       document
         .getElementById("phoneVerify")
-        .classList.remove("selected");
+        .classList.add("selected");
+
+    }
 
 
-      if (method === "email") {
+    document
+      .getElementById("otpSection")
+      .style.display = "none";
 
-        document
-          .getElementById("emailVerify")
-          .classList.add("selected");
+    document
+      .getElementById("registerMessage")
+      .innerText = "";
 
-      }
-
-      else {
-
-        document
-          .getElementById("phoneVerify")
-          .classList.add("selected");
-
-      }
-
-    };
+  };
 
 
-    /* -------------------------
-       DUPLICATE CHECK
-    ------------------------- */
+  /* -------------------------
+     DUPLICATE CHECK
+  ------------------------- */
 
-    async function checkAlreadyExists(email, mobile) {
+  async function checkAlreadyExists(email, mobile) {
 
-      const snapshot = await getDocs(
+    const snapshot =
+      await getDocs(
         collection(db, "registrationRequests")
       );
 
 
-      let emailExists = false;
-      let mobileExists = false;
+    let emailExists = false;
+
+    let mobileExists = false;
 
 
-      snapshot.forEach((doc) => {
+    snapshot.forEach((doc) => {
 
-        const data = doc.data();
-
-
-        if (
-          data.email &&
-          data.email.toLowerCase() === email.toLowerCase()
-        ) {
-
-          emailExists = true;
-
-        }
+      const data = doc.data();
 
 
-        if (
-          data.mobile &&
-          data.mobile === mobile
-        ) {
+      if (
+        data.email &&
+        data.email.toLowerCase() ===
+        email.toLowerCase()
+      ) {
 
-          mobileExists = true;
+        emailExists = true;
 
-        }
-
-      });
+      }
 
 
-      return {
-        emailExists,
-        mobileExists
-      };
+      if (
+        data.mobile &&
+        data.mobile === mobile
+      ) {
+
+        mobileExists = true;
+
+      }
+
+    });
+
+
+    return {
+      emailExists,
+      mobileExists
+    };
+
+  }
+
+
+  /* -------------------------
+     START VERIFICATION
+  ------------------------- */
+
+  window.startVerification = async function() {
+
+    const name =
+      document.getElementById("name")
+        .value.trim();
+
+    const email =
+      document.getElementById("email")
+        .value.trim();
+
+    const mobile =
+      document.getElementById("mobile")
+        .value.trim();
+
+    const message =
+      document.getElementById("registerMessage");
+
+    const loginLink =
+      document.getElementById("loginLink");
+
+
+    message.className = "message";
+
+    message.innerText = "";
+
+    loginLink.style.display = "none";
+
+
+    /* NAME */
+
+    if (name === "") {
+
+      message.classList.add("error");
+
+      message.innerText =
+        "⚠️ Please enter your name.";
+
+      return;
 
     }
 
 
-    /* -------------------------
-       SEND VERIFICATION
-    ------------------------- */
+    /* GMAIL */
 
-    window.sendVerification = async function() {
+    if (
+      !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
+    ) {
 
-      const name =
-        document
-          .getElementById("name")
-          .value
-          .trim();
+      message.classList.add("error");
 
+      message.innerText =
+        "⚠️ Please enter a valid Gmail ending with @gmail.com.";
 
-      const email =
-        document
-          .getElementById("email")
-          .value
-          .trim();
+      return;
+
+    }
 
 
-      const mobile =
-        document
-          .getElementById("mobile")
-          .value
-          .trim();
+    /* MOBILE */
+
+    if (!/^[0-9]{10}$/.test(mobile)) {
+
+      message.classList.add("error");
+
+      message.innerText =
+        "⚠️ Mobile number must contain exactly 10 digits.";
+
+      return;
+
+    }
 
 
-      const message =
-        document.getElementById("registerMessage");
-
-
-      const loginLink =
-        document.getElementById("loginLink");
-
-
-      message.className = "message";
-
-      message.innerText = "";
-
-      loginLink.style.display = "none";
-
-
-      /* NAME CHECK */
-
-      if (name === "") {
-
-        message.classList.add("error");
-
-        message.innerText =
-          "⚠️ Please enter your name.";
-
-        return;
-
-      }
-
-
-      /* GMAIL CHECK */
-
-      if (
-        !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
-      ) {
-
-        message.classList.add("error");
-
-        message.innerText =
-          "⚠️ Please enter a valid Gmail ending with @gmail.com.";
-
-        return;
-
-      }
-
-
-      /* MOBILE CHECK */
-
-      if (!/^[0-9]{10}$/.test(mobile)) {
-
-        message.classList.add("error");
-
-        message.innerText =
-          "⚠️ Mobile number must contain exactly 10 digits.";
-
-        return;
-
-      }
-
+    try {
 
       /* DUPLICATE CHECK */
 
-      try {
+      const exists =
+        await checkAlreadyExists(
+          email,
+          mobile
+        );
 
-        message.innerText =
-          "Checking registration details...";
 
+      if (
+        exists.emailExists ||
+        exists.mobileExists
+      ) {
 
-        const exists =
-          await checkAlreadyExists(email, mobile);
+        message.className =
+          "message error";
 
 
         if (
-          exists.emailExists ||
+          exists.emailExists &&
           exists.mobileExists
         ) {
 
-          message.className =
-            "message error";
+          message.innerText =
+            "⚠️ Gmail and mobile number already exist. Please login.";
 
+        }
 
-          if (
-            exists.emailExists &&
-            exists.mobileExists
-          ) {
+        else if (exists.emailExists) {
 
-            message.innerText =
-              "⚠️ Gmail and mobile number already exist. Please login.";
+          message.innerText =
+            "⚠️ Gmail already exists. Please login.";
 
-          }
+        }
 
-          else if (exists.emailExists) {
+        else {
 
-            message.innerText =
-              "⚠️ Gmail already exists. Please login.";
-
-          }
-
-          else {
-
-            message.innerText =
-              "⚠️ Mobile number already exists. Please login.";
-
-          }
-
-
-          loginLink.style.display =
-            "block";
-
-
-          return;
+          message.innerText =
+            "⚠️ Mobile number already exists. Please login.";
 
         }
 
 
-        /* NO DUPLICATE */
+        loginLink.style.display =
+          "block";
+
+        return;
+
+      }
+
+
+      /* -------------------------
+         EMAIL VERIFICATION
+      ------------------------- */
+
+      if (verificationMethod === "email") {
+
+        const actionCodeSettings = {
+
+          url:
+            window.location.origin +
+            window.location.pathname,
+
+          handleCodeInApp: true
+
+        };
+
+
+        await sendSignInLinkToEmail(
+          auth,
+          email,
+          actionCodeSettings
+        );
+
+
+        localStorage.setItem(
+          "emailForSignIn",
+          email
+        );
+
+
+        localStorage.setItem(
+          "pendingName",
+          name
+        );
+
+        localStorage.setItem(
+          "pendingMobile",
+          mobile
+        );
+
+
+        message.className =
+          "message success";
+
+
+        message.innerText =
+          "📧 Verification link has been sent to your Gmail. Open the email and click the link.";
+
+      }
+
+
+      /* -------------------------
+         PHONE VERIFICATION
+      ------------------------- */
+
+      else {
+
+        if (!recaptchaVerifier) {
+
+          recaptchaVerifier =
+            new RecaptchaVerifier(
+              auth,
+              "recaptcha-container",
+              {
+                size: "normal"
+              }
+            );
+
+        }
+
+
+        const phoneNumber =
+          "+91" + mobile;
+
+
+        confirmationResult =
+          await signInWithPhoneNumber(
+            auth,
+            phoneNumber,
+            recaptchaVerifier
+          );
+
 
         document
           .getElementById("otpSection")
@@ -678,128 +765,356 @@
           "message success";
 
 
-        if (verificationMethod === "email") {
-
-          message.innerText =
-            "📧 Gmail verification selected. Real email verification will be connected next.";
-
-        }
-
-        else {
-
-          message.innerText =
-            "📱 Mobile verification selected. Real SMS OTP will be connected next.";
-
-        }
+        message.innerText =
+          "📱 OTP sent to your mobile number.";
 
       }
 
-      catch (error) {
+    }
 
-        console.error(error);
+    catch (error) {
 
-        message.className =
-          "message error";
+      console.error(error);
+
+      message.className =
+        "message error";
+
+
+      if (
+        error.code ===
+        "auth/invalid-phone-number"
+      ) {
 
         message.innerText =
-          "⚠️ Unable to check registration. Please try again.";
+          "⚠️ Invalid mobile number.";
 
       }
 
-    };
-
-
-    /* -------------------------
-       VERIFY OTP
-    ------------------------- */
-
-    window.verifyOTP = async function() {
-
-      const otp =
-        document
-          .getElementById("otp")
-          .value
-          .trim();
-
-
-      const message =
-        document.getElementById("registerMessage");
-
-
-      if (!/^[0-9]{6}$/.test(otp)) {
-
-        message.className =
-          "message error";
+      else if (
+        error.code ===
+        "auth/too-many-requests"
+      ) {
 
         message.innerText =
-          "⚠️ Please enter a valid 6 digit OTP.";
-
-        return;
+          "⚠️ Too many attempts. Please try again later.";
 
       }
 
+      else {
 
-      /*
-        IMPORTANT:
+        message.innerText =
+          "⚠️ Verification could not be started: " +
+          error.message;
 
-        Real Firebase OTP verification
-        will be connected here.
+      }
 
-        We are NOT accepting this OTP as
-        real verification yet.
-      */
+    }
 
+  };
+
+
+  /* -------------------------
+     PHONE OTP VERIFY
+  ------------------------- */
+
+  window.verifyPhoneOTP = async function() {
+
+    const otp =
+      document.getElementById("otp")
+        .value.trim();
+
+    const message =
+      document.getElementById("registerMessage");
+
+
+    if (!/^[0-9]{6}$/.test(otp)) {
 
       message.className =
         "message error";
 
       message.innerText =
-        "⚠️ Real OTP verification is not connected yet.";
+        "⚠️ Please enter the 6 digit OTP.";
 
-    };
+      return;
 
-
-    /* -------------------------
-       LOGIN
-    ------------------------- */
-
-    window.loginUser = async function() {
-
-      const email =
-        document
-          .getElementById("loginEmail")
-          .value
-          .trim();
+    }
 
 
-      const message =
-        document.getElementById("loginMessage");
+    if (!confirmationResult) {
+
+      message.className =
+        "message error";
+
+      message.innerText =
+        "⚠️ Please request OTP first.";
+
+      return;
+
+    }
 
 
-      if (
-        !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
-      ) {
+    try {
 
-        message.className =
-          "message error";
+      const result =
+        await confirmationResult.confirm(otp);
 
-        message.innerText =
-          "⚠️ Please enter a valid Gmail.";
 
-        return;
+      const user =
+        result.user;
 
-      }
+
+      await submitRegistration(
+        user.uid,
+        "phone"
+      );
+
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      message.className =
+        "message error";
+
+      message.innerText =
+        "⚠️ Invalid OTP. Please try again.";
+
+    }
+
+  };
+
+
+  /* -------------------------
+     EMAIL LINK VERIFY
+  ------------------------- */
+
+  async function checkEmailLink() {
+
+    if (
+      !isSignInWithEmailLink(
+        auth,
+        window.location.href
+      )
+    ) {
+
+      return;
+
+    }
+
+
+    let email =
+      localStorage.getItem(
+        "emailForSignIn"
+      );
+
+
+    if (!email) {
+
+      email =
+        window.prompt(
+          "Please enter your Gmail again:"
+        );
+
+    }
+
+
+    if (!email) {
+
+      return;
+
+    }
+
+
+    try {
+
+      const result =
+        await signInWithEmailLink(
+          auth,
+          email,
+          window.location.href
+        );
+
+
+      const user =
+        result.user;
+
+
+      await submitRegistration(
+        user.uid,
+        "email"
+      );
+
+
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(error);
+
+      document
+        .getElementById("registerMessage")
+        .className = "message error";
+
+      document
+        .getElementById("registerMessage")
+        .innerText =
+        "⚠️ Email verification failed.";
+
+    }
+
+  }
+
+
+  /* -------------------------
+     SUBMIT REGISTRATION
+  ------------------------- */
+
+  async function submitRegistration(
+    uid,
+    verifiedBy
+  ) {
+
+    const name =
+      localStorage.getItem(
+        "pendingName"
+      );
+
+    const email =
+      localStorage.getItem(
+        "emailForSignIn"
+      );
+
+    const mobile =
+      localStorage.getItem(
+        "pendingMobile"
+      );
+
+
+    const message =
+      document.getElementById(
+        "registerMessage"
+      );
+
+
+    try {
+
+      await addDoc(
+        collection(
+          db,
+          "registrationRequests"
+        ),
+        {
+
+          uid: uid,
+
+          name: name,
+
+          email: email,
+
+          mobile: mobile,
+
+          verifiedBy: verifiedBy,
+
+          status: "pending",
+
+          createdAt:
+            serverTimestamp()
+
+        }
+      );
+
+
+      localStorage.removeItem(
+        "emailForSignIn"
+      );
+
+      localStorage.removeItem(
+        "pendingName"
+      );
+
+      localStorage.removeItem(
+        "pendingMobile"
+      );
 
 
       message.className =
         "message success";
 
+
       message.innerText =
-        "Login verification will be connected next.";
+        "✅ Verification successful! Your registration request has been sent to the Coordinator for approval.";
 
-    };
+    }
 
-  </script>
+    catch (error) {
+
+      console.error(error);
+
+      message.className =
+        "message error";
+
+      message.innerText =
+        "⚠️ Registration could not be submitted.";
+
+    }
+
+  }
+
+
+  /* -------------------------
+     LOGIN
+  ------------------------- */
+
+  window.loginUser = function() {
+
+    const email =
+      document.getElementById(
+        "loginEmail"
+      ).value.trim();
+
+    const message =
+      document.getElementById(
+        "loginMessage"
+      );
+
+
+    if (
+      !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
+    ) {
+
+      message.className =
+        "message error";
+
+      message.innerText =
+        "⚠️ Please enter a valid Gmail.";
+
+      return;
+
+    }
+
+
+    message.className =
+      "message success";
+
+    message.innerText =
+      "Login verification will be connected after Coordinator approval.";
+
+  };
+
+
+  /* CHECK EMAIL VERIFICATION LINK */
+
+  checkEmailLink();
+
+</script>
 
 </body>
 </html>
