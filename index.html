@@ -3,239 +3,683 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Digital Board Management</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f6f8;
       margin: 0;
-      padding: 20px;
+      min-height: 100vh;
+      font-family: Inter, Arial, sans-serif;
+      background:
+        radial-gradient(circle at top left, #dbeafe 0%, transparent 35%),
+        radial-gradient(circle at bottom right, #e0e7ff 0%, transparent 35%),
+        #f5f7fb;
+      color: #172033;
     }
 
-    .container {
-      max-width: 500px;
-      margin: 40px auto;
-      background: white;
-      padding: 25px;
+    /* HEADER */
+
+    header {
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e5e7eb;
+      padding: 16px 7%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 42px;
+      height: 42px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
     }
 
-    h1, h2 {
+    .brand h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .brand span {
+      display: block;
+      color: #64748b;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .secure-badge {
+      font-size: 12px;
+      color: #15803d;
+      background: #dcfce7;
+      padding: 7px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    /* MAIN */
+
+    main {
+      width: 100%;
+      max-width: 1050px;
+      margin: 55px auto;
+      padding: 0 20px;
+    }
+
+    .hero {
       text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .hero .tag {
+      display: inline-block;
+      padding: 7px 14px;
+      background: #dbeafe;
+      color: #1d4ed8;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 48px);
+      letter-spacing: -1px;
+    }
+
+    .hero p {
+      max-width: 620px;
+      margin: 12px auto 0;
+      color: #64748b;
+      line-height: 1.6;
+    }
+
+    /* CARD */
+
+    .card {
+      max-width: 520px;
+      margin: auto;
+      background: rgba(255,255,255,0.96);
+      border: 1px solid #e5e7eb;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 20px 50px rgba(15,23,42,0.08);
+    }
+
+    /* TABS */
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      padding: 5px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      margin-bottom: 25px;
+    }
+
+    .tabs button {
+      border: none;
+      background: transparent;
+      color: #64748b;
+      padding: 11px;
+      border-radius: 9px;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .tabs button:first-child {
+      background: white;
+      color: #2563eb;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.06);
+    }
+
+    /* FORM */
+
+    .form-title {
+      margin-bottom: 5px;
+      font-size: 22px;
+    }
+
+    .form-subtitle {
+      color: #64748b;
+      font-size: 14px;
+      margin-top: 0;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 7px;
+      color: #334155;
     }
 
     input {
       width: 100%;
-      box-sizing: border-box;
-      padding: 12px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 15px;
+      padding: 13px 14px;
+      border: 1px solid #dbe1ea;
+      border-radius: 10px;
+      outline: none;
+      font-size: 14px;
+      transition: 0.2s;
+      background: #fafbfc;
     }
 
-    button {
+    input:focus {
+      border-color: #2563eb;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+
+    /* BUTTON */
+
+    .primary-btn {
       width: 100%;
-      padding: 12px;
-      margin-top: 10px;
       border: none;
-      border-radius: 6px;
-      background: #1976d2;
+      padding: 13px;
+      margin-top: 8px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
       color: white;
-      font-size: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .primary-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(37,99,235,0.25);
+    }
+
+    .danger-btn {
+      width: 100%;
+      border: none;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 10px;
+      background: #ef4444;
+      color: white;
+      font-size: 15px;
+      font-weight: 700;
       cursor: pointer;
     }
 
-    button:hover {
-      background: #125ca5;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .tabs button {
-      margin: 0;
-    }
+    /* MESSAGE */
 
     .message {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 6px;
+      margin-top: 18px;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 14px;
       text-align: center;
       display: none;
     }
 
     .success {
-      background: #d4edda;
-      color: #155724;
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
     }
 
     .error {
-      background: #f8d7da;
-      color: #721c24;
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
     }
 
     .info {
-      background: #dbeafe;
-      color: #1e40af;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
     }
 
-    .hidden {
-      display: none;
-    }
+    /* BOARD ACCESS */
 
     .board-box {
-      margin-top: 25px;
-      padding: 20px;
-      border: 1px solid #ddd;
+      margin-top: 20px;
+      background: linear-gradient(145deg, #f8fafc, #eef2ff);
+      border: 1px solid #dbe4f0;
+      border-radius: 16px;
+      padding: 22px;
+    }
+
+    .board-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .board-icon {
+      width: 45px;
+      height: 45px;
+      background: #dbeafe;
+      color: #2563eb;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+    }
+
+    .board-header h3 {
+      margin: 0;
+    }
+
+    .board-header p {
+      margin: 4px 0 0;
+      color: #64748b;
+      font-size: 13px;
+    }
+
+    .code-input {
+      text-align: center;
+      letter-spacing: 5px;
+      font-size: 21px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    /* SHARE */
+
+    #shareArea {
+      margin-top: 20px;
+    }
+
+    .share-status {
+      background: #ecfdf5;
+      color: #047857;
+      padding: 12px;
       border-radius: 10px;
-      background: #fafafa;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 12px;
     }
 
     #videoPreview {
       width: 100%;
       margin-top: 15px;
-      border-radius: 8px;
-      background: black;
+      border-radius: 12px;
+      background: #020617;
       display: none;
     }
 
-    #stopShareBtn {
-      background: #dc3545;
+    /* FOOTER */
+
+    footer {
+      text-align: center;
+      padding: 25px;
+      color: #94a3b8;
+      font-size: 12px;
     }
 
-    #stopShareBtn:hover {
-      background: #b52a37;
+    .hidden {
+      display: none !important;
     }
+
+    /* MOBILE */
+
+    @media (max-width: 600px) {
+
+      header {
+        padding: 14px 20px;
+      }
+
+      .secure-badge {
+        display: none;
+      }
+
+      main {
+        margin: 30px auto;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+    }
+
   </style>
 </head>
 
+
 <body>
 
-<div class="container">
+<header>
 
-  <h1>Digital Board Management</h1>
+  <div class="brand">
 
-  <div class="tabs">
-    <button onclick="showLogin()">Login</button>
-    <button onclick="showRegister()">Register</button>
-  </div>
+    <div class="brand-icon">
+      DB
+    </div>
 
-  <!-- LOGIN -->
-  <div id="loginSection">
-
-    <h2>Login</h2>
-
-    <input
-      type="email"
-      id="loginEmail"
-      placeholder="Enter Gmail"
-    >
-
-    <button onclick="loginUser()">Login</button>
+    <div>
+      <h2>Digital Board</h2>
+      <span>College Management System</span>
+    </div>
 
   </div>
 
-
-  <!-- REGISTER -->
-  <div id="registerSection" class="hidden">
-
-    <h2>Register</h2>
-
-    <input
-      type="text"
-      id="regName"
-      placeholder="Enter Name"
-    >
-
-    <input
-      type="email"
-      id="regEmail"
-      placeholder="Enter Gmail"
-    >
-
-    <input
-      type="text"
-      id="regMobile"
-      placeholder="Enter 10 digit Mobile Number"
-      maxlength="10"
-    >
-
-    <button onclick="registerUser()">Register</button>
-
+  <div class="secure-badge">
+    ● Secure Access
   </div>
 
-
-  <!-- MESSAGE -->
-  <div id="message" class="message"></div>
+</header>
 
 
-  <!-- APPROVED USER BOARD ACCESS -->
-  <div id="boardAccess" class="board-box hidden">
+<main>
 
-    <h2>Board Access</h2>
+  <div class="hero">
+
+    <div class="tag">
+      DIGITAL CLASSROOM
+    </div>
+
+    <h1>Digital Board Management</h1>
 
     <p>
-      Your registration has been approved.
+      Securely connect authorized users with college
+      digital boards for seamless classroom screen sharing.
     </p>
 
-    <input
-      type="text"
-      id="boardCode"
-      placeholder="Enter 6-character Board Code"
-      maxlength="6"
-      style="text-transform: uppercase;"
-    >
+  </div>
 
-    <button onclick="checkBoardCode()">
-      Verify Board Code
-    </button>
 
-    <div id="shareArea" class="hidden">
+  <div class="card">
 
-      <button onclick="startScreenShare()">
-        Screen Share
+    <!-- TABS -->
+
+    <div class="tabs">
+
+      <button
+        id="loginTab"
+        onclick="showLogin()"
+      >
+        Login
       </button>
 
       <button
-        id="stopShareBtn"
-        onclick="stopScreenShare()"
-        class="hidden"
+        id="registerTab"
+        onclick="showRegister()"
       >
-        Stop Sharing
+        Register
       </button>
 
-      <video
-        id="videoPreview"
-        autoplay
-        muted
-        playsinline
-      ></video>
+    </div>
+
+
+    <!-- LOGIN -->
+
+    <div id="loginSection">
+
+      <h2 class="form-title">
+        Welcome Back
+      </h2>
+
+      <p class="form-subtitle">
+        Login using your registered Gmail account.
+      </p>
+
+
+      <div class="input-group">
+
+        <label>
+          Gmail Address
+        </label>
+
+        <input
+          type="email"
+          id="loginEmail"
+          placeholder="example@gmail.com"
+        >
+
+      </div>
+
+
+      <button
+        class="primary-btn"
+        onclick="loginUser()"
+      >
+        Login to Dashboard
+      </button>
+
+    </div>
+
+
+    <!-- REGISTER -->
+
+    <div
+      id="registerSection"
+      class="hidden"
+    >
+
+      <h2 class="form-title">
+        Create Account
+      </h2>
+
+      <p class="form-subtitle">
+        Register to request access to digital boards.
+      </p>
+
+
+      <div class="input-group">
+
+        <label>
+          Full Name
+        </label>
+
+        <input
+          type="text"
+          id="regName"
+          placeholder="Enter your full name"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          Gmail Address
+        </label>
+
+        <input
+          type="email"
+          id="regEmail"
+          placeholder="example@gmail.com"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          Mobile Number
+        </label>
+
+        <input
+          type="text"
+          id="regMobile"
+          placeholder="10 digit mobile number"
+          maxlength="10"
+        >
+
+      </div>
+
+
+      <button
+        class="primary-btn"
+        onclick="registerUser()"
+      >
+        Submit Registration
+      </button>
+
+    </div>
+
+
+    <!-- MESSAGE -->
+
+    <div
+      id="message"
+      class="message"
+    ></div>
+
+
+    <!-- BOARD ACCESS -->
+
+    <div
+      id="boardAccess"
+      class="board-box hidden"
+    >
+
+      <div class="board-header">
+
+        <div class="board-icon">
+          ▣
+        </div>
+
+        <div>
+
+          <h3>
+            Board Access
+          </h3>
+
+          <p>
+            Enter the code displayed on your digital board.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          6-Character Board Code
+        </label>
+
+        <input
+          class="code-input"
+          type="text"
+          id="boardCode"
+          placeholder="ABC123"
+          maxlength="6"
+        >
+
+      </div>
+
+
+      <button
+        class="primary-btn"
+        onclick="checkBoardCode()"
+      >
+        Verify Board Code
+      </button>
+
+
+      <!-- SHARE AREA -->
+
+      <div
+        id="shareArea"
+        class="hidden"
+      >
+
+        <div class="share-status">
+          ✓ Board verified — Screen sharing is ready
+        </div>
+
+
+        <button
+          class="primary-btn"
+          onclick="startScreenShare()"
+        >
+          Start Screen Share
+        </button>
+
+
+        <button
+          id="stopShareBtn"
+          class="danger-btn hidden"
+          onclick="stopScreenShare()"
+        >
+          Stop Screen Sharing
+        </button>
+
+
+        <video
+          id="videoPreview"
+          autoplay
+          muted
+          playsinline
+        ></video>
+
+      </div>
 
     </div>
 
   </div>
 
-</div>
+</main>
+
+
+<footer>
+
+  Digital Board Management System • College Project
+
+</footer>
 
 
 <script type="module">
 
   import {
     initializeApp
-  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  } from
+  "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+
 
   import {
     getAuth,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut
-  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+  } from
+  "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
 
   import {
     getFirestore,
@@ -249,50 +693,71 @@
     setDoc,
     updateDoc,
     onSnapshot,
-    serverTimestamp,
-    addDoc as addFirestoreDoc
-  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+    serverTimestamp
+  } from
+  "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-  // =========================
-  // FIREBASE CONFIG
-  // =========================
+  /* =========================
+     FIREBASE
+  ========================= */
 
   const firebaseConfig = {
-    apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-    authDomain: "digital-board-acces-management.firebaseapp.com",
-    projectId: "digital-board-acces-management",
-    storageBucket: "digital-board-acces-management.firebasestorage.app",
-    messagingSenderId: "902348932290",
-    appId: "1:902348932290:web:db47f1b012bf882886675b"
+
+    apiKey:
+      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+
+    authDomain:
+      "digital-board-acces-management.firebaseapp.com",
+
+    projectId:
+      "digital-board-acces-management",
+
+    storageBucket:
+      "digital-board-acces-management.firebasestorage.app",
+
+    messagingSenderId:
+      "902348932290",
+
+    appId:
+      "1:902348932290:web:db47f1b012bf882886675b"
+
   };
 
 
-  const app = initializeApp(firebaseConfig);
+  const app =
+    initializeApp(firebaseConfig);
 
-  const auth = getAuth(app);
+  const auth =
+    getAuth(app);
 
-  const db = getFirestore(app);
+  const db =
+    getFirestore(app);
 
 
-  // =========================
-  // TEMPORARY PASSWORD
-  // =========================
+  /* =========================
+     SETTINGS
+  ========================= */
 
-  const TEMP_PASSWORD = "password123456";
+  const TEMP_PASSWORD =
+    "password123456";
 
   const COORDINATOR_EMAIL =
     "anujshivamshukla99359@gmail.com";
 
 
   let currentBoardCode = null;
+
   let peerConnection = null;
+
   let screenStream = null;
 
+  let approvalListener = null;
 
-  // =========================
-  // UI
-  // =========================
+
+  /* =========================
+     UI
+  ========================= */
 
   window.showLogin = function () {
 
@@ -304,7 +769,24 @@
       .getElementById("registerSection")
       .classList.add("hidden");
 
+    document
+      .getElementById("loginTab")
+      .style.background = "white";
+
+    document
+      .getElementById("loginTab")
+      .style.color = "#2563eb";
+
+    document
+      .getElementById("registerTab")
+      .style.background = "transparent";
+
+    document
+      .getElementById("registerTab")
+      .style.color = "#64748b";
+
     hideMessage();
+
   };
 
 
@@ -318,106 +800,95 @@
       .getElementById("loginSection")
       .classList.add("hidden");
 
+    document
+      .getElementById("registerTab")
+      .style.background = "white";
+
+    document
+      .getElementById("registerTab")
+      .style.color = "#2563eb";
+
+    document
+      .getElementById("loginTab")
+      .style.background = "transparent";
+
+    document
+      .getElementById("loginTab")
+      .style.color = "#64748b";
+
     hideMessage();
+
   };
 
 
   function showMessage(text, type = "info") {
 
-    const box = document.getElementById("message");
+    const box =
+      document.getElementById("message");
 
     box.textContent = text;
 
-    box.className = "message " + type;
+    box.className =
+      "message " + type;
 
-    box.style.display = "block";
+    box.style.display =
+      "block";
+
   }
 
 
   function hideMessage() {
 
-    const box = document.getElementById("message");
+    document
+      .getElementById("message")
+      .style.display = "none";
 
-    box.style.display = "none";
   }
 
 
-  // =========================
-  // EMAIL VALIDATION
-  // =========================
+  /* =========================
+     GMAIL
+  ========================= */
 
   function validGmail(email) {
 
-    return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email);
+    return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i
+      .test(email);
+
   }
 
 
-  // =========================
-  // REGISTER
-  // =========================
+  /* =========================
+     REGISTER
+  ========================= */
 
-  window.registerUser = async function () {
+  window.registerUser =
+    async function () {
 
-    const name =
-      document.getElementById("regName").value.trim();
+      const name =
+        document
+          .getElementById("regName")
+          .value
+          .trim();
 
-    const email =
-      document.getElementById("regEmail").value.trim().toLowerCase();
+      const email =
+        document
+          .getElementById("regEmail")
+          .value
+          .trim()
+          .toLowerCase();
 
-    const mobile =
-      document.getElementById("regMobile").value.trim();
-
-
-    if (!name || !email || !mobile) {
-
-      showMessage(
-        "Please fill all fields.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    if (!validGmail(email)) {
-
-      showMessage(
-        "Please enter a valid Gmail address.",
-        "error"
-      );
-
-      return;
-    }
+      const mobile =
+        document
+          .getElementById("regMobile")
+          .value
+          .trim();
 
 
-    if (!/^\d{10}$/.test(mobile)) {
-
-      showMessage(
-        "Mobile number must be exactly 10 digits.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    try {
-
-      // Check duplicate Gmail
-
-      const emailQuery = query(
-        collection(db, "registrationRequests"),
-        where("email", "==", email)
-      );
-
-      const emailSnapshot =
-        await getDocs(emailQuery);
-
-
-      if (!emailSnapshot.empty) {
+      if (!name || !email || !mobile) {
 
         showMessage(
-          "Already exists. Please login.",
+          "Please fill all fields.",
           "error"
         );
 
@@ -425,21 +896,10 @@
       }
 
 
-      // Check duplicate mobile
-
-      const mobileQuery = query(
-        collection(db, "registrationRequests"),
-        where("mobile", "==", mobile)
-      );
-
-      const mobileSnapshot =
-        await getDocs(mobileQuery);
-
-
-      if (!mobileSnapshot.empty) {
+      if (!validGmail(email)) {
 
         showMessage(
-          "Already exists. Please login.",
+          "Please enter a valid Gmail address.",
           "error"
         );
 
@@ -447,22 +907,40 @@
       }
 
 
-      // Create Firebase account
+      if (!/^\d{10}$/.test(mobile)) {
 
-      let userCredential;
+        showMessage(
+          "Mobile number must contain exactly 10 digits.",
+          "error"
+        );
+
+        return;
+      }
+
 
       try {
 
-        userCredential =
-          await createUserWithEmailAndPassword(
-            auth,
-            email,
-            TEMP_PASSWORD
+        /* Duplicate Gmail */
+
+        const emailQuery =
+          query(
+            collection(
+              db,
+              "registrationRequests"
+            ),
+            where(
+              "email",
+              "==",
+              email
+            )
           );
 
-      } catch (error) {
 
-        if (error.code === "auth/email-already-in-use") {
+        const emailSnapshot =
+          await getDocs(emailQuery);
+
+
+        if (!emailSnapshot.empty) {
 
           showMessage(
             "Already exists. Please login.",
@@ -472,90 +950,392 @@
           return;
         }
 
-        throw error;
+
+        /* Duplicate Mobile */
+
+        const mobileQuery =
+          query(
+            collection(
+              db,
+              "registrationRequests"
+            ),
+            where(
+              "mobile",
+              "==",
+              mobile
+            )
+          );
+
+
+        const mobileSnapshot =
+          await getDocs(mobileQuery);
+
+
+        if (!mobileSnapshot.empty) {
+
+          showMessage(
+            "Already exists. Please login.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* Firebase Account */
+
+        const userCredential =
+          await createUserWithEmailAndPassword(
+            auth,
+            email,
+            TEMP_PASSWORD
+          );
+
+
+        const uid =
+          userCredential.user.uid;
+
+
+        /* Registration */
+
+        await addDoc(
+          collection(
+            db,
+            "registrationRequests"
+          ),
+          {
+
+            uid: uid,
+
+            name: name,
+
+            email: email,
+
+            mobile: mobile,
+
+            verification:
+              "Temporary Password",
+
+            status:
+              "pending",
+
+            createdAt:
+              serverTimestamp()
+
+          }
+        );
+
+
+        await signOut(auth);
+
+
+        showMessage(
+          "Registration submitted successfully. Waiting for coordinator approval...",
+          "success"
+        );
+
+
+        document
+          .getElementById("regName")
+          .value = "";
+
+        document
+          .getElementById("regEmail")
+          .value = "";
+
+        document
+          .getElementById("regMobile")
+          .value = "";
+
+
+        /* Start live approval checking */
+
+        startApprovalListener(
+          email
+        );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        if (
+          error.code ===
+          "auth/email-already-in-use"
+        ) {
+
+          showMessage(
+            "Already exists. Please login.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        showMessage(
+          "Registration failed: " +
+          error.message,
+          "error"
+        );
+
       }
 
+    };
 
-      const uid = userCredential.user.uid;
+
+  /* =========================
+     LIVE APPROVAL LISTENER
+  ========================= */
+
+  function startApprovalListener(email) {
+
+    if (approvalListener) {
+
+      approvalListener();
+
+      approvalListener = null;
+
+    }
 
 
-      // Registration request
+    const q =
+      query(
+        collection(
+          db,
+          "registrationRequests"
+        ),
+        where(
+          "email",
+          "==",
+          email
+        )
+      );
 
-      await addDoc(
-        collection(db, "registrationRequests"),
-        {
-          uid: uid,
-          name: name,
-          email: email,
-          mobile: mobile,
 
-          verification:
-            "Temporary Password",
+    approvalListener =
+      onSnapshot(
+        q,
+        snapshot => {
 
-          status: "pending",
+          if (snapshot.empty)
+            return;
 
-          createdAt: serverTimestamp()
+
+          const data =
+            snapshot.docs[0].data();
+
+
+          if (
+            data.status ===
+            "approved"
+          ) {
+
+            if (approvalListener) {
+
+              approvalListener();
+
+              approvalListener = null;
+
+            }
+
+
+            showApprovedBoardAccess();
+
+          }
+
+
+          if (
+            data.status ===
+            "rejected"
+          ) {
+
+            showMessage(
+              "Your registration was rejected by the coordinator.",
+              "error"
+            );
+
+          }
+
         }
       );
 
-
-      await signOut(auth);
-
-
-      showMessage(
-        "Registration successful. Coordinator approval pending.",
-        "success"
-      );
+  }
 
 
-      document.getElementById("regName").value = "";
-      document.getElementById("regEmail").value = "";
-      document.getElementById("regMobile").value = "";
+  /* =========================
+     SHOW BOARD ACCESS
+  ========================= */
 
-    } catch (error) {
+  function showApprovedBoardAccess() {
 
-      console.error(error);
+    document
+      .getElementById("loginSection")
+      .classList.add("hidden");
 
-      showMessage(
-        "Registration failed: " + error.message,
-        "error"
-      );
-    }
-
-  };
+    document
+      .getElementById("registerSection")
+      .classList.add("hidden");
 
 
-  // =========================
-  // LOGIN
-  // =========================
-
-  window.loginUser = async function () {
-
-    const email =
-      document.getElementById("loginEmail")
-        .value
-        .trim()
-        .toLowerCase();
+    document
+      .querySelector(".tabs")
+      .classList.add("hidden");
 
 
-    if (!validGmail(email)) {
-
-      showMessage(
-        "Please enter a valid Gmail address.",
-        "error"
-      );
-
-      return;
-    }
+    document
+      .getElementById("boardAccess")
+      .classList.remove("hidden");
 
 
-    try {
+    showMessage(
+      "✓ Access approved! Enter your Digital Board Code.",
+      "success"
+    );
 
-      // =========================
-      // COORDINATOR LOGIN
-      // =========================
 
-      if (email === COORDINATOR_EMAIL) {
+    document
+      .getElementById("boardCode")
+      .focus();
+
+  }
+
+
+  /* =========================
+     LOGIN
+  ========================= */
+
+  window.loginUser =
+    async function () {
+
+      const email =
+        document
+          .getElementById("loginEmail")
+          .value
+          .trim()
+          .toLowerCase();
+
+
+      if (!validGmail(email)) {
+
+        showMessage(
+          "Please enter a valid Gmail address.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      try {
+
+        /* Coordinator */
+
+        if (
+          email ===
+          COORDINATOR_EMAIL
+        ) {
+
+          await signInWithEmailAndPassword(
+            auth,
+            email,
+            TEMP_PASSWORD
+          );
+
+
+          window.location.href =
+            "coordinator.html";
+
+          return;
+        }
+
+
+        /* Find user */
+
+        const userQuery =
+          query(
+            collection(
+              db,
+              "registrationRequests"
+            ),
+            where(
+              "email",
+              "==",
+              email
+            )
+          );
+
+
+        const snapshot =
+          await getDocs(userQuery);
+
+
+        if (snapshot.empty) {
+
+          showMessage(
+            "You are not registered. Please register first.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        const userData =
+          snapshot.docs[0].data();
+
+
+        if (
+          userData.status ===
+          "pending"
+        ) {
+
+          showMessage(
+            "Waiting for coordinator approval...",
+            "info"
+          );
+
+
+          /* Live approval */
+
+          startApprovalListener(
+            email
+          );
+
+          return;
+        }
+
+
+        if (
+          userData.status ===
+          "rejected"
+        ) {
+
+          showMessage(
+            "Your registration has been rejected.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (
+          userData.status !==
+          "approved"
+        ) {
+
+          showMessage(
+            "You are not authorized to access the digital boards.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* Approved → Login */
 
         await signInWithEmailAndPassword(
           auth,
@@ -564,493 +1344,484 @@
         );
 
 
-        window.location.href =
-          "coordinator.html";
+        showApprovedBoardAccess();
 
-        return;
-      }
 
+      } catch (error) {
 
-      // =========================
-      // NORMAL USER
-      // =========================
+        console.error(error);
 
-      const userQuery = query(
-        collection(db, "registrationRequests"),
-        where("email", "==", email)
-      );
 
+        if (
+          error.code ===
+          "auth/invalid-credential" ||
+          error.code ===
+          "auth/wrong-password" ||
+          error.code ===
+          "auth/user-not-found"
+        ) {
 
-      const snapshot =
-        await getDocs(userQuery);
-
-
-      if (snapshot.empty) {
-
-        showMessage(
-          "You are not registered. Please register first.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      const userData =
-        snapshot.docs[0].data();
-
-
-      // Pending
-
-      if (userData.status === "pending") {
-
-        showMessage(
-          "Your registration is pending coordinator approval.",
-          "info"
-        );
-
-        return;
-      }
-
-
-      // Rejected
-
-      if (userData.status === "rejected") {
-
-        showMessage(
-          "Your registration has been rejected.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      // Deleted / unknown
-
-      if (userData.status !== "approved") {
-
-        showMessage(
-          "You are not authorized to access the board.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      // Login
-
-      await signInWithEmailAndPassword(
-        auth,
-        email,
-        TEMP_PASSWORD
-      );
-
-
-      showMessage(
-        "Login successful.",
-        "success"
-      );
-
-
-      document
-        .getElementById("boardAccess")
-        .classList.remove("hidden");
-
-
-      document
-        .getElementById("loginSection")
-        .classList.add("hidden");
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      if (
-        error.code === "auth/invalid-credential" ||
-        error.code === "auth/wrong-password" ||
-        error.code === "auth/user-not-found"
-      ) {
-
-        showMessage(
-          "Login failed. This account needs the temporary password set in Firebase Authentication.",
-          "error"
-        );
-
-      } else {
-
-        showMessage(
-          "Login failed: " + error.message,
-          "error"
-        );
-      }
-    }
-
-  };
-
-
-  // =========================
-  // BOARD CODE CHECK
-  // =========================
-
-  window.checkBoardCode = async function () {
-
-    const code =
-      document.getElementById("boardCode")
-        .value
-        .trim()
-        .toUpperCase();
-
-
-    if (code.length !== 6) {
-
-      showMessage(
-        "Board code must be exactly 6 characters.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    try {
-
-      const boardRef =
-        doc(db, "boards", code);
-
-      const boardSnap =
-        await getDoc(boardRef);
-
-
-      if (
-        !boardSnap.exists() ||
-        boardSnap.data().status !== "available"
-      ) {
-
-        showMessage(
-          "Invalid or inactive board code.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      currentBoardCode = code;
-
-
-      showMessage(
-        "Board code verified. Screen Share is available.",
-        "success"
-      );
-
-
-      document
-        .getElementById("shareArea")
-        .classList.remove("hidden");
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "Board code verification failed: " + error.message,
-        "error"
-      );
-    }
-
-  };
-
-
-  // =========================
-  // SCREEN SHARE
-  // =========================
-
-  window.startScreenShare = async function () {
-
-    if (!currentBoardCode) {
-
-      showMessage(
-        "Please verify the board code first.",
-        "error"
-      );
-
-      return;
-    }
-
-
-    try {
-
-      screenStream =
-        await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: true
-        });
-
-
-      const video =
-        document.getElementById("videoPreview");
-
-
-      video.srcObject = screenStream;
-
-      video.style.display = "block";
-
-
-      document
-        .getElementById("stopShareBtn")
-        .classList.remove("hidden");
-
-
-      peerConnection =
-        new RTCPeerConnection({
-          iceServers: [
-            {
-              urls:
-                "stun:stun.l.google.com:19302"
-            }
-          ]
-        });
-
-
-      // Add screen tracks
-
-      screenStream
-        .getTracks()
-        .forEach(track => {
-
-          peerConnection.addTrack(
-            track,
-            screenStream
+          showMessage(
+            "Login failed. Please check the temporary password in Firebase Authentication.",
+            "error"
           );
 
-        });
+        } else {
 
-
-      // Teacher ICE candidates
-
-      peerConnection.onicecandidate =
-        async event => {
-
-          if (!event.candidate) return;
-
-
-          await addDoc(
-            collection(
-              db,
-              "sessions",
-              currentBoardCode,
-              "teacherCandidates"
-            ),
-            event.candidate.toJSON()
+          showMessage(
+            "Login failed: " +
+            error.message,
+            "error"
           );
 
-        };
-
-
-      // Create offer
-
-      const offer =
-        await peerConnection.createOffer();
-
-
-      await peerConnection.setLocalDescription(
-        offer
-      );
-
-
-      const sessionRef =
-        doc(
-          db,
-          "sessions",
-          currentBoardCode
-        );
-
-
-      await setDoc(
-        sessionRef,
-        {
-          offer: {
-            type: offer.type,
-            sdp: offer.sdp
-          },
-
-          status: "active",
-
-          createdAt:
-            serverTimestamp()
         }
-      );
+
+      }
+
+    };
 
 
-      // Listen for board answer
+  /* =========================
+     BOARD CODE
+  ========================= */
 
-      onSnapshot(
-        sessionRef,
-        async snapshot => {
+  window.checkBoardCode =
+    async function () {
 
-          const data = snapshot.data();
+      const code =
+        document
+          .getElementById("boardCode")
+          .value
+          .trim()
+          .toUpperCase();
 
-          if (!data) return;
+
+      if (code.length !== 6) {
+
+        showMessage(
+          "Board Code must contain exactly 6 characters.",
+          "error"
+        );
+
+        return;
+      }
 
 
-          if (
-            data.answer &&
-            !peerConnection.currentRemoteDescription
-          ) {
+      try {
 
-            await peerConnection.setRemoteDescription(
-              new RTCSessionDescription(
-                data.answer
-              )
+        const boardRef =
+          doc(
+            db,
+            "boards",
+            code
+          );
+
+
+        const boardSnap =
+          await getDoc(
+            boardRef
+          );
+
+
+        if (
+          !boardSnap.exists() ||
+          boardSnap.data().status !==
+          "available"
+        ) {
+
+          showMessage(
+            "Invalid or inactive Board Code.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        currentBoardCode =
+          code;
+
+
+        showMessage(
+          "✓ Board verified successfully.",
+          "success"
+        );
+
+
+        document
+          .getElementById("shareArea")
+          .classList.remove("hidden");
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+          "Board verification failed: " +
+          error.message,
+          "error"
+        );
+
+      }
+
+    };
+
+
+  /* =========================
+     SCREEN SHARE
+  ========================= */
+
+  window.startScreenShare =
+    async function () {
+
+      if (!currentBoardCode) {
+
+        showMessage(
+          "Please verify the Board Code first.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      try {
+
+        screenStream =
+          await navigator
+            .mediaDevices
+            .getDisplayMedia({
+
+              video: true,
+
+              audio: true
+
+            });
+
+
+        const video =
+          document
+            .getElementById(
+              "videoPreview"
             );
 
-          }
 
-        }
-      );
+        video.srcObject =
+          screenStream;
+
+        video.style.display =
+          "block";
 
 
-      // Board ICE candidates
+        document
+          .getElementById(
+            "stopShareBtn"
+          )
+          .classList
+          .remove("hidden");
 
-      onSnapshot(
-        collection(
-          db,
-          "sessions",
-          currentBoardCode,
-          "boardCandidates"
-        ),
-        snapshot => {
 
-          snapshot.docChanges().forEach(
-            async change => {
+        peerConnection =
+          new RTCPeerConnection({
 
-              if (change.type !== "added")
-                return;
+            iceServers: [
 
-              try {
-
-                await peerConnection.addIceCandidate(
-                  new RTCIceCandidate(
-                    change.doc.data()
-                  )
-                );
-
-              } catch (e) {
-
-                console.log(
-                  "ICE error:",
-                  e
-                );
-
+              {
+                urls:
+                  "stun:stun.l.google.com:19302"
               }
 
-            }
-          );
+            ]
 
-        }
-      );
+          });
 
-
-      // Stop if browser stops sharing
-
-      screenStream
-        .getVideoTracks()[0]
-        .addEventListener(
-          "ended",
-          () => {
-
-            stopScreenShare();
-
-          }
-        );
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "Screen sharing failed: " + error.message,
-        "error"
-      );
-    }
-
-  };
-
-
-  // =========================
-  // STOP SCREEN SHARE
-  // =========================
-
-  window.stopScreenShare = async function () {
-
-    try {
-
-      if (screenStream) {
 
         screenStream
           .getTracks()
-          .forEach(track => track.stop());
+          .forEach(track => {
 
-        screenStream = null;
-      }
+            peerConnection
+              .addTrack(
+                track,
+                screenStream
+              );
 
-
-      if (peerConnection) {
-
-        peerConnection.close();
-
-        peerConnection = null;
-      }
+          });
 
 
-      if (currentBoardCode) {
+        /* Teacher ICE */
 
-        await updateDoc(
+        peerConnection
+          .onicecandidate =
+          async event => {
+
+            if (!event.candidate)
+              return;
+
+
+            await addDoc(
+              collection(
+                db,
+                "sessions",
+                currentBoardCode,
+                "teacherCandidates"
+              ),
+              event.candidate
+                .toJSON()
+            );
+
+          };
+
+
+        /* Offer */
+
+        const offer =
+          await peerConnection
+            .createOffer();
+
+
+        await peerConnection
+          .setLocalDescription(
+            offer
+          );
+
+
+        const sessionRef =
           doc(
             db,
             "sessions",
             currentBoardCode
-          ),
+          );
+
+
+        await setDoc(
+          sessionRef,
           {
-            status: "ended"
+
+            offer: {
+
+              type:
+                offer.type,
+
+              sdp:
+                offer.sdp
+
+            },
+
+            status:
+              "active",
+
+            createdAt:
+              serverTimestamp()
+
           }
-        ).catch(() => {});
+        );
+
+
+        /* Board Answer */
+
+        onSnapshot(
+          sessionRef,
+          async snapshot => {
+
+            const data =
+              snapshot.data();
+
+            if (!data)
+              return;
+
+
+            if (
+              data.answer &&
+              !peerConnection
+                .currentRemoteDescription
+            ) {
+
+              await peerConnection
+                .setRemoteDescription(
+                  new RTCSessionDescription(
+                    data.answer
+                  )
+                );
+
+            }
+
+          }
+        );
+
+
+        /* Board ICE */
+
+        onSnapshot(
+
+          collection(
+            db,
+            "sessions",
+            currentBoardCode,
+            "boardCandidates"
+          ),
+
+          snapshot => {
+
+            snapshot
+              .docChanges()
+              .forEach(
+                async change => {
+
+                  if (
+                    change.type !==
+                    "added"
+                  )
+                    return;
+
+
+                  try {
+
+                    await peerConnection
+                      .addIceCandidate(
+                        new RTCIceCandidate(
+                          change.doc.data()
+                        )
+                      );
+
+                  } catch (error) {
+
+                    console.log(
+                      "ICE error:",
+                      error
+                    );
+
+                  }
+
+                }
+              );
+
+          }
+
+        );
+
+
+        /* Browser stop */
+
+        screenStream
+          .getVideoTracks()[0]
+          .addEventListener(
+            "ended",
+            () => {
+
+              stopScreenShare();
+
+            }
+          );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        showMessage(
+          "Screen sharing failed: " +
+          error.message,
+          "error"
+        );
 
       }
 
-
-      const video =
-        document.getElementById("videoPreview");
+    };
 
 
-      video.srcObject = null;
+  /* =========================
+     STOP SHARE
+  ========================= */
 
-      video.style.display = "none";
+  window.stopScreenShare =
+    async function () {
+
+      try {
+
+        if (screenStream) {
+
+          screenStream
+            .getTracks()
+            .forEach(
+              track =>
+                track.stop()
+            );
+
+          screenStream = null;
+
+        }
 
 
-      document
-        .getElementById("stopShareBtn")
-        .classList.add("hidden");
+        if (peerConnection) {
+
+          peerConnection.close();
+
+          peerConnection = null;
+
+        }
 
 
-      showMessage(
-        "Screen sharing stopped.",
-        "info"
-      );
+        if (currentBoardCode) {
+
+          await updateDoc(
+            doc(
+              db,
+              "sessions",
+              currentBoardCode
+            ),
+            {
+              status:
+                "ended"
+            }
+          ).catch(
+            () => {}
+          );
+
+        }
 
 
-    } catch (error) {
+        const video =
+          document
+            .getElementById(
+              "videoPreview"
+            );
 
-      console.error(error);
 
-    }
+        video.srcObject = null;
 
-  };
+        video.style.display =
+          "none";
+
+
+        document
+          .getElementById(
+            "stopShareBtn"
+          )
+          .classList
+          .add("hidden");
+
+
+        showMessage(
+          "Screen sharing stopped.",
+          "info"
+        );
+
+
+      } catch (error) {
+
+        console.error(error);
+
+      }
+
+    };
+
+
+  /* Initial tab */
+
+  showLogin();
 
 </script>
 
