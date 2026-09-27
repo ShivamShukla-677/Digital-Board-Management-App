@@ -1488,7 +1488,7 @@
 
       try {
 
-        /* Check secure HTTPS context */
+        /* Secure HTTPS context */
 
         if (!window.isSecureContext) {
 
@@ -1501,7 +1501,7 @@
         }
 
 
-        /* Check browser support */
+        /* Browser support */
 
         if (
           !navigator.mediaDevices ||
@@ -1509,7 +1509,7 @@
         ) {
 
           showMessage(
-            "Screen sharing is not available in this browser or page. Please open this website directly in Google Chrome or Microsoft Edge.",
+            "Screen sharing is not available. Please open this website directly in Google Chrome.",
             "error"
           );
 
@@ -1517,23 +1517,24 @@
         }
 
 
+        /* START SCREEN SHARE */
+
         screenStream =
-          await navigator
-            .mediaDevices
-            .getDisplayMedia({
+          await navigator.mediaDevices.getDisplayMedia({
 
-              video: true,
+            video: true,
 
-              audio: true
+            audio: false
 
-            });
+          });
 
+
+        /* Video Preview */
 
         const video =
-          document
-            .getElementById(
-              "videoPreview"
-            );
+          document.getElementById(
+            "videoPreview"
+          );
 
 
         video.srcObject =
@@ -1550,6 +1551,8 @@
           .classList
           .remove("hidden");
 
+
+        /* WebRTC */
 
         peerConnection =
           new RTCPeerConnection({
@@ -1570,19 +1573,17 @@
           .getTracks()
           .forEach(track => {
 
-            peerConnection
-              .addTrack(
-                track,
-                screenStream
-              );
+            peerConnection.addTrack(
+              track,
+              screenStream
+            );
 
           });
 
 
         /* Teacher ICE */
 
-        peerConnection
-          .onicecandidate =
+        peerConnection.onicecandidate =
           async event => {
 
             if (!event.candidate)
@@ -1596,25 +1597,24 @@
                 currentBoardCode,
                 "teacherCandidates"
               ),
-              event.candidate
-                .toJSON()
+              event.candidate.toJSON()
             );
 
           };
 
 
-        /* Offer */
+        /* Create Offer */
 
         const offer =
-          await peerConnection
-            .createOffer();
+          await peerConnection.createOffer();
 
 
-        await peerConnection
-          .setLocalDescription(
-            offer
-          );
+        await peerConnection.setLocalDescription(
+          offer
+        );
 
+
+        /* Session */
 
         const sessionRef =
           doc(
@@ -1664,16 +1664,14 @@
             if (
               data.answer &&
               peerConnection &&
-              !peerConnection
-                .currentRemoteDescription
+              !peerConnection.currentRemoteDescription
             ) {
 
-              await peerConnection
-                .setRemoteDescription(
-                  new RTCSessionDescription(
-                    data.answer
-                  )
-                );
+              await peerConnection.setRemoteDescription(
+                new RTCSessionDescription(
+                  data.answer
+                )
+              );
 
             }
 
@@ -1712,12 +1710,11 @@
 
                   try {
 
-                    await peerConnection
-                      .addIceCandidate(
-                        new RTCIceCandidate(
-                          change.doc.data()
-                        )
-                      );
+                    await peerConnection.addIceCandidate(
+                      new RTCIceCandidate(
+                        change.doc.data()
+                      )
+                    );
 
                   } catch (error) {
 
@@ -1736,7 +1733,7 @@
         );
 
 
-        /* Browser stop */
+        /* Chrome share window closed */
 
         screenStream
           .getVideoTracks()[0]
@@ -1750,6 +1747,12 @@
           );
 
 
+        showMessage(
+          "✓ Screen sharing started successfully.",
+          "success"
+        );
+
+
       } catch (error) {
 
         console.error(error);
@@ -1761,7 +1764,7 @@
         ) {
 
           showMessage(
-            "Screen sharing was cancelled or permission was denied.",
+            "Screen sharing was cancelled.",
             "error"
           );
 
