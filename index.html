@@ -7,106 +7,238 @@
   <title>Digital Board Management</title>
 
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
-      background: #f2f4f8;
+      background: #f1f5f9;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      margin: 0;
     }
 
-    .box {
+    .container {
+      width: 380px;
+      max-width: 92%;
       background: white;
-      width: 350px;
       padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
     }
 
     h1 {
       text-align: center;
-      font-size: 24px;
+      margin-bottom: 25px;
+      font-size: 25px;
+    }
+
+    .tabs {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .tab {
+      width: 50%;
+      padding: 12px;
+      border: none;
+      cursor: pointer;
+      background: #e5e7eb;
+      color: #111827;
+      font-size: 15px;
+    }
+
+    .tab:first-child {
+      border-radius: 7px 0 0 7px;
+    }
+
+    .tab:last-child {
+      border-radius: 0 7px 7px 0;
+    }
+
+    .tab.active {
+      background: #2563eb;
+      color: white;
+    }
+
+    .form {
+      display: none;
+    }
+
+    .form.active {
+      display: block;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
 
     input {
       width: 100%;
       padding: 12px;
-      margin: 8px 0;
-      box-sizing: border-box;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      border-radius: 7px;
+      font-size: 15px;
     }
 
-    button {
+    input:focus {
+      outline: none;
+      border-color: #2563eb;
+    }
+
+    button.submit {
       width: 100%;
+      margin-top: 18px;
       padding: 12px;
-      margin-top: 12px;
       border: none;
-      border-radius: 6px;
+      border-radius: 7px;
       background: #2563eb;
       color: white;
       font-size: 16px;
       cursor: pointer;
     }
 
-    #message {
-      text-align: center;
+    button.submit:hover {
+      background: #1d4ed8;
+    }
+
+    .message {
       margin-top: 15px;
+      text-align: center;
+      font-size: 14px;
       font-weight: bold;
+    }
+
+    .error {
+      color: #dc2626;
+    }
+
+    .success {
+      color: #16a34a;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="box">
+  <div class="container">
 
-    <h1>Digital Board Access</h1>
+    <h1>Digital Board Management</h1>
 
-    <form id="registrationForm">
+    <!-- LOGIN / REGISTER TABS -->
+
+    <div class="tabs">
+
+      <button
+        class="tab active"
+        id="loginTab"
+        onclick="showLogin()">
+        Login
+      </button>
+
+      <button
+        class="tab"
+        id="registerTab"
+        onclick="showRegister()">
+        Register
+      </button>
+
+    </div>
+
+
+    <!-- LOGIN FORM -->
+
+    <div class="form active" id="loginForm">
+
+      <label>Email</label>
+
+      <input
+        type="email"
+        id="loginEmail"
+        placeholder="Enter Gmail"
+      >
+
+      <label>Password</label>
+
+      <input
+        type="password"
+        id="loginPassword"
+        placeholder="Enter password"
+      >
+
+      <button
+        class="submit"
+        onclick="loginUser()">
+        Login
+      </button>
+
+      <div id="loginMessage" class="message"></div>
+
+    </div>
+
+
+    <!-- REGISTER FORM -->
+
+    <div class="form" id="registerForm">
+
+      <label>Full Name</label>
 
       <input
         type="text"
         id="name"
-        placeholder="Enter your name"
-        required
+        placeholder="Enter your full name"
       >
+
+
+      <label>Gmail</label>
 
       <input
         type="email"
         id="email"
-        placeholder="Enter your Gmail"
-        required
+        placeholder="example@gmail.com"
       >
+
+
+      <label>Mobile Number</label>
 
       <input
         type="tel"
         id="mobile"
-        placeholder="Enter mobile number"
-        required
+        placeholder="10 digit mobile number"
+        maxlength="10"
       >
+
+
+      <label>Password</label>
 
       <input
         type="password"
         id="password"
         placeholder="Create password"
-        required
       >
 
-      <button type="submit">
+
+      <button
+        class="submit"
+        onclick="registerUser()">
         Register
       </button>
 
-    </form>
+      <div id="registerMessage" class="message"></div>
 
-    <div id="message"></div>
+    </div>
 
   </div>
 
 
-  <!-- Firebase -->
+  <!-- FIREBASE -->
+
   <script type="module">
 
     import { initializeApp }
@@ -114,7 +246,8 @@
 
     import {
       getAuth,
-      createUserWithEmailAndPassword
+      createUserWithEmailAndPassword,
+      signInWithEmailAndPassword
     }
       from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
@@ -126,7 +259,7 @@
       from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-    // Firebase Configuration
+    // FIREBASE CONFIG
 
     const firebaseConfig = {
       apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
@@ -138,7 +271,7 @@
     };
 
 
-    // Firebase start
+    // START FIREBASE
 
     const app = initializeApp(firebaseConfig);
 
@@ -147,84 +280,274 @@
     const db = getFirestore(app);
 
 
-    // Registration
+    // SWITCH TO LOGIN
 
-    document
-      .getElementById("registrationForm")
-      .addEventListener("submit", async function(event) {
+    window.showLogin = function() {
 
-        event.preventDefault();
+      document
+        .getElementById("loginForm")
+        .classList.add("active");
 
-        const name =
-          document.getElementById("name").value;
+      document
+        .getElementById("registerForm")
+        .classList.remove("active");
 
-        const email =
-          document.getElementById("email").value;
+      document
+        .getElementById("loginTab")
+        .classList.add("active");
 
-        const mobile =
-          document.getElementById("mobile").value;
+      document
+        .getElementById("registerTab")
+        .classList.remove("active");
 
-        const password =
-          document.getElementById("password").value;
-
-        const message =
-          document.getElementById("message");
-
-
-        message.innerText = "Registering...";
+    };
 
 
-        try {
+    // SWITCH TO REGISTER
 
-          const userCredential =
-            await createUserWithEmailAndPassword(
-              auth,
-              email,
-              password
-            );
+    window.showRegister = function() {
+
+      document
+        .getElementById("registerForm")
+        .classList.add("active");
+
+      document
+        .getElementById("loginForm")
+        .classList.remove("active");
+
+      document
+        .getElementById("registerTab")
+        .classList.add("active");
+
+      document
+        .getElementById("loginTab")
+        .classList.remove("active");
+
+    };
 
 
-          const user =
-            userCredential.user;
+    // REGISTER
+
+    window.registerUser = async function() {
+
+      const name =
+        document.getElementById("name").value.trim();
+
+      const email =
+        document.getElementById("email").value.trim();
+
+      const mobile =
+        document.getElementById("mobile").value.trim();
+
+      const password =
+        document.getElementById("password").value;
+
+      const message =
+        document.getElementById("registerMessage");
 
 
-          // Save user information in Firestore
+      message.className = "message";
 
-          await setDoc(
-            doc(db, "users", user.uid),
-            {
-              name: name,
-              email: email,
-              mobile: mobile,
-              status: "pending",
-              createdAt: new Date()
-            }
+
+      // NAME CHECK
+
+      if (name === "") {
+
+        message.classList.add("error");
+
+        message.innerText =
+          "⚠️ Please enter your name.";
+
+        return;
+      }
+
+
+      // GMAIL CHECK
+
+      if (!email.toLowerCase().endsWith("@gmail.com")) {
+
+        message.classList.add("error");
+
+        message.innerText =
+          "⚠️ Please enter a valid Gmail ending with @gmail.com.";
+
+        return;
+      }
+
+
+      // MOBILE CHECK
+
+      if (!/^[0-9]{10}$/.test(mobile)) {
+
+        message.classList.add("error");
+
+        message.innerText =
+          "⚠️ Mobile number must contain exactly 10 digits.";
+
+        return;
+      }
+
+
+      // PASSWORD CHECK
+
+      if (password.length < 6) {
+
+        message.classList.add("error");
+
+        message.innerText =
+          "⚠️ Password must contain at least 6 characters.";
+
+        return;
+      }
+
+
+      message.innerText = "Creating account...";
+
+
+      try {
+
+        const userCredential =
+          await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
           );
 
 
-          message.style.color = "green";
+        const user =
+          userCredential.user;
+
+
+        // SAVE USER DATA
+
+        await setDoc(
+          doc(db, "users", user.uid),
+          {
+            name: name,
+            email: email,
+            mobile: mobile,
+            status: "pending",
+            createdAt: new Date()
+          }
+        );
+
+
+        message.classList.add("success");
+
+        message.innerText =
+          "✅ Registration successful! Waiting for coordinator approval.";
+
+
+        document
+          .getElementById("name")
+          .value = "";
+
+        document
+          .getElementById("email")
+          .value = "";
+
+        document
+          .getElementById("mobile")
+          .value = "";
+
+        document
+          .getElementById("password")
+          .value = "";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        message.classList.add("error");
+
+        if (error.code === "auth/email-already-in-use") {
 
           message.innerText =
-            "Registration successful! Waiting for coordinator approval.";
+            "⚠️ This Gmail is already registered.";
 
-
-          document
-            .getElementById("registrationForm")
-            .reset();
-
-
-        } catch (error) {
-
-          console.error(error);
-
-          message.style.color = "red";
+        } else {
 
           message.innerText =
-            error.message;
-
+            "⚠️ " + error.message;
         }
 
-      });
+      }
+
+    };
+
+
+    // LOGIN
+
+    window.loginUser = async function() {
+
+      const email =
+        document.getElementById("loginEmail").value.trim();
+
+      const password =
+        document.getElementById("loginPassword").value;
+
+      const message =
+        document.getElementById("loginMessage");
+
+
+      message.className = "message";
+
+
+      // GMAIL CHECK
+
+      if (!email.toLowerCase().endsWith("@gmail.com")) {
+
+        message.classList.add("error");
+
+        message.innerText =
+          "⚠️ Please enter a valid Gmail.";
+
+        return;
+      }
+
+
+      if (password === "") {
+
+        message.classList.add("error");
+
+        message.innerText =
+          "⚠️ Please enter your password.";
+
+        return;
+      }
+
+
+      message.innerText = "Logging in...";
+
+
+      try {
+
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+
+        message.classList.add("success");
+
+        message.innerText =
+          "✅ Login successful!";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+        message.classList.add("error");
+
+        message.innerText =
+          "⚠️ Invalid Gmail or password.";
+
+      }
+
+    };
 
   </script>
 
