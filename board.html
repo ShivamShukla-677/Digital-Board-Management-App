@@ -6,9 +6,6 @@
 
   <title>Digital Board</title>
 
-  <!-- QR Code Library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-
   <style>
     * {
       box-sizing: border-box;
@@ -18,76 +15,83 @@
     body {
       margin: 0;
       background: #f4f7fb;
-      color: #222;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .container {
-      max-width: 700px;
-      margin: 40px auto;
-      padding: 25px;
-    }
-
-    .card {
+    .board {
       background: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 90%;
+      max-width: 700px;
+      padding: 40px;
       text-align: center;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.12);
     }
 
     h1 {
       margin-bottom: 10px;
     }
 
-    .board-code {
-      font-size: 32px;
-      font-weight: bold;
-      letter-spacing: 5px;
-      margin: 20px 0;
-      padding: 15px;
-      background: #f0f3f7;
-      border-radius: 10px;
+    .title {
+      font-size: 18px;
+      margin-top: 25px;
     }
 
-    #qrcode {
-      display: flex;
-      justify-content: center;
-      margin: 25px 0;
+    .code {
+      font-size: 42px;
+      font-weight: bold;
+      letter-spacing: 8px;
+      padding: 20px;
+      margin: 15px 0;
+      background: #f1f3f5;
+      border-radius: 12px;
+    }
+
+    .qr-box {
+      margin-top: 30px;
+    }
+
+    .qr-box img {
+      width: 220px;
+      height: 220px;
     }
 
     .status {
-      padding: 12px;
-      border-radius: 8px;
       margin-top: 20px;
-      background: #fff3cd;
-    }
-
-    .hidden {
-      display: none;
+      color: #555;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="container">
+  <div class="board">
 
-    <div class="card">
+    <h1>Digital Board</h1>
 
-      <h1>Digital Board</h1>
+    <div class="title">
+      Board Code
+    </div>
 
-      <p>Board Code</p>
+    <div id="boardCode" class="code">
+      Loading...
+    </div>
 
-      <div id="boardCode" class="board-code">
-        Loading...
-      </div>
+    <div class="qr-box">
 
-      <div id="qrcode"></div>
+      <!-- SAME QR FOR ALL BOARDS -->
+      <img
+        src="https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=https%3A%2F%2Fshivamshukla-677.github.io%2FDigital-Board-Management-App%2F"
+        alt="Digital Board QR Code"
+      >
 
-      <div id="status" class="status">
-        Loading board information...
-      </div>
+    </div>
 
+    <div id="status" class="status">
+      Generating board code...
     </div>
 
   </div>
@@ -111,48 +115,63 @@
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-    // ==========================
+    // =========================
     // FIREBASE CONFIG
-    // ==========================
+    // =========================
 
     const firebaseConfig = {
+
       apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-      authDomain: "digital-board-acces-management.firebaseapp.com",
-      projectId: "digital-board-acces-management",
-      storageBucket: "digital-board-acces-management.firebasestorage.app",
-      messagingSenderId: "902348932290",
-      appId: "1:902348932290:web:db47f1b012bf882886675b"
+
+      authDomain:
+        "digital-board-acces-management.firebaseapp.com",
+
+      projectId:
+        "digital-board-acces-management",
+
+      storageBucket:
+        "digital-board-acces-management.firebasestorage.app",
+
+      messagingSenderId:
+        "902348932290",
+
+      appId:
+        "1:902348932290:web:db47f1b012bf882886675b"
+
     };
+
 
     const app = initializeApp(firebaseConfig);
 
     const db = getFirestore(app);
 
 
-    // ==========================
-    // SETTINGS
-    // ==========================
+    // =========================
+    // CODE SETTINGS
+    // =========================
 
-    const CODE_LENGTH = 6;
-
-    const CHARACTERS =
+    const characters =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
+    const codeLength = 6;
 
-    // ==========================
-    // RANDOM CODE GENERATOR
-    // ==========================
+
+    // =========================
+    // RANDOM CODE
+    // =========================
 
     function generateRandomCode() {
 
       let code = "";
 
-      for (let i = 0; i < CODE_LENGTH; i++) {
+      for (let i = 0; i < codeLength; i++) {
 
-        const randomIndex =
-          Math.floor(Math.random() * CHARACTERS.length);
+        const randomNumber =
+          Math.floor(
+            Math.random() * characters.length
+          );
 
-        code += CHARACTERS[randomIndex];
+        code += characters[randomNumber];
 
       }
 
@@ -160,178 +179,106 @@
     }
 
 
-    // ==========================
-    // CHECK CODE ALREADY EXISTS
-    // ==========================
+    // =========================
+    // CHECK DUPLICATE
+    // =========================
 
-    async function codeAlreadyExists(code) {
+    async function checkCodeExists(code) {
 
       const q = query(
         collection(db, "boards"),
         where("boardCode", "==", code)
       );
 
-      const snapshot = await getDocs(q);
+      const result = await getDocs(q);
 
-      return !snapshot.empty;
+      return !result.empty;
     }
 
 
-    // ==========================
+    // =========================
     // CREATE UNIQUE CODE
-    // ==========================
+    // =========================
 
     async function createUniqueCode() {
 
       let code;
-      let exists = true;
 
-      while (exists) {
+      while (true) {
 
         code = generateRandomCode();
 
-        exists = await codeAlreadyExists(code);
+        const exists =
+          await checkCodeExists(code);
+
+        if (!exists) {
+          return code;
+        }
 
       }
 
-      return code;
     }
 
 
-    // ==========================
-    // GET BOARD NUMBER
-    // ==========================
+    // =========================
+    // CREATE BOARD
+    // =========================
 
-    function getBoardNumber() {
-
-      const params =
-        new URLSearchParams(window.location.search);
-
-      return params.get("board");
-
-    }
-
-
-    // ==========================
-    // LOAD BOARD
-    // ==========================
-
-    async function loadBoard() {
+    async function createBoard() {
 
       try {
 
-        const boardNumber = getBoardNumber();
-
-        if (!boardNumber) {
-
-          document.getElementById("status").innerText =
-            "Board information not found.";
-
-          return;
-        }
-
-
-        // Check if this board already exists
-        const boardQuery = query(
-          collection(db, "boards"),
-          where("boardNumber", "==", boardNumber)
-        );
-
-        const boardSnapshot =
-          await getDocs(boardQuery);
-
-
-        if (!boardSnapshot.empty) {
-
-          const boardData =
-            boardSnapshot.docs[0].data();
-
-          showBoard(
-            boardData.boardNumber,
-            boardData.boardCode
-          );
-
-          return;
-        }
-
-
-        // ==========================
-        // CREATE NEW BOARD
-        // ==========================
-
-        const uniqueCode =
+        const code =
           await createUniqueCode();
 
+
+        // Save code in Firestore
 
         await addDoc(
           collection(db, "boards"),
           {
-            boardNumber: boardNumber,
-            boardCode: uniqueCode,
+            boardCode: code,
             createdAt: serverTimestamp()
           }
         );
 
 
-        showBoard(
-          boardNumber,
-          uniqueCode
-        );
+        // Show code
+
+        document.getElementById(
+          "boardCode"
+        ).textContent = code;
+
+
+        document.getElementById(
+          "status"
+        ).textContent =
+          "Board is ready";
 
 
       } catch (error) {
 
         console.error(error);
 
-        document.getElementById("status").innerText =
-          "Unable to load board.";
+        document.getElementById(
+          "boardCode"
+        ).textContent = "ERROR";
+
+        document.getElementById(
+          "status"
+        ).textContent =
+          "Unable to create board code.";
 
       }
 
     }
 
 
-    // ==========================
-    // SHOW BOARD
-    // ==========================
-
-    function showBoard(boardNumber, boardCode) {
-
-      document.getElementById("boardCode").innerText =
-        boardCode;
-
-      document.getElementById("status").innerText =
-        "Board ready";
-
-
-      // QR URL
-      const qrURL =
-        window.location.origin +
-        window.location.pathname +
-        "?board=" +
-        encodeURIComponent(boardNumber);
-
-
-      // Generate QR
-      document.getElementById("qrcode").innerHTML = "";
-
-      new QRCode(
-        document.getElementById("qrcode"),
-        {
-          text: qrURL,
-          width: 220,
-          height: 220
-        }
-      );
-
-    }
-
-
-    // ==========================
+    // =========================
     // START
-    // ==========================
+    // =========================
 
-    loadBoard();
+    createBoard();
 
   </script>
 
