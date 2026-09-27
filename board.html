@@ -6,7 +6,6 @@
 
   <title>Digital Board</title>
 
-  <!-- QR CODE LIBRARY -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -77,12 +76,37 @@
       margin-top: 20px;
       color: #555;
     }
+
+    #screenContainer {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: black;
+      z-index: 9999;
+    }
+
+    #remoteVideo {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      background: black;
+    }
+
+    #waiting {
+      color: white;
+      font-size: 24px;
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   </style>
 </head>
 
 <body>
 
-<div class="board">
+<div class="board" id="mainBoard">
 
   <h1>Digital Board</h1>
 
@@ -111,11 +135,23 @@
 </div>
 
 
-<script type="module">
+<!-- LIVE SCREEN -->
+<div id="screenContainer">
 
-  // ==========================================
-  // FIREBASE
-  // ==========================================
+  <video
+    id="remoteVideo"
+    autoplay
+    playsinline>
+  </video>
+
+  <div id="waiting">
+    Waiting for Screen Share...
+  </div>
+
+</div>
+
+
+<script type="module">
 
   import {
     initializeApp
@@ -123,14 +159,23 @@
 
   import {
     getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc,
     collection,
     query,
     where,
     getDocs,
     addDoc,
+    onSnapshot,
     serverTimestamp
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+
+  /* =========================================
+     FIREBASE
+  ========================================= */
 
   const firebaseConfig = {
 
@@ -162,68 +207,83 @@
     getFirestore(app);
 
 
-  // ==========================================
-  // SETTINGS
-  // ==========================================
+  /* =========================================
+     SETTINGS
+  ========================================= */
 
   const CHARACTERS =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
   const CODE_LENGTH = 6;
 
+  let currentBoardCode = null;
 
-  // ==========================================
-  // RANDOM CODE
-  // ==========================================
+  let peerConnection = null;
+
+  let candidateUnsubscribe = null;
+
+  let sessionUnsubscribe = null;
+
+
+  /* =========================================
+     RANDOM CODE
+  ========================================= */
 
   function generateRandomCode() {
 
     let code = "";
 
-    for (
-      let i = 0;
-      i < CODE_LENGTH;
-      i++
-    ) {
+    for (let i = 0; i < CODE_LENGTH; i++) {
 
       const randomIndex =
         Math.floor(
-          Math.random() *
-          CHARACTERS.length
+          Math.random() * CHARACTERS.length
         );
 
-      code +=
-        CHARACTERS[randomIndex];
+      code += CHARACTERS[randomIndex];
 
     }
 
     return code;
-
   }
 
 
-  // ==========================================
-  // CHECK CODE IN FIRESTORE
-  // ==========================================
+  /* =========================================
+     CHECK OLD CODES
+  ========================================= */
 
   async function codeExists(code) {
 
-    const q = query(
-      collection(db, "boards"),
-      where("boardCode", "==", code)
-    );
+    const q =
+      query(
+        collection(db, "boards"),
+        where("boardCode", "==", code)
+      );
 
     const snapshot =
       await getDocs(q);
 
-    return !snapshot.empty;
+    if (!snapshot.empty) {
+      return true;
+    }
 
+
+    const usedQuery =
+      query(
+        collection(db, "usedBoardCodes"),
+        where("boardCode", "==", code)
+      );
+
+    const usedSnapshot =
+      await getDocs(usedQuery);
+
+    return !usedSnapshot.empty;
   }
 
 
-  // ==========================================
-  // CREATE UNIQUE CODE
-  // ==========================================
+  /* =========================================
+     CREATE UNIQUE CODE
+  ========================================= */
 
   async function createUniqueCode() {
 
@@ -236,42 +296,16 @@
         await codeExists(code);
 
       if (!exists) {
-
         return code;
-
       }
 
     }
-
   }
 
 
-  // ==========================================
-  // SAVE CODE TO FIRESTORE
-  // ==========================================
-
-  async function saveBoardCode(code) {
-
-    await addDoc(
-      collection(db, "boards"),
-      {
-
-        boardCode: code,
-
-        status: "available",
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-  }
-
-
-  // ==========================================
-  // CREATE NEW BOARD CODE
-  // ==========================================
+  /* =========================================
+     SAVE NEW BOARD CODE
+  ========================================= */
 
   async function createBoardCode() {
 
@@ -281,7 +315,91 @@
         await createUniqueCode();
 
 
-      await saveBoardCode(
+      /*
+       If this browser already had
+       a previous board code, mark it inactive.
+      */
+
+      const oldCode =
+        localStorage.getItem(
+          "currentBoardCode"
+        );
+
+
+      if (oldCode) {
+
+        const oldBoardRef =
+          doc(
+            db,
+            "boards",
+            oldCode
+          );
+
+        const oldBoard =
+          await getDoc(oldBoardRef);
+
+
+        if (oldBoard.exists()) {
+
+          await updateDoc(
+            oldBoardRef,
+            {
+              status: "inactive"
+            }
+          );
+
+        }
+
+      }
+
+
+      /*
+       Save old code permanently
+       so it can never be generated again.
+      */
+
+      if (oldCode) {
+
+        await setDoc(
+          doc(
+            db,
+            "usedBoardCodes",
+            oldCode
+          ),
+          {
+            boardCode: oldCode,
+            usedAt: serverTimestamp()
+          }
+        );
+
+      }
+
+
+      /*
+       Save current code.
+      Document ID = Board Code.
+      */
+
+      await setDoc(
+        doc(
+          db,
+          "boards",
+          newCode
+        ),
+        {
+          boardCode: newCode,
+          status: "available",
+          createdAt: serverTimestamp()
+        }
+      );
+
+
+      currentBoardCode =
+        newCode;
+
+
+      localStorage.setItem(
+        "currentBoardCode",
         newCode
       );
 
@@ -295,22 +413,26 @@
       document.getElementById(
         "status"
       ).textContent =
-        "New unique code saved successfully.";
+        "Waiting for Screen Share...";
 
 
-    } catch (error) {
+      startBoardListener(
+        newCode
+      );
+
+    }
+
+    catch (error) {
 
       console.error(
         "Board code error:",
         error
       );
 
-
       document.getElementById(
         "boardCode"
       ).textContent =
         "ERROR";
-
 
       document.getElementById(
         "status"
@@ -322,9 +444,9 @@
   }
 
 
-  // ==========================================
-  // SAME QR FOR ALL BOARDS
-  // ==========================================
+  /* =========================================
+     SAME QR
+  ========================================= */
 
   function createQRCode() {
 
@@ -332,7 +454,6 @@
       document.getElementById(
         "qrcode"
       );
-
 
     qrContainer.innerHTML = "";
 
@@ -357,9 +478,360 @@
   }
 
 
-  // ==========================================
-  // START
-  // ==========================================
+  /* =========================================
+     WEBRTC CONFIG
+  ========================================= */
+
+  const rtcConfig = {
+
+    iceServers: [
+
+      {
+        urls:
+          "stun:stun.l.google.com:19302"
+      }
+
+    ]
+
+  };
+
+
+  /* =========================================
+     BOARD LISTENER
+  ========================================= */
+
+  function startBoardListener(code) {
+
+    if (sessionUnsubscribe) {
+      sessionUnsubscribe();
+    }
+
+
+    const sessionRef =
+      doc(
+        db,
+        "sessions",
+        code
+      );
+
+
+    sessionUnsubscribe =
+      onSnapshot(
+        sessionRef,
+        async function(snapshot) {
+
+          if (!snapshot.exists()) {
+            return;
+          }
+
+
+          const data =
+            snapshot.data();
+
+
+          if (
+            data.status === "sharing" &&
+            data.offer
+          ) {
+
+            await receiveOffer(
+              code,
+              data.offer
+            );
+
+          }
+
+
+          if (
+            data.status === "ended"
+          ) {
+
+            stopBoardScreen();
+
+          }
+
+        }
+      );
+
+  }
+
+
+  /* =========================================
+     RECEIVE TEACHER OFFER
+  ========================================= */
+
+  async function receiveOffer(
+    code,
+    offerData
+  ) {
+
+    try {
+
+      /*
+       Close previous connection
+      */
+
+      if (peerConnection) {
+
+        peerConnection.close();
+
+      }
+
+
+      peerConnection =
+        new RTCPeerConnection(
+          rtcConfig
+        );
+
+
+      const remoteVideo =
+        document.getElementById(
+          "remoteVideo"
+        );
+
+
+      peerConnection.ontrack =
+        function(event) {
+
+          if (
+            event.streams &&
+            event.streams[0]
+          ) {
+
+            remoteVideo.srcObject =
+              event.streams[0];
+
+            document.getElementById(
+              "screenContainer"
+            ).style.display =
+              "block";
+
+            document.getElementById(
+              "waiting"
+            ).style.display =
+              "none";
+
+            document.getElementById(
+              "mainBoard"
+            ).style.display =
+              "none";
+
+          }
+
+        };
+
+
+      /*
+       Receive ICE candidates
+      */
+
+      const candidateQuery =
+        collection(
+          db,
+          "sessions",
+          code,
+          "teacherCandidates"
+        );
+
+
+      if (candidateUnsubscribe) {
+        candidateUnsubscribe();
+      }
+
+
+      candidateUnsubscribe =
+        onSnapshot(
+          candidateQuery,
+          async function(snapshot) {
+
+            for (
+              const change
+              of snapshot.docChanges()
+            ) {
+
+              if (
+                change.type === "added"
+              ) {
+
+                try {
+
+                  await peerConnection
+                    .addIceCandidate(
+                      new RTCIceCandidate(
+                        change.doc.data()
+                      )
+                    );
+
+                }
+                catch (e) {
+
+                  console.log(
+                    "ICE candidate error",
+                    e
+                  );
+
+                }
+
+              }
+
+            }
+
+          }
+        );
+
+
+      /*
+       Send board ICE candidates
+      */
+
+      peerConnection.onicecandidate =
+        async function(event) {
+
+          if (!event.candidate) {
+            return;
+          }
+
+
+          await addDoc(
+            collection(
+              db,
+              "sessions",
+              code,
+              "boardCandidates"
+            ),
+            event.candidate.toJSON()
+          );
+
+        };
+
+
+      /*
+       Set teacher offer
+      */
+
+      await peerConnection
+        .setRemoteDescription(
+          new RTCSessionDescription(
+            offerData
+          )
+        );
+
+
+      /*
+       Create answer
+      */
+
+      const answer =
+        await peerConnection
+          .createAnswer();
+
+
+      await peerConnection
+        .setLocalDescription(
+          answer
+        );
+
+
+      /*
+       Save answer
+      */
+
+      await updateDoc(
+        doc(
+          db,
+          "sessions",
+          code
+        ),
+        {
+          answer:
+            {
+              type:
+                answer.type,
+
+              sdp:
+                answer.sdp
+            },
+
+          status:
+            "connected"
+        }
+      );
+
+
+      document.getElementById(
+        "status"
+      ).textContent =
+        "Screen sharing connected.";
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "WebRTC board error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /* =========================================
+     STOP BOARD SCREEN
+  ========================================= */
+
+  function stopBoardScreen() {
+
+    const video =
+      document.getElementById(
+        "remoteVideo"
+      );
+
+
+    video.srcObject =
+      null;
+
+
+    document.getElementById(
+      "screenContainer"
+    ).style.display =
+      "none";
+
+
+    document.getElementById(
+      "waiting"
+    ).style.display =
+      "flex";
+
+
+    document.getElementById(
+      "mainBoard"
+    ).style.display =
+      "block";
+
+
+    document.getElementById(
+      "status"
+    ).textContent =
+      "Waiting for Screen Share...";
+
+
+    if (peerConnection) {
+
+      peerConnection.close();
+
+      peerConnection =
+        null;
+
+    }
+
+  }
+
+
+  /* =========================================
+     START
+  ========================================= */
 
   createQRCode();
 
