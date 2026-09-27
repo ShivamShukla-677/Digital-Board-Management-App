@@ -15,88 +15,249 @@
 
   <style>
 
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, sans-serif;
-      background: #f4f6f8;
+      background: linear-gradient(135deg, #eef4ff, #f8fafc);
       margin: 0;
-      padding: 20px;
+      padding: 25px;
+      color: #1f2937;
     }
 
     .container {
-      max-width: 1100px;
+      max-width: 1200px;
       margin: auto;
       background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 30px;
+      border-radius: 18px;
+      box-shadow: 0 10px 35px rgba(0,0,0,0.08);
     }
 
-    h1 {
-      text-align: center;
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 15px;
     }
 
-    button {
-      padding: 9px 14px;
-      border: none;
-      border-radius: 5px;
-      color: white;
-      cursor: pointer;
-      margin: 3px;
+    .title-section h1 {
+      margin: 0;
+      font-size: 30px;
+      color: #172554;
     }
 
-    .approve {
-      background: #198754;
-    }
-
-    .reject {
-      background: #dc3545;
-    }
-
-    .delete {
-      background: #6c757d;
+    .title-section p {
+      margin: 7px 0 0;
+      color: #64748b;
+      font-size: 14px;
     }
 
     .logout {
-      background: #212529;
-      float: right;
+      background: #111827;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .logout:hover {
+      background: #000000;
+    }
+
+    .welcome {
+      margin-top: 20px;
+      padding: 15px 18px;
+      background: #eff6ff;
+      border-left: 4px solid #2563eb;
+      border-radius: 8px;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-top: 25px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 250px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 9px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .search-box input:focus {
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,0.10);
+    }
+
+    .live-status {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: #16a34a;
+      font-weight: 600;
+    }
+
+    .live-dot {
+      width: 9px;
+      height: 9px;
+      background: #22c55e;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    #loading {
+      text-align: center;
+      margin-top: 25px;
+      color: #64748b;
+    }
+
+    .table-wrapper {
+      width: 100%;
+      overflow-x: auto;
+      margin-top: 20px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 25px;
+      min-width: 850px;
     }
 
     th,
     td {
-      border: 1px solid #ddd;
-      padding: 10px;
+      padding: 14px 12px;
       text-align: center;
+      border-bottom: 1px solid #e5e7eb;
     }
 
     th {
-      background: #1976d2;
+      background: #1d4ed8;
       color: white;
+      font-size: 14px;
+    }
+
+    td {
+      font-size: 14px;
+      background: white;
+    }
+
+    tr:hover td {
+      background: #f8fafc;
+    }
+
+    button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 7px;
+      color: white;
+      cursor: pointer;
+      margin: 2px;
+      font-size: 13px;
+      font-weight: 600;
+      transition: 0.15s;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      opacity: 0.92;
+    }
+
+    button:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .approve {
+      background: #16a34a;
+    }
+
+    .reject {
+      background: #dc2626;
+    }
+
+    .delete {
+      background: #64748b;
     }
 
     .pending {
       color: #d97706;
       font-weight: bold;
+      text-transform: capitalize;
     }
 
     .approved {
-      color: #198754;
+      color: #16a34a;
       font-weight: bold;
+      text-transform: capitalize;
     }
 
     .rejected {
-      color: #dc3545;
+      color: #dc2626;
       font-weight: bold;
+      text-transform: capitalize;
     }
 
-    #loading {
+    .empty-message {
       text-align: center;
-      margin-top: 20px;
+      padding: 30px;
+      color: #64748b;
+    }
+
+    .count-box {
+      background: #f1f5f9;
+      padding: 9px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #475569;
+      font-weight: 600;
+    }
+
+    @media (max-width: 700px) {
+
+      body {
+        padding: 12px;
+      }
+
+      .container {
+        padding: 18px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .title-section h1 {
+        font-size: 24px;
+      }
+
+      .logout {
+        padding: 9px 13px;
+      }
+
     }
 
   </style>
@@ -108,51 +269,107 @@
 
 <div class="container">
 
-  <button
-    class="logout"
-    onclick="logoutCoordinator()"
+  <div class="topbar">
+
+    <div class="title-section">
+
+      <h1>Coordinator Dashboard</h1>
+
+      <p>
+        Digital Board Management System
+      </p>
+
+    </div>
+
+
+    <button
+      class="logout"
+      onclick="logoutCoordinator()"
+    >
+      Logout
+    </button>
+
+  </div>
+
+
+  <div
+    class="welcome"
+    id="welcome"
   >
-    Logout
-  </button>
+    Checking coordinator access...
+  </div>
 
 
-  <h1>Coordinator Dashboard</h1>
+  <div class="toolbar">
 
-  <p id="welcome"></p>
+    <div class="search-box">
+
+      <input
+        type="text"
+        id="searchInput"
+        placeholder="Search by Gmail, name or mobile..."
+        oninput="filterRegistrations()"
+      >
+
+    </div>
+
+
+    <div class="live-status">
+
+      <span class="live-dot"></span>
+
+      Live Updates
+
+    </div>
+
+
+    <div
+      class="count-box"
+      id="countBox"
+    >
+      0 Registrations
+    </div>
+
+  </div>
+
 
   <div id="loading">
     Loading registrations...
   </div>
 
 
-  <table id="registrationTable">
+  <div class="table-wrapper">
 
-    <thead>
+    <table id="registrationTable">
 
-      <tr>
+      <thead>
 
-        <th>Name</th>
+        <tr>
 
-        <th>Gmail</th>
+          <th>Name</th>
 
-        <th>Mobile</th>
+          <th>Gmail</th>
 
-        <th>Verification</th>
+          <th>Mobile</th>
 
-        <th>Status</th>
+          <th>Verification</th>
 
-        <th>Action</th>
+          <th>Status</th>
 
-      </tr>
+          <th>Action</th>
 
-    </thead>
+        </tr>
+
+      </thead>
 
 
-    <tbody id="registrationBody">
+      <tbody id="registrationBody">
 
-    </tbody>
+      </tbody>
 
-  </table>
+    </table>
+
+  </div>
 
 </div>
 
@@ -174,7 +391,7 @@
   import {
     getFirestore,
     collection,
-    getDocs,
+    onSnapshot,
     updateDoc,
     deleteDoc,
     doc
@@ -224,6 +441,9 @@
     "anujshivamshukla99359@gmail.com";
 
 
+  let allRegistrations = [];
+
+
   // =========================
   // AUTH CHECK
   // =========================
@@ -268,10 +488,86 @@
 
 
   // =========================
-  // LOAD REGISTRATIONS
+  // REAL-TIME LOAD
   // =========================
 
-  async function loadRegistrations() {
+  function loadRegistrations() {
+
+    const body =
+      document.getElementById(
+        "registrationBody"
+      );
+
+
+    onSnapshot(
+
+      collection(
+        db,
+        "registrationRequests"
+      ),
+
+      snapshot => {
+
+        allRegistrations = [];
+
+
+        snapshot.forEach(
+          registrationDoc => {
+
+            allRegistrations.push({
+
+              id:
+                registrationDoc.id,
+
+              data:
+                registrationDoc.data()
+
+            });
+
+          }
+        );
+
+
+        document.getElementById(
+          "loading"
+        ).style.display = "none";
+
+
+        renderRegistrations(
+          allRegistrations
+        );
+
+      },
+
+
+      error => {
+
+        console.error(error);
+
+        document.getElementById(
+          "loading"
+        ).style.display = "block";
+
+        document.getElementById(
+          "loading"
+        ).textContent =
+          "Error loading registrations: " +
+          error.message;
+
+      }
+
+    );
+
+  }
+
+
+  // =========================
+  // RENDER REGISTRATIONS
+  // =========================
+
+  function renderRegistrations(
+    registrations
+  ) {
 
     const body =
       document.getElementById(
@@ -282,129 +578,198 @@
     body.innerHTML = "";
 
 
-    try {
-
-      const snapshot =
-        await getDocs(
-          collection(
-            db,
-            "registrationRequests"
-          )
-        );
-
-
-      document.getElementById(
-        "loading"
-      ).style.display = "none";
-
-
-      if (snapshot.empty) {
-
-        body.innerHTML = `
-          <tr>
-            <td colspan="6">
-              No registration requests found.
-            </td>
-          </tr>
-        `;
-
-        return;
-      }
-
-
-      snapshot.forEach(
-        registrationDoc => {
-
-          const data =
-            registrationDoc.data();
-
-
-          const id =
-            registrationDoc.id;
-
-
-          const row =
-            document.createElement("tr");
-
-
-          let statusClass =
-            data.status || "pending";
-
-
-          row.innerHTML = `
-
-            <td>
-              ${escapeHTML(data.name || "")}
-            </td>
-
-            <td>
-              ${escapeHTML(data.email || "")}
-            </td>
-
-            <td>
-              ${escapeHTML(data.mobile || "")}
-            </td>
-
-            <td>
-              ${escapeHTML(
-                data.verification ||
-                "Temporary Password"
-              )}
-            </td>
-
-            <td class="${statusClass}">
-              ${escapeHTML(
-                data.status || "pending"
-              )}
-            </td>
-
-            <td>
-
-              <button
-                class="approve"
-                onclick="approveUser('${id}')"
-              >
-                Approve
-              </button>
-
-              <button
-                class="reject"
-                onclick="rejectUser('${id}')"
-              >
-                Reject
-              </button>
-
-              <button
-                class="delete"
-                onclick="deleteUser('${id}')"
-              >
-                Delete
-              </button>
-
-            </td>
-
-          `;
-
-
-          body.appendChild(row);
-
-        }
+    document.getElementById(
+      "countBox"
+    ).textContent =
+      registrations.length +
+      (
+        registrations.length === 1
+          ? " Registration"
+          : " Registrations"
       );
 
 
-    } catch (error) {
+    if (
+      registrations.length === 0
+    ) {
 
-      console.error(error);
+      body.innerHTML = `
 
-      document.getElementById(
-        "loading"
-      ).textContent =
-        "Error loading registrations: " +
-        error.message;
+        <tr>
+
+          <td
+            colspan="6"
+            class="empty-message"
+          >
+
+            No registration requests found.
+
+          </td>
+
+        </tr>
+
+      `;
+
+      return;
 
     }
 
+
+    registrations.forEach(
+      registration => {
+
+        const data =
+          registration.data;
+
+
+        const id =
+          registration.id;
+
+
+        const row =
+          document.createElement("tr");
+
+
+        let status =
+          data.status || "pending";
+
+
+        let statusClass =
+          status.toLowerCase();
+
+
+        row.innerHTML = `
+
+          <td>
+            ${escapeHTML(data.name || "")}
+          </td>
+
+          <td>
+            ${escapeHTML(data.email || "")}
+          </td>
+
+          <td>
+            ${escapeHTML(data.mobile || "")}
+          </td>
+
+          <td>
+            ${escapeHTML(
+              data.verification ||
+              "Temporary Password"
+            )}
+          </td>
+
+          <td class="${statusClass}">
+            ${escapeHTML(status)}
+          </td>
+
+          <td>
+
+            <button
+              class="approve"
+              onclick="approveUser('${id}')"
+              ${status === "approved" ? "disabled" : ""}
+            >
+              Approve
+            </button>
+
+
+            <button
+              class="reject"
+              onclick="rejectUser('${id}')"
+              ${status === "rejected" ? "disabled" : ""}
+            >
+              Reject
+            </button>
+
+
+            <button
+              class="delete"
+              onclick="deleteUser('${id}')"
+            >
+              Delete
+            </button>
+
+          </td>
+
+        `;
+
+
+        body.appendChild(row);
+
+      }
+    );
+
   }
+
+
+  // =========================
+  // SEARCH
+  // =========================
+
+  window.filterRegistrations =
+    function() {
+
+      const search =
+        document.getElementById(
+          "searchInput"
+        ).value
+        .trim()
+        .toLowerCase();
+
+
+      if (!search) {
+
+        renderRegistrations(
+          allRegistrations
+        );
+
+        return;
+
+      }
+
+
+      const filtered =
+        allRegistrations.filter(
+          registration => {
+
+            const data =
+              registration.data;
+
+
+            const name =
+              String(
+                data.name || ""
+              ).toLowerCase();
+
+
+            const email =
+              String(
+                data.email || ""
+              ).toLowerCase();
+
+
+            const mobile =
+              String(
+                data.mobile || ""
+              ).toLowerCase();
+
+
+            return (
+              name.includes(search) ||
+              email.includes(search) ||
+              mobile.includes(search)
+            );
+
+          }
+        );
+
+
+      renderRegistrations(
+        filtered
+      );
+
+    };
 
 
   // =========================
@@ -414,29 +779,47 @@
   window.approveUser =
     async function(id) {
 
+      const button =
+        event.target;
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "Approving...";
+
+
       try {
 
         await updateDoc(
+
           doc(
             db,
             "registrationRequests",
             id
           ),
+
           {
             status: "approved"
           }
+
         );
 
 
-        alert(
-          "User approved successfully."
-        );
-
-
-        loadRegistrations();
+        /*
+          onSnapshot automatically
+          updates the table here.
+          No page refresh required.
+        */
 
 
       } catch (error) {
+
+        button.disabled = false;
+
+        button.textContent =
+          "Approve";
+
 
         alert(
           "Approve failed: " +
@@ -455,29 +838,40 @@
   window.rejectUser =
     async function(id) {
 
+      const button =
+        event.target;
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "Rejecting...";
+
+
       try {
 
         await updateDoc(
+
           doc(
             db,
             "registrationRequests",
             id
           ),
+
           {
             status: "rejected"
           }
+
         );
-
-
-        alert(
-          "User rejected."
-        );
-
-
-        loadRegistrations();
 
 
       } catch (error) {
+
+        button.disabled = false;
+
+        button.textContent =
+          "Reject";
+
 
         alert(
           "Reject failed: " +
@@ -506,26 +900,36 @@
         return;
 
 
+      const button =
+        event.target;
+
+
+      button.disabled = true;
+
+      button.textContent =
+        "Deleting...";
+
+
       try {
 
         await deleteDoc(
+
           doc(
             db,
             "registrationRequests",
             id
           )
+
         );
-
-
-        alert(
-          "Registration deleted."
-        );
-
-
-        loadRegistrations();
 
 
       } catch (error) {
+
+        button.disabled = false;
+
+        button.textContent =
+          "Delete";
+
 
         alert(
           "Delete failed: " +
@@ -559,11 +963,31 @@
   function escapeHTML(value) {
 
     return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
+
+      .replaceAll(
+        "&",
+        "&amp;"
+      )
+
+      .replaceAll(
+        "<",
+        "&lt;"
+      )
+
+      .replaceAll(
+        ">",
+        "&gt;"
+      )
+
+      .replaceAll(
+        '"',
+        "&quot;"
+      )
+
+      .replaceAll(
+        "'",
+        "&#039;"
+      );
 
   }
 
