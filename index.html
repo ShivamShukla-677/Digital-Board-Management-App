@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>College Digital Board</title>
+
+  <title>Digital Board Management</title>
 
   <style>
     body {
@@ -50,10 +51,6 @@
       cursor: pointer;
     }
 
-    button:hover {
-      background: #1d4ed8;
-    }
-
     #message {
       text-align: center;
       margin-top: 15px;
@@ -65,6 +62,7 @@
 <body>
 
   <div class="box">
+
     <h1>Digital Board Access</h1>
 
     <form id="registrationForm">
@@ -90,28 +88,144 @@
         required
       >
 
-      <button type="submit">Register</button>
+      <input
+        type="password"
+        id="password"
+        placeholder="Create password"
+        required
+      >
+
+      <button type="submit">
+        Register
+      </button>
 
     </form>
 
     <div id="message"></div>
+
   </div>
 
-  <script>
-    document.getElementById("registrationForm").addEventListener("submit", function(event) {
-      event.preventDefault();
 
-      const name = document.getElementById("name").value;
-      const email = document.getElementById("email").value;
-      const mobile = document.getElementById("mobile").value;
+  <!-- Firebase -->
+  <script type="module">
 
-      document.getElementById("message").innerText =
-        "Registration submitted successfully!";
+    import { initializeApp }
+      from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
-      console.log("Name:", name);
-      console.log("Email:", email);
-      console.log("Mobile:", mobile);
-    });
+    import {
+      getAuth,
+      createUserWithEmailAndPassword
+    }
+      from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+
+    import {
+      getFirestore,
+      doc,
+      setDoc
+    }
+      from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+
+
+    // Firebase Configuration
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+      authDomain: "digital-board-acces-management.firebaseapp.com",
+      projectId: "digital-board-acces-management",
+      storageBucket: "digital-board-acces-management.firebasestorage.app",
+      messagingSenderId: "902348932290",
+      appId: "1:902348932290:web:db47f1b012bf882886675b"
+    };
+
+
+    // Firebase start
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+
+    const db = getFirestore(app);
+
+
+    // Registration
+
+    document
+      .getElementById("registrationForm")
+      .addEventListener("submit", async function(event) {
+
+        event.preventDefault();
+
+        const name =
+          document.getElementById("name").value;
+
+        const email =
+          document.getElementById("email").value;
+
+        const mobile =
+          document.getElementById("mobile").value;
+
+        const password =
+          document.getElementById("password").value;
+
+        const message =
+          document.getElementById("message");
+
+
+        message.innerText = "Registering...";
+
+
+        try {
+
+          const userCredential =
+            await createUserWithEmailAndPassword(
+              auth,
+              email,
+              password
+            );
+
+
+          const user =
+            userCredential.user;
+
+
+          // Save user information in Firestore
+
+          await setDoc(
+            doc(db, "users", user.uid),
+            {
+              name: name,
+              email: email,
+              mobile: mobile,
+              status: "pending",
+              createdAt: new Date()
+            }
+          );
+
+
+          message.style.color = "green";
+
+          message.innerText =
+            "Registration successful! Waiting for coordinator approval.";
+
+
+          document
+            .getElementById("registrationForm")
+            .reset();
+
+
+        } catch (error) {
+
+          console.error(error);
+
+          message.style.color = "red";
+
+          message.innerText =
+            error.message;
+
+        }
+
+      });
+
   </script>
 
 </body>
