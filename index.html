@@ -1,1 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>College Digital Board</title>
 
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .box {
+      background: white;
+      width: 350px;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 24px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border: none;
+      border-radius: 6px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+    <h1>Digital Board Access</h1>
+
+    <form id="registrationForm">
+
+      <input
+        type="text"
+        id="name"
+        placeholder="Enter your name"
+        required
+      >
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Enter your Gmail"
+        required
+      >
+
+      <input
+        type="tel"
+        id="mobile"
+        placeholder="Enter mobile number"
+        required
+      >
+
+      <button type="submit">Register</button>
+
+    </form>
+
+    <div id="message"></div>
+  </div>
+
+  <script>
+    document.getElementById("registrationForm").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const mobile = document.getElementById("mobile").value;
+
+      document.getElementById("message").innerText =
+        "Registration submitted successfully!";
+
+      console.log("Name:", name);
+      console.log("Email:", email);
+      console.log("Mobile:", mobile);
+    });
+  </script>
+
+</body>
+</html>
