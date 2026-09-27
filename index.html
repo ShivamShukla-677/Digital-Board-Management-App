@@ -3,51 +3,50 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Digital Board Management</title>
 
   <style>
     * {
       box-sizing: border-box;
+      font-family: Arial, sans-serif;
     }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f1f5f9;
-      min-height: 100vh;
+      background: #f4f6f8;
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
     }
 
     .container {
-      width: 420px;
-      max-width: 92%;
+      width: 100%;
+      max-width: 450px;
       background: white;
       padding: 30px;
       border-radius: 15px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      box-shadow: 0 5px 25px rgba(0,0,0,0.12);
     }
 
     h1 {
       text-align: center;
-      font-size: 24px;
       margin-bottom: 25px;
+      color: #222;
     }
 
     .tabs {
       display: flex;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     .tab {
       width: 50%;
       padding: 12px;
       border: none;
-      background: #e5e7eb;
       cursor: pointer;
-      font-size: 15px;
+      background: #e9ecef;
+      font-size: 16px;
     }
 
     .tab.active {
@@ -55,25 +54,17 @@
       color: white;
     }
 
-    .tab:first-child {
-      border-radius: 7px 0 0 7px;
-    }
-
-    .tab:last-child {
-      border-radius: 0 7px 7px 0;
-    }
-
-    .form {
+    .form-section {
       display: none;
     }
 
-    .form.active {
+    .form-section.active {
       display: block;
     }
 
     label {
       display: block;
-      margin-top: 12px;
+      margin-top: 15px;
       margin-bottom: 6px;
       font-weight: bold;
     }
@@ -81,42 +72,15 @@
     input {
       width: 100%;
       padding: 12px;
-      border: 1px solid #cbd5e1;
+      border: 1px solid #ccc;
       border-radius: 7px;
       font-size: 15px;
     }
 
-    .verify-title {
-      margin-top: 18px;
-      font-weight: bold;
-    }
-
-    .verify-options {
-      display: flex;
-      gap: 10px;
-      margin-top: 10px;
-    }
-
-    .verify-option {
-      flex: 1;
-      padding: 12px;
-      border: 2px solid #cbd5e1;
-      border-radius: 7px;
-      background: white;
-      cursor: pointer;
-      text-align: center;
-      font-size: 14px;
-    }
-
-    .verify-option.selected {
-      border-color: #2563eb;
-      background: #eff6ff;
-    }
-
-    button.submit {
+    button.main-btn {
       width: 100%;
-      margin-top: 18px;
-      padding: 12px;
+      padding: 13px;
+      margin-top: 20px;
       border: none;
       border-radius: 7px;
       background: #2563eb;
@@ -125,30 +89,37 @@
       cursor: pointer;
     }
 
-    button.submit:hover {
+    button.main-btn:hover {
       background: #1d4ed8;
     }
 
     .message {
       margin-top: 15px;
+      padding: 10px;
+      border-radius: 7px;
+      display: none;
       text-align: center;
-      font-size: 14px;
-      font-weight: bold;
-      line-height: 1.5;
-    }
-
-    .error {
-      color: #dc2626;
     }
 
     .success {
-      color: #16a34a;
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .error {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .info {
+      background: #dbeafe;
+      color: #1e40af;
     }
 
     .login-link {
-      margin-top: 10px;
-      text-align: center;
       display: none;
+      text-align: center;
+      margin-top: 12px;
     }
 
     .login-link button {
@@ -156,15 +127,8 @@
       background: none;
       color: #2563eb;
       cursor: pointer;
-      font-weight: bold;
-    }
-
-    #otpSection {
-      display: none;
-    }
-
-    #recaptcha-container {
-      margin-top: 15px;
+      text-decoration: underline;
+      font-size: 15px;
     }
   </style>
 </head>
@@ -175,159 +139,48 @@
 
   <h1>Digital Board Management</h1>
 
-  <!-- TABS -->
-
   <div class="tabs">
+    <button class="tab active" id="registerTab">Register</button>
+    <button class="tab" id="loginTab">Login</button>
+  </div>
 
-    <button
-      class="tab active"
-      id="loginTab"
-      onclick="showLogin()">
-      Login
+  <!-- REGISTER -->
+  <div id="registerSection" class="form-section active">
+
+    <label>Name</label>
+    <input type="text" id="name" placeholder="Enter your name">
+
+    <label>Gmail</label>
+    <input type="email" id="email" placeholder="example@gmail.com">
+
+    <label>Mobile Number</label>
+    <input type="tel" id="mobile" placeholder="10 digit mobile number" maxlength="10">
+
+    <button class="main-btn" id="registerBtn">
+      Verify Gmail & Register
     </button>
 
-    <button
-      class="tab"
-      id="registerTab"
-      onclick="showRegister()">
-      Register
-    </button>
+    <div id="registerMessage" class="message"></div>
+
+    <div id="duplicateLogin" class="login-link">
+      Already registered?
+      <button id="goLogin">Login</button>
+    </div>
 
   </div>
 
 
   <!-- LOGIN -->
-
-  <div class="form active" id="loginForm">
-
-    <label>Gmail</label>
-
-    <input
-      type="email"
-      id="loginEmail"
-      placeholder="example@gmail.com">
-
-    <button
-      class="submit"
-      onclick="loginUser()">
-      Login
-    </button>
-
-    <div
-      id="loginMessage"
-      class="message">
-    </div>
-
-  </div>
-
-
-  <!-- REGISTER -->
-
-  <div class="form" id="registerForm">
-
-    <label>Full Name</label>
-
-    <input
-      type="text"
-      id="name"
-      placeholder="Enter your full name">
-
+  <div id="loginSection" class="form-section">
 
     <label>Gmail</label>
+    <input type="email" id="loginEmail" placeholder="example@gmail.com">
 
-    <input
-      type="email"
-      id="email"
-      placeholder="example@gmail.com">
-
-
-    <label>Mobile Number</label>
-
-    <input
-      type="tel"
-      id="mobile"
-      maxlength="10"
-      inputmode="numeric"
-      placeholder="10 digit mobile number">
-
-
-    <div class="verify-title">
-      Verify using
-    </div>
-
-
-    <div class="verify-options">
-
-      <button
-        type="button"
-        class="verify-option selected"
-        id="emailVerify"
-        onclick="selectVerification('email')">
-        📧 Gmail
-      </button>
-
-      <button
-        type="button"
-        class="verify-option"
-        id="phoneVerify"
-        onclick="selectVerification('phone')">
-        📱 Mobile
-      </button>
-
-    </div>
-
-
-    <button
-      class="submit"
-      onclick="startVerification()">
-      Start Verification
+    <button class="main-btn" id="loginBtn">
+      Send Login Link
     </button>
 
-
-    <!-- RECAPTCHA -->
-
-    <div id="recaptcha-container"></div>
-
-
-    <!-- OTP -->
-
-    <div id="otpSection">
-
-      <label>Enter SMS OTP</label>
-
-      <input
-        type="text"
-        id="otp"
-        maxlength="6"
-        inputmode="numeric"
-        placeholder="Enter 6 digit OTP">
-
-      <button
-        class="submit"
-        onclick="verifyPhoneOTP()">
-        Verify OTP
-      </button>
-
-    </div>
-
-
-    <div
-      id="registerMessage"
-      class="message">
-    </div>
-
-
-    <div
-      id="loginLink"
-      class="login-link">
-
-      Already registered?
-
-      <button onclick="showLogin()">
-        Please Login
-      </button>
-
-    </div>
+    <div id="loginMessage" class="message"></div>
 
   </div>
 
@@ -337,50 +190,37 @@
 <script type="module">
 
   import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
+  from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
   import {
     getFirestore,
     collection,
+    getDocs,
     addDoc,
-    serverTimestamp,
-    getDocs
+    serverTimestamp
   }
-    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
   import {
     getAuth,
-    RecaptchaVerifier,
-    signInWithPhoneNumber,
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink
   }
-    from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
+  from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
-  /* FIREBASE CONFIG */
+  // =========================
+  // FIREBASE CONFIG
+  // =========================
 
   const firebaseConfig = {
-
-    apiKey:
-      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-
-    authDomain:
-      "digital-board-acces-management.firebaseapp.com",
-
-    projectId:
-      "digital-board-acces-management",
-
-    storageBucket:
-      "digital-board-acces-management.firebasestorage.app",
-
-    messagingSenderId:
-      "902348932290",
-
-    appId:
-      "1:902348932290:web:db47f1b012bf882886675b"
-
+    apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+    authDomain: "digital-board-acces-management.firebaseapp.com",
+    projectId: "digital-board-acces-management",
+    storageBucket: "digital-board-acces-management.firebasestorage.app",
+    messagingSenderId: "902348932290",
+    appId: "1:902348932290:web:db47f1b012bf882886675b"
   };
 
 
@@ -391,513 +231,281 @@
   const auth = getAuth(app);
 
 
-  let verificationMethod = "email";
+  // =========================
+  // ELEMENTS
+  // =========================
 
-  let confirmationResult = null;
+  const registerTab = document.getElementById("registerTab");
+  const loginTab = document.getElementById("loginTab");
 
-  let recaptchaVerifier = null;
+  const registerSection = document.getElementById("registerSection");
+  const loginSection = document.getElementById("loginSection");
 
+  const registerBtn = document.getElementById("registerBtn");
+  const loginBtn = document.getElementById("loginBtn");
 
-  /* -------------------------
-     LOGIN TAB
-  ------------------------- */
+  const registerMessage = document.getElementById("registerMessage");
+  const loginMessage = document.getElementById("loginMessage");
 
-  window.showLogin = function() {
-
-    document
-      .getElementById("loginForm")
-      .classList.add("active");
-
-    document
-      .getElementById("registerForm")
-      .classList.remove("active");
-
-    document
-      .getElementById("loginTab")
-      .classList.add("active");
-
-    document
-      .getElementById("registerTab")
-      .classList.remove("active");
-
-  };
+  const duplicateLogin = document.getElementById("duplicateLogin");
+  const goLogin = document.getElementById("goLogin");
 
 
-  /* -------------------------
-     REGISTER TAB
-  ------------------------- */
+  // =========================
+  // TAB SWITCH
+  // =========================
 
-  window.showRegister = function() {
+  registerTab.addEventListener("click", () => {
 
-    document
-      .getElementById("registerForm")
-      .classList.add("active");
+    registerTab.classList.add("active");
+    loginTab.classList.remove("active");
 
-    document
-      .getElementById("loginForm")
-      .classList.remove("active");
+    registerSection.classList.add("active");
+    loginSection.classList.remove("active");
 
-    document
-      .getElementById("registerTab")
-      .classList.add("active");
-
-    document
-      .getElementById("loginTab")
-      .classList.remove("active");
-
-  };
+  });
 
 
-  /* -------------------------
-     SELECT VERIFICATION
-  ------------------------- */
+  loginTab.addEventListener("click", () => {
 
-  window.selectVerification = function(method) {
+    loginTab.classList.add("active");
+    registerTab.classList.remove("active");
 
-    verificationMethod = method;
+    loginSection.classList.add("active");
+    registerSection.classList.remove("active");
 
-    document
-      .getElementById("emailVerify")
-      .classList.remove("selected");
-
-    document
-      .getElementById("phoneVerify")
-      .classList.remove("selected");
+  });
 
 
-    if (method === "email") {
+  goLogin.addEventListener("click", () => {
 
-      document
-        .getElementById("emailVerify")
-        .classList.add("selected");
+    loginTab.click();
 
-    } else {
-
-      document
-        .getElementById("phoneVerify")
-        .classList.add("selected");
-
-    }
+  });
 
 
-    document
-      .getElementById("otpSection")
-      .style.display = "none";
+  // =========================
+  // MESSAGE FUNCTION
+  // =========================
 
-    document
-      .getElementById("registerMessage")
-      .innerText = "";
+  function showMessage(element, message, type) {
 
-  };
+    element.textContent = message;
 
+    element.className = "message " + type;
 
-  /* -------------------------
-     DUPLICATE CHECK
-  ------------------------- */
-
-  async function checkAlreadyExists(email, mobile) {
-
-    const snapshot =
-      await getDocs(
-        collection(db, "registrationRequests")
-      );
-
-
-    let emailExists = false;
-
-    let mobileExists = false;
-
-
-    snapshot.forEach((doc) => {
-
-      const data = doc.data();
-
-
-      if (
-        data.email &&
-        data.email.toLowerCase() ===
-        email.toLowerCase()
-      ) {
-
-        emailExists = true;
-
-      }
-
-
-      if (
-        data.mobile &&
-        data.mobile === mobile
-      ) {
-
-        mobileExists = true;
-
-      }
-
-    });
-
-
-    return {
-      emailExists,
-      mobileExists
-    };
+    element.style.display = "block";
 
   }
 
 
-  /* -------------------------
-     START VERIFICATION
-  ------------------------- */
+  // =========================
+  // CHECK DUPLICATE
+  // =========================
 
-  window.startVerification = async function() {
+  async function checkDuplicate(email, mobile) {
+
+    const snapshot =
+      await getDocs(collection(db, "registrationRequests"));
+
+    for (const doc of snapshot.docs) {
+
+      const data = doc.data();
+
+      const existingEmail =
+        (data.email || "").toLowerCase();
+
+      const existingMobile =
+        data.mobile || "";
+
+      if (
+        existingEmail === email.toLowerCase() ||
+        existingMobile === mobile
+      ) {
+
+        return true;
+
+      }
+
+    }
+
+    return false;
+
+  }
+
+
+  // =========================
+  // REGISTER
+  // =========================
+
+  registerBtn.addEventListener("click", async () => {
 
     const name =
-      document.getElementById("name")
-        .value.trim();
+      document.getElementById("name").value.trim();
 
     const email =
-      document.getElementById("email")
-        .value.trim();
+      document.getElementById("email").value.trim().toLowerCase();
 
     const mobile =
-      document.getElementById("mobile")
-        .value.trim();
-
-    const message =
-      document.getElementById("registerMessage");
-
-    const loginLink =
-      document.getElementById("loginLink");
+      document.getElementById("mobile").value.trim();
 
 
-    message.className = "message";
-
-    message.innerText = "";
-
-    loginLink.style.display = "none";
+    duplicateLogin.style.display = "none";
 
 
-    /* NAME */
+    // NAME CHECK
 
-    if (name === "") {
+    if (!name) {
 
-      message.classList.add("error");
-
-      message.innerText =
-        "⚠️ Please enter your name.";
+      showMessage(
+        registerMessage,
+        "Please enter your name.",
+        "error"
+      );
 
       return;
 
     }
 
 
-    /* GMAIL */
+    // GMAIL CHECK
 
-    if (
-      !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
-    ) {
+    if (!email.endsWith("@gmail.com")) {
 
-      message.classList.add("error");
-
-      message.innerText =
-        "⚠️ Please enter a valid Gmail ending with @gmail.com.";
+      showMessage(
+        registerMessage,
+        "Please use a valid Gmail address ending with @gmail.com.",
+        "error"
+      );
 
       return;
 
     }
 
 
-    /* MOBILE */
+    // MOBILE CHECK
 
     if (!/^[0-9]{10}$/.test(mobile)) {
 
-      message.classList.add("error");
-
-      message.innerText =
-        "⚠️ Mobile number must contain exactly 10 digits.";
+      showMessage(
+        registerMessage,
+        "Mobile number must be exactly 10 digits.",
+        "error"
+      );
 
       return;
 
     }
+
+
+    registerBtn.disabled = true;
+
+    registerBtn.textContent = "Checking...";
 
 
     try {
 
-      /* DUPLICATE CHECK */
+      // CHECK DUPLICATE
 
-      const exists =
-        await checkAlreadyExists(
-          email,
-          mobile
+      const duplicate =
+        await checkDuplicate(email, mobile);
+
+
+      if (duplicate) {
+
+        showMessage(
+          registerMessage,
+          "Already exists. Please login.",
+          "error"
         );
 
+        duplicateLogin.style.display = "block";
 
-      if (
-        exists.emailExists ||
-        exists.mobileExists
-      ) {
+        registerBtn.disabled = false;
 
-        message.className =
-          "message error";
-
-
-        if (
-          exists.emailExists &&
-          exists.mobileExists
-        ) {
-
-          message.innerText =
-            "⚠️ Gmail and mobile number already exist. Please login.";
-
-        }
-
-        else if (exists.emailExists) {
-
-          message.innerText =
-            "⚠️ Gmail already exists. Please login.";
-
-        }
-
-        else {
-
-          message.innerText =
-            "⚠️ Mobile number already exists. Please login.";
-
-        }
-
-
-        loginLink.style.display =
-          "block";
+        registerBtn.textContent =
+          "Verify Gmail & Register";
 
         return;
 
       }
 
 
-      /* -------------------------
-         EMAIL VERIFICATION
-      ------------------------- */
-
-      if (verificationMethod === "email") {
-
-        const actionCodeSettings = {
-
-          url:
-            window.location.origin +
-            window.location.pathname,
-
-          handleCodeInApp: true
-
-        };
-
-
-        await sendSignInLinkToEmail(
-          auth,
-          email,
-          actionCodeSettings
-        );
-
-
-        localStorage.setItem(
-          "emailForSignIn",
-          email
-        );
-
-
-        localStorage.setItem(
-          "pendingName",
-          name
-        );
-
-        localStorage.setItem(
-          "pendingMobile",
-          mobile
-        );
-
-
-        message.className =
-          "message success";
-
-
-        message.innerText =
-          "📧 Verification link has been sent to your Gmail. Open the email and click the link.";
-
-      }
-
-
-      /* -------------------------
-         PHONE VERIFICATION
-      ------------------------- */
-
-      else {
-
-        if (!recaptchaVerifier) {
-
-          recaptchaVerifier =
-            new RecaptchaVerifier(
-              auth,
-              "recaptcha-container",
-              {
-                size: "normal"
-              }
-            );
-
-        }
-
-
-        const phoneNumber =
-          "+91" + mobile;
-
-
-        confirmationResult =
-          await signInWithPhoneNumber(
-            auth,
-            phoneNumber,
-            recaptchaVerifier
-          );
-
-
-        document
-          .getElementById("otpSection")
-          .style.display = "block";
-
-
-        message.className =
-          "message success";
-
-
-        message.innerText =
-          "📱 OTP sent to your mobile number.";
-
-      }
-
-    }
-
-    catch (error) {
-
-      console.error(error);
-
-      message.className =
-        "message error";
-
-
-      if (
-        error.code ===
-        "auth/invalid-phone-number"
-      ) {
-
-        message.innerText =
-          "⚠️ Invalid mobile number.";
-
-      }
-
-      else if (
-        error.code ===
-        "auth/too-many-requests"
-      ) {
-
-        message.innerText =
-          "⚠️ Too many attempts. Please try again later.";
-
-      }
-
-      else {
-
-        message.innerText =
-          "⚠️ Verification could not be started: " +
-          error.message;
-
-      }
-
-    }
-
-  };
-
-
-  /* -------------------------
-     PHONE OTP VERIFY
-  ------------------------- */
-
-  window.verifyPhoneOTP = async function() {
-
-    const otp =
-      document.getElementById("otp")
-        .value.trim();
-
-    const message =
-      document.getElementById("registerMessage");
-
-
-    if (!/^[0-9]{6}$/.test(otp)) {
-
-      message.className =
-        "message error";
-
-      message.innerText =
-        "⚠️ Please enter the 6 digit OTP.";
-
-      return;
-
-    }
-
-
-    if (!confirmationResult) {
-
-      message.className =
-        "message error";
-
-      message.innerText =
-        "⚠️ Please request OTP first.";
-
-      return;
-
-    }
-
-
-    try {
-
-      const result =
-        await confirmationResult.confirm(otp);
-
-
-      const user =
-        result.user;
-
-
-      await submitRegistration(
-        user.uid,
-        "phone"
+      // SAVE TEMP DATA
+
+      localStorage.setItem(
+        "pendingName",
+        name
+      );
+
+      localStorage.setItem(
+        "pendingMobile",
+        mobile
       );
 
 
-    }
+      // EMAIL VERIFICATION LINK
 
-    catch (error) {
+      const actionCodeSettings = {
+
+        url:
+          window.location.origin +
+          window.location.pathname,
+
+        handleCodeInApp: true
+
+      };
+
+
+      await sendSignInLinkToEmail(
+        auth,
+        email,
+        actionCodeSettings
+      );
+
+
+      localStorage.setItem(
+        "emailForSignIn",
+        email
+      );
+
+
+      showMessage(
+        registerMessage,
+        "Verification link Gmail par bhej diya gaya hai. Apna Gmail open karke link par click karein.",
+        "success"
+      );
+
+
+    } catch (error) {
 
       console.error(error);
 
-      message.className =
-        "message error";
-
-      message.innerText =
-        "⚠️ Invalid OTP. Please try again.";
+      showMessage(
+        registerMessage,
+        "Unable to send Gmail verification link: " +
+        error.message,
+        "error"
+      );
 
     }
 
-  };
+
+    registerBtn.disabled = false;
+
+    registerBtn.textContent =
+      "Verify Gmail & Register";
+
+  });
 
 
-  /* -------------------------
-     EMAIL LINK VERIFY
-  ------------------------- */
+  // =========================
+  // AFTER GMAIL LINK CLICK
+  // =========================
 
-  async function checkEmailLink() {
+  async function completeEmailVerification() {
 
-    if (
-      !isSignInWithEmailLink(
-        auth,
-        window.location.href
-      )
-    ) {
+    if (!isSignInWithEmailLink(auth, window.location.href)) {
 
       return;
 
@@ -905,17 +513,13 @@
 
 
     let email =
-      localStorage.getItem(
-        "emailForSignIn"
-      );
+      localStorage.getItem("emailForSignIn");
 
 
     if (!email) {
 
       email =
-        window.prompt(
-          "Please enter your Gmail again:"
-        );
+        prompt("Please enter your Gmail address:");
 
     }
 
@@ -928,6 +532,13 @@
 
 
     try {
+
+      showMessage(
+        registerMessage,
+        "Gmail verification complete ho rahi hai...",
+        "info"
+      );
+
 
       const result =
         await signInWithEmailLink(
@@ -941,178 +552,170 @@
         result.user;
 
 
-      await submitRegistration(
-        user.uid,
-        "email"
-      );
+      const name =
+        localStorage.getItem("pendingName") || "";
+
+      const mobile =
+        localStorage.getItem("pendingMobile") || "";
 
 
-      window.history.replaceState(
-        {},
-        document.title,
-        window.location.pathname
-      );
+      // DOUBLE CHECK DUPLICATE
 
-    }
-
-    catch (error) {
-
-      console.error(error);
-
-      document
-        .getElementById("registerMessage")
-        .className = "message error";
-
-      document
-        .getElementById("registerMessage")
-        .innerText =
-        "⚠️ Email verification failed.";
-
-    }
-
-  }
+      const duplicate =
+        await checkDuplicate(email, mobile);
 
 
-  /* -------------------------
-     SUBMIT REGISTRATION
-  ------------------------- */
+      if (duplicate) {
 
-  async function submitRegistration(
-    uid,
-    verifiedBy
-  ) {
+        showMessage(
+          registerMessage,
+          "Already exists. Please login.",
+          "error"
+        );
 
-    const name =
-      localStorage.getItem(
-        "pendingName"
-      );
+        duplicateLogin.style.display = "block";
 
-    const email =
-      localStorage.getItem(
-        "emailForSignIn"
-      );
+        return;
 
-    const mobile =
-      localStorage.getItem(
-        "pendingMobile"
-      );
+      }
 
 
-    const message =
-      document.getElementById(
-        "registerMessage"
-      );
-
-
-    try {
+      // SAVE REGISTRATION REQUEST
 
       await addDoc(
-        collection(
-          db,
-          "registrationRequests"
-        ),
+        collection(db, "registrationRequests"),
         {
-
-          uid: uid,
-
+          uid: user.uid,
           name: name,
-
-          email: email,
-
+          email: email.toLowerCase(),
           mobile: mobile,
-
-          verifiedBy: verifiedBy,
-
+          verifiedBy: "gmail",
           status: "pending",
-
-          createdAt:
-            serverTimestamp()
-
+          createdAt: serverTimestamp()
         }
       );
 
 
-      localStorage.removeItem(
-        "emailForSignIn"
-      );
-
-      localStorage.removeItem(
-        "pendingName"
-      );
-
-      localStorage.removeItem(
-        "pendingMobile"
+      showMessage(
+        registerMessage,
+        "Gmail verified successfully! Your registration request has been sent to the Coordinator for approval.",
+        "success"
       );
 
 
-      message.className =
-        "message success";
+      // CLEAR TEMP DATA
+
+      localStorage.removeItem("emailForSignIn");
+      localStorage.removeItem("pendingName");
+      localStorage.removeItem("pendingMobile");
 
 
-      message.innerText =
-        "✅ Verification successful! Your registration request has been sent to the Coordinator for approval.";
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
       console.error(error);
 
-      message.className =
-        "message error";
-
-      message.innerText =
-        "⚠️ Registration could not be submitted.";
+      showMessage(
+        registerMessage,
+        "Gmail verification failed: " +
+        error.message,
+        "error"
+      );
 
     }
 
   }
 
 
-  /* -------------------------
-     LOGIN
-  ------------------------- */
+  // RUN EMAIL VERIFICATION CHECK
 
-  window.loginUser = function() {
+  completeEmailVerification();
+
+
+  // =========================
+  // LOGIN
+  // =========================
+
+  loginBtn.addEventListener("click", async () => {
 
     const email =
-      document.getElementById(
-        "loginEmail"
-      ).value.trim();
+      document.getElementById("loginEmail")
+      .value
+      .trim()
+      .toLowerCase();
 
-    const message =
-      document.getElementById(
-        "loginMessage"
+
+    if (!email.endsWith("@gmail.com")) {
+
+      showMessage(
+        loginMessage,
+        "Please enter a valid Gmail address.",
+        "error"
       );
-
-
-    if (
-      !/^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email)
-    ) {
-
-      message.className =
-        "message error";
-
-      message.innerText =
-        "⚠️ Please enter a valid Gmail.";
 
       return;
 
     }
 
 
-    message.className =
-      "message success";
+    loginBtn.disabled = true;
 
-    message.innerText =
-      "Login verification will be connected after Coordinator approval.";
-
-  };
+    loginBtn.textContent =
+      "Sending...";
 
 
-  /* CHECK EMAIL VERIFICATION LINK */
+    try {
 
-  checkEmailLink();
+      const actionCodeSettings = {
+
+        url:
+          window.location.origin +
+          window.location.pathname,
+
+        handleCodeInApp: true
+
+      };
+
+
+      await sendSignInLinkToEmail(
+        auth,
+        email,
+        actionCodeSettings
+      );
+
+
+      localStorage.setItem(
+        "loginEmail",
+        email
+      );
+
+
+      showMessage(
+        loginMessage,
+        "Login link Gmail par bhej diya gaya hai.",
+        "success"
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        loginMessage,
+        "Unable to send login link: " +
+        error.message,
+        "error"
+      );
+
+    }
+
+
+    loginBtn.disabled = false;
+
+    loginBtn.textContent =
+      "Send Login Link";
+
+  });
 
 </script>
 
