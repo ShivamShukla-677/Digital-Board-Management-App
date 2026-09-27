@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Coordinator Dashboard</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f4f8;
+      margin: 0;
+      padding: 30px;
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .user-card {
+      background: white;
+      padding: 20px;
+      margin: 15px 0;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    }
+
+    .user-card p {
+      margin: 7px 0;
+    }
+
+    button {
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .approve {
+      background: #16a34a;
+    }
+
+    .reject {
+      background: #dc2626;
+    }
+
+    .status {
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <h1>Digital Coordinator Dashboard</h1>
+
+    <div class="user-card">
+
+      <h3>Registration Request</h3>
+
+      <p><strong>Name:</strong> Rahul Kumar</p>
+
+      <p><strong>Email:</strong> rahul@gmail.com</p>
+
+      <p><strong>Mobile:</strong> 9876543210</p>
+
+      <p>
+        <strong>Status:</strong>
+        <span class="status" id="status">Pending</span>
+      </p>
+
+      <button class="approve" onclick="approveUser()">
+        Approve
+      </button>
+
+      <button class="reject" onclick="rejectUser()">
+        Reject
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    function approveUser() {
+
+      document.getElementById("status").innerText = "Approved";
+
+      document.getElementById("status").style.color = "green";
+
+      alert("User Approved Successfully!");
+
+    }
+
+    function rejectUser() {
+
+      document.getElementById("status").innerText = "Rejected";
+
+      document.getElementById("status").style.color = "red";
+
+      alert("User Rejected!");
+
+    }
+
+  </script>
+
+</body>
+</html>
