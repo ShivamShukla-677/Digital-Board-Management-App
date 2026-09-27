@@ -1534,6 +1534,10 @@
 
       try {
 
+        /* =========================
+           HTTPS CHECK
+        ========================= */
+
         if (!window.isSecureContext) {
 
           showMessage(
@@ -1545,6 +1549,10 @@
         }
 
 
+        /* =========================
+           SCREEN SHARE SUPPORT
+        ========================= */
+
         if (
           !navigator.mediaDevices ||
           typeof navigator.mediaDevices.getDisplayMedia !==
@@ -1552,7 +1560,7 @@
         ) {
 
           showMessage(
-            "Screen sharing is not supported on this page. Please open the GitHub Pages website directly in Chrome.",
+            "Screen sharing is not supported by this mobile browser. Please use a supported Chrome browser or desktop browser.",
             "error"
           );
 
@@ -1566,17 +1574,23 @@
           "Opening Screen Share...";
 
 
+        /* =========================
+           MOBILE + DESKTOP CAPTURE
+        ========================= */
+
         screenStream =
           await navigator.mediaDevices.getDisplayMedia({
 
-            video: {
-              cursor: "always"
-            },
+            video: true,
 
             audio: false
 
           });
 
+
+        /* =========================
+           LOCAL PREVIEW
+        ========================= */
 
         const video =
           document.getElementById(
@@ -1604,6 +1618,10 @@
           .remove("hidden");
 
 
+        /* =========================
+           WEBRTC CONNECTION
+        ========================= */
+
         peerConnection =
           new RTCPeerConnection({
 
@@ -1630,6 +1648,10 @@
 
           });
 
+
+        /* =========================
+           TEACHER ICE
+        ========================= */
 
         peerConnection.onicecandidate =
           async event => {
@@ -1664,6 +1686,10 @@
 
           };
 
+
+        /* =========================
+           CREATE OFFER
+        ========================= */
 
         const offer =
           await peerConnection.createOffer();
@@ -1705,6 +1731,10 @@
           }
         );
 
+
+        /* =========================
+           BOARD ANSWER
+        ========================= */
 
         if (sessionListener) {
 
@@ -1758,6 +1788,10 @@
             }
           );
 
+
+        /* =========================
+           BOARD ICE
+        ========================= */
 
         if (boardIceListener) {
 
@@ -1825,6 +1859,10 @@
           );
 
 
+        /* =========================
+           SCREEN SHARE ENDED
+        ========================= */
+
         const videoTrack =
           screenStream
             .getVideoTracks()[0];
@@ -1871,7 +1909,21 @@
         ) {
 
           showMessage(
-            "Screen sharing was cancelled.",
+            "Screen sharing permission was cancelled or denied.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (
+          error.name ===
+          "InvalidStateError"
+        ) {
+
+          showMessage(
+            "Please tap Start Screen Share directly from this page.",
             "error"
           );
 
@@ -1885,7 +1937,21 @@
         ) {
 
           showMessage(
-            "Screen sharing is not supported on this page. Please open the GitHub Pages HTTPS website directly.",
+            "This mobile browser does not support screen sharing.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (
+          error.name ===
+          "NotFoundError"
+        ) {
+
+          showMessage(
+            "No screen source is available on this device.",
             "error"
           );
 
