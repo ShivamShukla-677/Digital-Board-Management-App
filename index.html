@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
   <title>Digital Board Management</title>
 
+
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -115,40 +122,53 @@
       background: #dbeafe;
       color: #1e40af;
     }
+
   </style>
+
 </head>
 
+
 <body>
+
 
 <div class="container">
 
   <h1>Digital Board Management</h1>
 
+
   <div class="tabs">
-    <button id="registerTab"
-            class="active"
-            onclick="showRegister()">
+
+    <button
+      id="registerTab"
+      class="active"
+      onclick="showRegister()">
       Register
     </button>
 
-    <button id="loginTab"
-            onclick="showLogin()">
+    <button
+      id="loginTab"
+      onclick="showLogin()">
       Login
     </button>
+
   </div>
 
 
-  <!-- REGISTER -->
 
-  <div id="registerForm" class="form active">
+  <!-- REGISTER FORM -->
+
+  <div
+    id="registerForm"
+    class="form active">
+
 
     <label>Name</label>
 
     <input
       type="text"
       id="name"
-      placeholder="Enter your name"
-    >
+      placeholder="Enter your name">
+
 
 
     <label>Gmail</label>
@@ -156,8 +176,8 @@
     <input
       type="email"
       id="email"
-      placeholder="example@gmail.com"
-    >
+      placeholder="example@gmail.com">
+
 
 
     <label>Mobile Number</label>
@@ -166,42 +186,52 @@
       type="tel"
       id="mobile"
       maxlength="10"
-      placeholder="10 digit mobile number"
-    >
+      placeholder="10 digit mobile number">
 
 
-    <button class="main-btn"
-            onclick="registerUser()">
+
+    <button
+      class="main-btn"
+      onclick="registerUser()">
       Register
     </button>
 
-    <div id="registerMessage"
-         class="message">
+
+    <div
+      id="registerMessage"
+      class="message">
     </div>
 
   </div>
 
 
-  <!-- LOGIN -->
 
-  <div id="loginForm" class="form">
+  <!-- LOGIN FORM -->
+
+  <div
+    id="loginForm"
+    class="form">
+
 
     <label>Gmail</label>
 
     <input
       type="email"
       id="loginEmail"
-      placeholder="Enter your Gmail"
-    >
+      placeholder="Enter your Gmail">
 
 
-    <button class="main-btn"
-            onclick="loginUser()">
+
+    <button
+      class="main-btn"
+      onclick="loginUser()">
       Send Login Link
     </button>
 
-    <div id="loginMessage"
-         class="message">
+
+    <div
+      id="loginMessage"
+      class="message">
     </div>
 
   </div>
@@ -209,7 +239,13 @@
 </div>
 
 
+
 <script type="module">
+
+
+/* ==============================
+   FIREBASE IMPORTS
+   ============================== */
 
 import {
   initializeApp
@@ -236,7 +272,9 @@ import {
 
 
 
-/* FIREBASE CONFIG */
+/* ==============================
+   FIREBASE CONFIG
+   ============================== */
 
 const firebaseConfig = {
 
@@ -261,6 +299,7 @@ const firebaseConfig = {
 };
 
 
+
 const app =
   initializeApp(firebaseConfig);
 
@@ -274,14 +313,18 @@ const db =
 
 
 
-/* COORDINATOR EMAIL */
+/* ==============================
+   COORDINATOR EMAIL
+   ============================== */
 
 const COORDINATOR_EMAIL =
   "anujshivamshukla99359@gamil.com";
 
 
 
-/* EMAIL LINK SETTINGS */
+/* ==============================
+   EMAIL LINK SETTINGS
+   ============================== */
 
 const actionCodeSettings = {
 
@@ -294,9 +337,11 @@ const actionCodeSettings = {
 
 
 
-/* TAB FUNCTIONS */
+/* ==============================
+   SHOW REGISTER
+   ============================== */
 
-window.showRegister = function () {
+window.showRegister = function() {
 
   document
     .getElementById("registerForm")
@@ -305,6 +350,7 @@ window.showRegister = function () {
   document
     .getElementById("loginForm")
     .classList.remove("active");
+
 
   document
     .getElementById("registerTab")
@@ -317,7 +363,12 @@ window.showRegister = function () {
 };
 
 
-window.showLogin = function () {
+
+/* ==============================
+   SHOW LOGIN
+   ============================== */
+
+window.showLogin = function() {
 
   document
     .getElementById("loginForm")
@@ -326,6 +377,7 @@ window.showLogin = function () {
   document
     .getElementById("registerForm")
     .classList.remove("active");
+
 
   document
     .getElementById("loginTab")
@@ -339,18 +391,20 @@ window.showLogin = function () {
 
 
 
-/* MESSAGE */
+/* ==============================
+   MESSAGE FUNCTION
+   ============================== */
 
 function showMessage(
   id,
-  text,
+  message,
   type
 ) {
 
   const box =
     document.getElementById(id);
 
-  box.textContent = text;
+  box.textContent = message;
 
   box.className =
     "message " + type;
@@ -359,9 +413,11 @@ function showMessage(
 
 
 
-/* REGISTER */
+/* ==============================
+   REGISTER
+   ============================== */
 
-window.registerUser = async function () {
+window.registerUser = async function() {
 
   const name =
     document
@@ -386,13 +442,13 @@ window.registerUser = async function () {
 
 
 
-  /* COORDINATOR CANNOT REGISTER */
+  /* COORDINATOR */
 
   if (email === COORDINATOR_EMAIL) {
 
     showMessage(
       "registerMessage",
-      "This Gmail is the Coordinator account. Please use Login.",
+      "This is the Coordinator account. Please use Login.",
       "info"
     );
 
@@ -448,7 +504,8 @@ window.registerUser = async function () {
 
   try {
 
-    /* EMAIL CHECK */
+
+    /* CHECK EMAIL */
 
     const emailQuery =
       query(
@@ -469,7 +526,7 @@ window.registerUser = async function () {
 
 
 
-    /* MOBILE CHECK */
+    /* CHECK MOBILE */
 
     const mobileQuery =
       query(
@@ -525,7 +582,7 @@ window.registerUser = async function () {
 
 
 
-    /* SEND VERIFICATION */
+    /* SEND VERIFICATION LINK */
 
     await sendSignInLinkToEmail(
       auth,
@@ -541,7 +598,7 @@ window.registerUser = async function () {
     );
 
 
-  } catch (error) {
+  } catch(error) {
 
     console.error(error);
 
@@ -557,9 +614,11 @@ window.registerUser = async function () {
 
 
 
-/* LOGIN */
+/* ==============================
+   LOGIN
+   ============================== */
 
-window.loginUser = async function () {
+window.loginUser = async function() {
 
   const email =
     document
@@ -583,11 +642,10 @@ window.loginUser = async function () {
 
 
 
-  /*
-     IMPORTANT:
-     COORDINATOR CHECK COMES FIRST.
-     FIRESTORE STATUS WILL NOT MATTER.
-  */
+  /* =================================
+     VERY IMPORTANT:
+     COORDINATOR CHECK FIRST
+     ================================= */
 
   if (email === COORDINATOR_EMAIL) {
 
@@ -613,12 +671,12 @@ window.loginUser = async function () {
 
       showMessage(
         "loginMessage",
-        "Coordinator login link sent to your Gmail.",
+        "Coordinator verification link sent. Please check your email.",
         "success"
       );
 
 
-    } catch (error) {
+    } catch(error) {
 
       console.error(error);
 
@@ -630,12 +688,16 @@ window.loginUser = async function () {
 
     }
 
+
     return;
+
   }
 
 
 
-  /* NORMAL USER */
+  /* ==============================
+     NORMAL USER
+     ============================== */
 
   if (!email.endsWith("@gmail.com")) {
 
@@ -651,6 +713,7 @@ window.loginUser = async function () {
 
 
   try {
+
 
     const q =
       query(
@@ -687,17 +750,19 @@ window.loginUser = async function () {
     let approved = false;
 
 
-    snapshot.forEach(doc => {
+    snapshot.forEach(
+      (doc) => {
 
-      if (
-        doc.data().status === "approved"
-      ) {
+        if (
+          doc.data().status === "approved"
+        ) {
 
-        approved = true;
+          approved = true;
+
+        }
 
       }
-
-    });
+    );
 
 
 
@@ -739,7 +804,7 @@ window.loginUser = async function () {
     );
 
 
-  } catch (error) {
+  } catch(error) {
 
     console.error(error);
 
@@ -755,9 +820,12 @@ window.loginUser = async function () {
 
 
 
-/* PROCESS EMAIL LINK */
+/* ==============================
+   PROCESS EMAIL VERIFICATION
+   ============================== */
 
 async function processEmailLink() {
+
 
   if (
     !isSignInWithEmailLink(
@@ -774,10 +842,10 @@ async function processEmailLink() {
 
   let email =
     localStorage.getItem(
-      "emailForSignIn"
+      "loginEmail"
     ) ||
     localStorage.getItem(
-      "loginEmail"
+      "emailForSignIn"
     );
 
 
@@ -799,7 +867,15 @@ async function processEmailLink() {
 
 
 
+  email =
+    email
+      .trim()
+      .toLowerCase();
+
+
+
   try {
+
 
     const result =
       await signInWithEmailLink(
@@ -811,19 +887,20 @@ async function processEmailLink() {
 
     const verifiedEmail =
       result.user.email
+        .trim()
         .toLowerCase();
 
 
 
-    /*
+    /* =================================
        COORDINATOR CHECK
-       AGAIN AFTER VERIFICATION
-    */
+       ================================= */
 
     if (
       verifiedEmail ===
       COORDINATOR_EMAIL
     ) {
+
 
       localStorage.removeItem(
         "loginEmail"
@@ -846,15 +923,21 @@ async function processEmailLink() {
       );
 
 
+      /* DIRECT DASHBOARD */
+
       window.location.href =
         "coordinator.html";
 
+
       return;
+
     }
 
 
 
-    /* REGISTRATION */
+    /* ==============================
+       REGISTRATION
+       ============================== */
 
     const pendingName =
       localStorage.getItem(
@@ -873,6 +956,7 @@ async function processEmailLink() {
       pendingName &&
       pendingMobile
     ) {
+
 
       await addDoc(
         collection(
@@ -920,7 +1004,6 @@ async function processEmailLink() {
       );
 
 
-
       showMessage(
         "registerMessage",
         "Gmail verified successfully. Your registration request has been sent to the Coordinator.",
@@ -930,13 +1013,14 @@ async function processEmailLink() {
 
       showRegister();
 
+
       return;
 
     }
 
 
 
-    /* NORMAL USER */
+    /* NORMAL USER LOGIN */
 
     showMessage(
       "loginMessage",
@@ -945,7 +1029,7 @@ async function processEmailLink() {
     );
 
 
-  } catch (error) {
+  } catch(error) {
 
     console.error(error);
 
@@ -961,9 +1045,14 @@ async function processEmailLink() {
 }
 
 
+
+/* RUN EMAIL LINK CHECK */
+
 processEmailLink();
 
 </script>
 
+
 </body>
+
 </html>
