@@ -115,14 +115,6 @@
       background: #dbeafe;
       color: #1e40af;
     }
-
-    .login-link {
-      display: inline-block;
-      margin-top: 10px;
-      color: #2563eb;
-      cursor: pointer;
-      text-decoration: underline;
-    }
   </style>
 </head>
 
@@ -133,315 +125,379 @@
   <h1>Digital Board Management</h1>
 
   <div class="tabs">
-    <button id="registerTab" class="active" onclick="showRegister()">
+    <button id="registerTab"
+            class="active"
+            onclick="showRegister()">
       Register
     </button>
 
-    <button id="loginTab" onclick="showLogin()">
+    <button id="loginTab"
+            onclick="showLogin()">
       Login
     </button>
   </div>
 
+
   <!-- REGISTER -->
+
   <div id="registerForm" class="form active">
 
     <label>Name</label>
-    <input type="text" id="name" placeholder="Enter your name">
+
+    <input
+      type="text"
+      id="name"
+      placeholder="Enter your name"
+    >
+
 
     <label>Gmail</label>
-    <input type="email" id="email" placeholder="example@gmail.com">
+
+    <input
+      type="email"
+      id="email"
+      placeholder="example@gmail.com"
+    >
+
 
     <label>Mobile Number</label>
-    <input type="tel" id="mobile" maxlength="10"
-           placeholder="10 digit mobile number">
 
-    <button class="main-btn" onclick="registerUser()">
+    <input
+      type="tel"
+      id="mobile"
+      maxlength="10"
+      placeholder="10 digit mobile number"
+    >
+
+
+    <button class="main-btn"
+            onclick="registerUser()">
       Register
     </button>
 
-    <div id="registerMessage" class="message"></div>
+    <div id="registerMessage"
+         class="message">
+    </div>
 
   </div>
 
 
   <!-- LOGIN -->
+
   <div id="loginForm" class="form">
 
     <label>Gmail</label>
-    <input type="email" id="loginEmail"
-           placeholder="Enter your Gmail">
 
-    <button class="main-btn" onclick="loginUser()">
+    <input
+      type="email"
+      id="loginEmail"
+      placeholder="Enter your Gmail"
+    >
+
+
+    <button class="main-btn"
+            onclick="loginUser()">
       Send Login Link
     </button>
 
-    <div id="loginMessage" class="message"></div>
+    <div id="loginMessage"
+         class="message">
+    </div>
 
   </div>
 
 </div>
 
 
-<!-- FIREBASE -->
 <script type="module">
 
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-  import {
-    getAuth,
-    sendSignInLinkToEmail,
-    isSignInWithEmailLink,
-    signInWithEmailLink
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-  import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs,
-    addDoc,
-    serverTimestamp
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {
+  getAuth,
+  sendSignInLinkToEmail,
+  isSignInWithEmailLink,
+  signInWithEmailLink
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 
-  // FIREBASE CONFIG
+import {
+  getFirestore,
+  collection,
+  query,
+  where,
+  getDocs,
+  addDoc,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
-    authDomain: "digital-board-acces-management.firebaseapp.com",
-    projectId: "digital-board-acces-management",
-    storageBucket: "digital-board-acces-management.firebasestorage.app",
-    messagingSenderId: "902348932290",
-    appId: "1:902348932290:web:db47f1b012bf882886675b"
-  };
 
 
-  const app = initializeApp(firebaseConfig);
+/* FIREBASE CONFIG */
 
-  const auth = getAuth(app);
+const firebaseConfig = {
 
-  const db = getFirestore(app);
+  apiKey:
+    "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
 
+  authDomain:
+    "digital-board-acces-management.firebaseapp.com",
 
-  // NEW COORDINATOR EMAIL
+  projectId:
+    "digital-board-acces-management",
 
-  const COORDINATOR_EMAIL =
-    "anujshivamshukla99359@gamil.com";
+  storageBucket:
+    "digital-board-acces-management.firebasestorage.app",
 
+  messagingSenderId:
+    "902348932290",
 
-  // GITHUB PAGES URL
+  appId:
+    "1:902348932290:web:db47f1b012bf882886675b"
 
-  const actionCodeSettings = {
-    url: "https://shivamshukla-677.github.io/Digital-Board-Management-App/",
-    handleCodeInApp: true
-  };
+};
 
 
-  // TAB FUNCTIONS
+const app =
+  initializeApp(firebaseConfig);
 
-  window.showRegister = function () {
 
-    document.getElementById("registerForm")
-      .classList.add("active");
+const auth =
+  getAuth(app);
 
-    document.getElementById("loginForm")
-      .classList.remove("active");
 
-    document.getElementById("registerTab")
-      .classList.add("active");
+const db =
+  getFirestore(app);
 
-    document.getElementById("loginTab")
-      .classList.remove("active");
-  };
 
 
-  window.showLogin = function () {
+/* COORDINATOR EMAIL */
 
-    document.getElementById("loginForm")
-      .classList.add("active");
+const COORDINATOR_EMAIL =
+  "anujshivamshukla99359@gamil.com";
 
-    document.getElementById("registerForm")
-      .classList.remove("active");
 
-    document.getElementById("loginTab")
-      .classList.add("active");
 
-    document.getElementById("registerTab")
-      .classList.remove("active");
-  };
+/* EMAIL LINK SETTINGS */
 
+const actionCodeSettings = {
 
-  // MESSAGE FUNCTION
+  url:
+    "https://shivamshukla-677.github.io/Digital-Board-Management-App/",
 
-  function showMessage(id, text, type) {
+  handleCodeInApp: true
 
-    const box = document.getElementById(id);
+};
 
-    box.textContent = text;
 
-    box.className = "message " + type;
-  }
 
+/* TAB FUNCTIONS */
 
-  // REGISTER
+window.showRegister = function () {
 
-  window.registerUser = async function () {
+  document
+    .getElementById("registerForm")
+    .classList.add("active");
 
-    const name =
-      document.getElementById("name").value.trim();
+  document
+    .getElementById("loginForm")
+    .classList.remove("active");
 
-    const email =
-      document.getElementById("email").value.trim().toLowerCase();
+  document
+    .getElementById("registerTab")
+    .classList.add("active");
 
-    const mobile =
-      document.getElementById("mobile").value.trim();
+  document
+    .getElementById("loginTab")
+    .classList.remove("active");
 
+};
 
-    // NAME CHECK
 
-    if (!name) {
+window.showLogin = function () {
 
-      showMessage(
-        "registerMessage",
-        "Please enter your name.",
-        "error"
-      );
+  document
+    .getElementById("loginForm")
+    .classList.add("active");
 
-      return;
-    }
+  document
+    .getElementById("registerForm")
+    .classList.remove("active");
 
+  document
+    .getElementById("loginTab")
+    .classList.add("active");
 
-    // GMAIL CHECK
+  document
+    .getElementById("registerTab")
+    .classList.remove("active");
 
-    if (!email.endsWith("@gmail.com")) {
+};
 
-      showMessage(
-        "registerMessage",
-        "Please enter a valid @gmail.com address.",
-        "error"
-      );
 
-      return;
-    }
 
+/* MESSAGE */
 
-    // MOBILE CHECK
+function showMessage(
+  id,
+  text,
+  type
+) {
 
-    if (!/^[0-9]{10}$/.test(mobile)) {
+  const box =
+    document.getElementById(id);
 
-      showMessage(
-        "registerMessage",
-        "Mobile number must be exactly 10 digits.",
-        "error"
-      );
+  box.textContent = text;
 
-      return;
-    }
+  box.className =
+    "message " + type;
 
+}
 
-    try {
 
-      // CHECK EXISTING EMAIL
 
-      const emailQuery = query(
-        collection(db, "registrationRequests"),
-        where("email", "==", email)
-      );
+/* REGISTER */
 
-      const emailSnapshot =
-        await getDocs(emailQuery);
+window.registerUser = async function () {
 
+  const name =
+    document
+      .getElementById("name")
+      .value
+      .trim();
 
-      // CHECK EXISTING MOBILE
 
-      const mobileQuery = query(
-        collection(db, "registrationRequests"),
-        where("mobile", "==", mobile)
-      );
-
-      const mobileSnapshot =
-        await getDocs(mobileQuery);
-
-
-      if (
-        !emailSnapshot.empty ||
-        !mobileSnapshot.empty
-      ) {
-
-        showMessage(
-          "registerMessage",
-          "Already exists. Please login.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      // SAVE TEMPORARY DATA
-
-      localStorage.setItem(
-        "pendingName",
-        name
-      );
-
-      localStorage.setItem(
-        "pendingMobile",
-        mobile
-      );
-
-      localStorage.setItem(
-        "emailForSignIn",
-        email
-      );
-
-
-      // SEND GMAIL VERIFICATION LINK
-
-      await sendSignInLinkToEmail(
-        auth,
-        email,
-        actionCodeSettings
-      );
-
-
-      showMessage(
-        "registerMessage",
-        "Verification link sent to your Gmail. Please check your inbox.",
-        "success"
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "registerMessage",
-        error.message,
-        "error"
-      );
-    }
-
-  };
-
-
-  // LOGIN
-
-  window.loginUser = async function () {
-
-    const email =
-      document.getElementById("loginEmail")
-      .value.trim()
+  const email =
+    document
+      .getElementById("email")
+      .value
+      .trim()
       .toLowerCase();
 
 
-    if (!email) {
+  const mobile =
+    document
+      .getElementById("mobile")
+      .value
+      .trim();
+
+
+
+  /* COORDINATOR CANNOT REGISTER */
+
+  if (email === COORDINATOR_EMAIL) {
+
+    showMessage(
+      "registerMessage",
+      "This Gmail is the Coordinator account. Please use Login.",
+      "info"
+    );
+
+    return;
+  }
+
+
+
+  /* NAME */
+
+  if (!name) {
+
+    showMessage(
+      "registerMessage",
+      "Please enter your name.",
+      "error"
+    );
+
+    return;
+  }
+
+
+
+  /* GMAIL */
+
+  if (!email.endsWith("@gmail.com")) {
+
+    showMessage(
+      "registerMessage",
+      "Please enter a valid @gmail.com address.",
+      "error"
+    );
+
+    return;
+  }
+
+
+
+  /* MOBILE */
+
+  if (!/^[0-9]{10}$/.test(mobile)) {
+
+    showMessage(
+      "registerMessage",
+      "Mobile number must be exactly 10 digits.",
+      "error"
+    );
+
+    return;
+  }
+
+
+
+  try {
+
+    /* EMAIL CHECK */
+
+    const emailQuery =
+      query(
+        collection(
+          db,
+          "registrationRequests"
+        ),
+        where(
+          "email",
+          "==",
+          email
+        )
+      );
+
+
+    const emailSnapshot =
+      await getDocs(emailQuery);
+
+
+
+    /* MOBILE CHECK */
+
+    const mobileQuery =
+      query(
+        collection(
+          db,
+          "registrationRequests"
+        ),
+        where(
+          "mobile",
+          "==",
+          mobile
+        )
+      );
+
+
+    const mobileSnapshot =
+      await getDocs(mobileQuery);
+
+
+
+    if (
+      !emailSnapshot.empty ||
+      !mobileSnapshot.empty
+    ) {
 
       showMessage(
-        "loginMessage",
-        "Please enter your Gmail.",
+        "registerMessage",
+        "Already exists. Please login.",
         "error"
       );
 
@@ -449,95 +505,93 @@
     }
 
 
-    if (!email.endsWith("@gmail.com")) {
 
-      showMessage(
-        "loginMessage",
-        "Please enter a valid @gmail.com address.",
-        "error"
-      );
+    /* SAVE TEMP DATA */
 
-      return;
-    }
+    localStorage.setItem(
+      "pendingName",
+      name
+    );
 
+    localStorage.setItem(
+      "pendingMobile",
+      mobile
+    );
+
+    localStorage.setItem(
+      "emailForSignIn",
+      email
+    );
+
+
+
+    /* SEND VERIFICATION */
+
+    await sendSignInLinkToEmail(
+      auth,
+      email,
+      actionCodeSettings
+    );
+
+
+    showMessage(
+      "registerMessage",
+      "Verification link sent to your Gmail. Please check your inbox.",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "registerMessage",
+      error.message,
+      "error"
+    );
+
+  }
+
+};
+
+
+
+/* LOGIN */
+
+window.loginUser = async function () {
+
+  const email =
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim()
+      .toLowerCase();
+
+
+
+  if (!email) {
+
+    showMessage(
+      "loginMessage",
+      "Please enter your Gmail.",
+      "error"
+    );
+
+    return;
+  }
+
+
+
+  /*
+     IMPORTANT:
+     COORDINATOR CHECK COMES FIRST.
+     FIRESTORE STATUS WILL NOT MATTER.
+  */
+
+  if (email === COORDINATOR_EMAIL) {
 
     try {
-
-      // COORDINATOR LOGIN
-
-      if (email === COORDINATOR_EMAIL) {
-
-        localStorage.setItem(
-          "loginEmail",
-          email
-        );
-
-        localStorage.setItem(
-          "loginType",
-          "coordinator"
-        );
-
-        await sendSignInLinkToEmail(
-          auth,
-          email,
-          actionCodeSettings
-        );
-
-        showMessage(
-          "loginMessage",
-          "Coordinator login link sent to your Gmail.",
-          "success"
-        );
-
-        return;
-      }
-
-
-      // NORMAL USER LOGIN
-
-      const q = query(
-        collection(db, "registrationRequests"),
-        where("email", "==", email)
-      );
-
-      const snapshot =
-        await getDocs(q);
-
-
-      if (snapshot.empty) {
-
-        showMessage(
-          "loginMessage",
-          "You are not registered. Please register first.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      let approved = false;
-
-      snapshot.forEach(doc => {
-
-        if (doc.data().status === "approved") {
-          approved = true;
-        }
-
-      });
-
-
-      if (!approved) {
-
-        showMessage(
-          "loginMessage",
-          "Your registration is not approved yet.",
-          "error"
-        );
-
-        return;
-      }
-
 
       localStorage.setItem(
         "loginEmail",
@@ -546,7 +600,7 @@
 
       localStorage.setItem(
         "loginType",
-        "user"
+        "coordinator"
       );
 
 
@@ -559,7 +613,7 @@
 
       showMessage(
         "loginMessage",
-        "Login link sent to your Gmail. Please check your inbox.",
+        "Coordinator login link sent to your Gmail.",
         "success"
       );
 
@@ -576,149 +630,338 @@
 
     }
 
-  };
+    return;
+  }
 
 
-  // PROCESS EMAIL LINK
 
-  async function processEmailLink() {
+  /* NORMAL USER */
 
-    if (!isSignInWithEmailLink(auth, window.location.href)) {
-      return;
-    }
+  if (!email.endsWith("@gmail.com")) {
+
+    showMessage(
+      "loginMessage",
+      "Please enter a valid @gmail.com address.",
+      "error"
+    );
+
+    return;
+  }
 
 
-    let email =
-      localStorage.getItem("emailForSignIn") ||
-      localStorage.getItem("loginEmail");
 
+  try {
 
-    if (!email) {
-
-      email = window.prompt(
-        "Please enter your email address"
+    const q =
+      query(
+        collection(
+          db,
+          "registrationRequests"
+        ),
+        where(
+          "email",
+          "==",
+          email
+        )
       );
 
-    }
+
+    const snapshot =
+      await getDocs(q);
 
 
-    if (!email) {
-      return;
-    }
 
-
-    try {
-
-      const result =
-        await signInWithEmailLink(
-          auth,
-          email,
-          window.location.href
-        );
-
-
-      const verifiedEmail =
-        result.user.email.toLowerCase();
-
-
-      // COORDINATOR
-
-      if (
-        verifiedEmail === COORDINATOR_EMAIL
-      ) {
-
-        localStorage.removeItem(
-          "loginEmail"
-        );
-
-        localStorage.removeItem(
-          "loginType"
-        );
-
-        window.location.href =
-          "coordinator.html";
-
-        return;
-      }
-
-
-      // REGISTRATION
-
-      const pendingName =
-        localStorage.getItem("pendingName");
-
-      const pendingMobile =
-        localStorage.getItem("pendingMobile");
-
-
-      if (pendingName && pendingMobile) {
-
-        await addDoc(
-          collection(
-            db,
-            "registrationRequests"
-          ),
-          {
-            uid: result.user.uid,
-            name: pendingName,
-            email: verifiedEmail,
-            mobile: pendingMobile,
-            verifiedBy: "gmail",
-            status: "pending",
-            createdAt: serverTimestamp()
-          }
-        );
-
-
-        localStorage.removeItem(
-          "pendingName"
-        );
-
-        localStorage.removeItem(
-          "pendingMobile"
-        );
-
-        localStorage.removeItem(
-          "emailForSignIn"
-        );
-
-
-        showMessage(
-          "registerMessage",
-          "Gmail verified successfully. Your registration request has been sent to the Coordinator.",
-          "success"
-        );
-
-        showRegister();
-
-        return;
-      }
-
-
-      // NORMAL USER
+    if (snapshot.empty) {
 
       showMessage(
         "loginMessage",
-        "Gmail verified successfully. User dashboard will be connected next.",
-        "success"
-      );
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "loginMessage",
-        "Verification failed: " + error.message,
+        "You are not registered. Please register first.",
         "error"
       );
 
+      return;
     }
+
+
+
+    let approved = false;
+
+
+    snapshot.forEach(doc => {
+
+      if (
+        doc.data().status === "approved"
+      ) {
+
+        approved = true;
+
+      }
+
+    });
+
+
+
+    if (!approved) {
+
+      showMessage(
+        "loginMessage",
+        "Your registration is still pending Coordinator approval.",
+        "error"
+      );
+
+      return;
+    }
+
+
+
+    localStorage.setItem(
+      "loginEmail",
+      email
+    );
+
+    localStorage.setItem(
+      "loginType",
+      "user"
+    );
+
+
+    await sendSignInLinkToEmail(
+      auth,
+      email,
+      actionCodeSettings
+    );
+
+
+    showMessage(
+      "loginMessage",
+      "Login link sent to your Gmail.",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "loginMessage",
+      error.message,
+      "error"
+    );
+
+  }
+
+};
+
+
+
+/* PROCESS EMAIL LINK */
+
+async function processEmailLink() {
+
+  if (
+    !isSignInWithEmailLink(
+      auth,
+      window.location.href
+    )
+  ) {
+
+    return;
 
   }
 
 
-  processEmailLink();
+
+  let email =
+    localStorage.getItem(
+      "emailForSignIn"
+    ) ||
+    localStorage.getItem(
+      "loginEmail"
+    );
+
+
+
+  if (!email) {
+
+    email =
+      window.prompt(
+        "Please enter your email address"
+      );
+
+  }
+
+
+
+  if (!email) {
+    return;
+  }
+
+
+
+  try {
+
+    const result =
+      await signInWithEmailLink(
+        auth,
+        email,
+        window.location.href
+      );
+
+
+    const verifiedEmail =
+      result.user.email
+        .toLowerCase();
+
+
+
+    /*
+       COORDINATOR CHECK
+       AGAIN AFTER VERIFICATION
+    */
+
+    if (
+      verifiedEmail ===
+      COORDINATOR_EMAIL
+    ) {
+
+      localStorage.removeItem(
+        "loginEmail"
+      );
+
+      localStorage.removeItem(
+        "loginType"
+      );
+
+      localStorage.removeItem(
+        "pendingName"
+      );
+
+      localStorage.removeItem(
+        "pendingMobile"
+      );
+
+      localStorage.removeItem(
+        "emailForSignIn"
+      );
+
+
+      window.location.href =
+        "coordinator.html";
+
+      return;
+    }
+
+
+
+    /* REGISTRATION */
+
+    const pendingName =
+      localStorage.getItem(
+        "pendingName"
+      );
+
+
+    const pendingMobile =
+      localStorage.getItem(
+        "pendingMobile"
+      );
+
+
+
+    if (
+      pendingName &&
+      pendingMobile
+    ) {
+
+      await addDoc(
+        collection(
+          db,
+          "registrationRequests"
+        ),
+        {
+
+          uid:
+            result.user.uid,
+
+          name:
+            pendingName,
+
+          email:
+            verifiedEmail,
+
+          mobile:
+            pendingMobile,
+
+          verifiedBy:
+            "gmail",
+
+          status:
+            "pending",
+
+          createdAt:
+            serverTimestamp()
+
+        }
+      );
+
+
+
+      localStorage.removeItem(
+        "pendingName"
+      );
+
+      localStorage.removeItem(
+        "pendingMobile"
+      );
+
+      localStorage.removeItem(
+        "emailForSignIn"
+      );
+
+
+
+      showMessage(
+        "registerMessage",
+        "Gmail verified successfully. Your registration request has been sent to the Coordinator.",
+        "success"
+      );
+
+
+      showRegister();
+
+      return;
+
+    }
+
+
+
+    /* NORMAL USER */
+
+    showMessage(
+      "loginMessage",
+      "Gmail verified successfully.",
+      "success"
+    );
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "loginMessage",
+      "Verification failed: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+processEmailLink();
 
 </script>
 
