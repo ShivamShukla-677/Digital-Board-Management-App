@@ -1488,6 +1488,35 @@
 
       try {
 
+        /* Check secure HTTPS context */
+
+        if (!window.isSecureContext) {
+
+          showMessage(
+            "Screen sharing requires a secure HTTPS connection. Please open the GitHub Pages HTTPS website.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /* Check browser support */
+
+        if (
+          !navigator.mediaDevices ||
+          typeof navigator.mediaDevices.getDisplayMedia !== "function"
+        ) {
+
+          showMessage(
+            "Screen sharing is not available in this browser or page. Please open this website directly in Google Chrome or Microsoft Edge.",
+            "error"
+          );
+
+          return;
+        }
+
+
         screenStream =
           await navigator
             .mediaDevices
@@ -1634,6 +1663,7 @@
 
             if (
               data.answer &&
+              peerConnection &&
               !peerConnection
                 .currentRemoteDescription
             ) {
@@ -1673,6 +1703,10 @@
                     change.type !==
                     "added"
                   )
+                    return;
+
+
+                  if (!peerConnection)
                     return;
 
 
@@ -1719,6 +1753,20 @@
       } catch (error) {
 
         console.error(error);
+
+
+        if (
+          error.name ===
+          "NotAllowedError"
+        ) {
+
+          showMessage(
+            "Screen sharing was cancelled or permission was denied.",
+            "error"
+          );
+
+          return;
+        }
 
 
         showMessage(
