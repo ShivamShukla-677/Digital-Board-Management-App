@@ -6,7 +6,7 @@
 
   <title>Digital Board</title>
 
-  <!-- QR Code Library -->
+  <!-- QR CODE LIBRARY -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
   <style>
@@ -19,7 +19,6 @@
       margin: 0;
       min-height: 100vh;
       background: #f4f7fb;
-
       display: flex;
       justify-content: center;
       align-items: center;
@@ -28,15 +27,10 @@
     .board {
       width: 90%;
       max-width: 650px;
-
       background: white;
-
       padding: 40px;
-
       border-radius: 18px;
-
       text-align: center;
-
       box-shadow: 0 5px 20px rgba(0,0,0,0.12);
     }
 
@@ -57,23 +51,16 @@
     .code {
       font-size: 42px;
       font-weight: bold;
-
       letter-spacing: 8px;
-
       background: #f1f5f9;
-
       padding: 20px;
-
       border-radius: 12px;
-
       margin-bottom: 30px;
     }
 
     #qrcode {
       display: flex;
       justify-content: center;
-      align-items: center;
-
       margin: 20px auto;
     }
 
@@ -83,7 +70,6 @@
     }
 
     .qr-text {
-      margin-top: 15px;
       color: #555;
     }
 
@@ -96,227 +82,290 @@
 
 <body>
 
-  <div class="board">
+<div class="board">
 
-    <h1>Digital Board</h1>
+  <h1>Digital Board</h1>
 
-    <div class="subtitle">
-      Scan QR Code or use the Board Code
-    </div>
-
-
-    <!-- UNIQUE CODE -->
-
-    <div class="code-label">
-      Board Code
-    </div>
-
-    <div id="boardCode" class="code">
-      ------
-    </div>
-
-
-    <!-- SAME QR -->
-
-    <div id="qrcode"></div>
-
-    <div class="qr-text">
-      Scan this QR Code to open the Digital Board App
-    </div>
-
-
-    <div id="status" class="status">
-      Creating code...
-    </div>
-
+  <div class="subtitle">
+    Scan QR Code or use the Board Code
   </div>
 
+  <div class="code-label">
+    Current Board Code
+  </div>
 
-  <script>
+  <div id="boardCode" class="code">
+    ------
+  </div>
 
-    // ==========================================
-    // APP URL
-    // ==========================================
+  <div id="qrcode"></div>
 
-    const APP_URL =
-      "https://shivamshukla-677.github.io/Digital-Board-Management-App/";
+  <div class="qr-text">
+    Scan this QR Code to open the Digital Board App
+  </div>
 
+  <div id="status" class="status">
+    Creating new code...
+  </div>
 
-    // ==========================================
-    // RANDOM CODE SETTINGS
-    // ==========================================
-
-    const characters =
-      "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-    const CODE_LENGTH = 6;
-
-
-    // ==========================================
-    // GENERATE RANDOM 6 CHARACTER CODE
-    // ==========================================
-
-    function generateRandomCode() {
-
-      let code = "";
-
-      for (let i = 0; i < CODE_LENGTH; i++) {
-
-        const randomIndex =
-          Math.floor(
-            Math.random() * characters.length
-          );
-
-        code += characters[randomIndex];
-
-      }
-
-      return code;
-
-    }
+</div>
 
 
-    // ==========================================
-    // GET OLD USED CODES
-    // ==========================================
+<script type="module">
 
-    function getUsedCodes() {
+  // ==========================================
+  // FIREBASE
+  // ==========================================
 
-      try {
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-        const saved =
-          localStorage.getItem(
-            "usedBoardCodes"
-          );
-
-        if (!saved) {
-          return [];
-        }
-
-        return JSON.parse(saved);
-
-      } catch (error) {
-
-        return [];
-
-      }
-
-    }
+  import {
+    getFirestore,
+    collection,
+    query,
+    where,
+    getDocs,
+    addDoc,
+    serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-    // ==========================================
-    // SAVE USED CODE
-    // ==========================================
+  const firebaseConfig = {
 
-    function saveUsedCode(code) {
+    apiKey:
+      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
 
-      const codes =
-        getUsedCodes();
+    authDomain:
+      "digital-board-acces-management.firebaseapp.com",
 
-      codes.push(code);
+    projectId:
+      "digital-board-acces-management",
 
-      localStorage.setItem(
-        "usedBoardCodes",
-        JSON.stringify(codes)
-      );
+    storageBucket:
+      "digital-board-acces-management.firebasestorage.app",
 
-    }
+    messagingSenderId:
+      "902348932290",
 
+    appId:
+      "1:902348932290:web:db47f1b012bf882886675b"
 
-    // ==========================================
-    // CREATE NEW UNIQUE CODE
-    // ==========================================
-
-    function createUniqueCode() {
-
-      const usedCodes =
-        getUsedCodes();
+  };
 
 
-      let newCode;
+  const app =
+    initializeApp(firebaseConfig);
+
+  const db =
+    getFirestore(app);
 
 
-      do {
+  // ==========================================
+  // SETTINGS
+  // ==========================================
 
-        newCode =
-          generateRandomCode();
+  const CHARACTERS =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-      } while (
-        usedCodes.includes(newCode)
-      );
+  const CODE_LENGTH = 6;
 
 
-      saveUsedCode(newCode);
+  // ==========================================
+  // RANDOM CODE
+  // ==========================================
 
-      return newCode;
+  function generateRandomCode() {
+
+    let code = "";
+
+    for (
+      let i = 0;
+      i < CODE_LENGTH;
+      i++
+    ) {
+
+      const randomIndex =
+        Math.floor(
+          Math.random() *
+          CHARACTERS.length
+        );
+
+      code +=
+        CHARACTERS[randomIndex];
 
     }
 
+    return code;
 
-    // ==========================================
-    // SHOW CODE
-    // ==========================================
+  }
 
-    function showCode() {
+
+  // ==========================================
+  // CHECK CODE IN FIRESTORE
+  // ==========================================
+
+  async function codeExists(code) {
+
+    const q = query(
+      collection(db, "boards"),
+      where("boardCode", "==", code)
+    );
+
+    const snapshot =
+      await getDocs(q);
+
+    return !snapshot.empty;
+
+  }
+
+
+  // ==========================================
+  // CREATE UNIQUE CODE
+  // ==========================================
+
+  async function createUniqueCode() {
+
+    while (true) {
 
       const code =
-        createUniqueCode();
+        generateRandomCode();
+
+      const exists =
+        await codeExists(code);
+
+      if (!exists) {
+
+        return code;
+
+      }
+
+    }
+
+  }
+
+
+  // ==========================================
+  // SAVE CODE TO FIRESTORE
+  // ==========================================
+
+  async function saveBoardCode(code) {
+
+    await addDoc(
+      collection(db, "boards"),
+      {
+
+        boardCode: code,
+
+        status: "available",
+
+        createdAt:
+          serverTimestamp()
+
+      }
+    );
+
+  }
+
+
+  // ==========================================
+  // CREATE NEW BOARD CODE
+  // ==========================================
+
+  async function createBoardCode() {
+
+    try {
+
+      const newCode =
+        await createUniqueCode();
+
+
+      await saveBoardCode(
+        newCode
+      );
 
 
       document.getElementById(
         "boardCode"
-      ).textContent = code;
+      ).textContent =
+        newCode;
 
 
       document.getElementById(
         "status"
       ).textContent =
-        "New unique code generated.";
-
-    }
+        "New unique code saved successfully.";
 
 
-    // ==========================================
-    // CREATE SAME QR CODE
-    // ==========================================
+    } catch (error) {
 
-    function createQR() {
-
-      const qrContainer =
-        document.getElementById(
-          "qrcode"
-        );
-
-
-      qrContainer.innerHTML = "";
-
-
-      new QRCode(
-        qrContainer,
-        {
-          text: APP_URL,
-
-          width: 220,
-
-          height: 220,
-
-          correctLevel:
-            QRCode.CorrectLevel.H
-        }
+      console.error(
+        "Board code error:",
+        error
       );
 
+
+      document.getElementById(
+        "boardCode"
+      ).textContent =
+        "ERROR";
+
+
+      document.getElementById(
+        "status"
+      ).textContent =
+        "Code save nahi ho saka. Firestore rules check karein.";
+
     }
 
+  }
 
-    // ==========================================
-    // START
-    // ==========================================
 
-    createQR();
+  // ==========================================
+  // SAME QR FOR ALL BOARDS
+  // ==========================================
 
-    showCode();
+  function createQRCode() {
 
-  </script>
+    const qrContainer =
+      document.getElementById(
+        "qrcode"
+      );
+
+
+    qrContainer.innerHTML = "";
+
+
+    new QRCode(
+      qrContainer,
+      {
+
+        text:
+          "https://shivamshukla-677.github.io/Digital-Board-Management-App/",
+
+        width: 220,
+
+        height: 220,
+
+        correctLevel:
+          QRCode.CorrectLevel.H
+
+      }
+    );
+
+  }
+
+
+  // ==========================================
+  // START
+  // ==========================================
+
+  createQRCode();
+
+  createBoardCode();
+
+</script>
 
 </body>
 </html>
