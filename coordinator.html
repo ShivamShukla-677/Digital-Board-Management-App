@@ -12,102 +12,91 @@
 
   <title>Coordinator Dashboard</title>
 
+
   <style>
 
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
     body {
-      margin: 0;
+      font-family: Arial, sans-serif;
       background: #f4f6f8;
-    }
-
-    header {
-      background: #007bff;
-      color: white;
-      padding: 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    header h2 {
       margin: 0;
-    }
-
-    .logout {
-      padding: 10px 18px;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      background: white;
-      color: #007bff;
-      font-weight: bold;
+      padding: 20px;
     }
 
     .container {
-      width: 95%;
-      max-width: 1200px;
-      margin: 30px auto;
+      max-width: 1100px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
-    .card {
-      background: white;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,.08);
-      overflow-x: auto;
+    h1 {
+      text-align: center;
+    }
+
+    button {
+      padding: 9px 14px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+      margin: 3px;
+    }
+
+    .approve {
+      background: #198754;
+    }
+
+    .reject {
+      background: #dc3545;
+    }
+
+    .delete {
+      background: #6c757d;
+    }
+
+    .logout {
+      background: #212529;
+      float: right;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 20px;
+      margin-top: 25px;
     }
 
     th,
     td {
-      padding: 12px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: center;
     }
 
     th {
-      background: #f1f1f1;
-    }
-
-    button {
-      padding: 8px 12px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 2px;
-    }
-
-    .approve {
-      background: #28a745;
+      background: #1976d2;
       color: white;
     }
 
-    .reject {
-      background: #dc3545;
-      color: white;
+    .pending {
+      color: #d97706;
+      font-weight: bold;
     }
 
-    .delete {
-      background: #343a40;
-      color: white;
+    .approved {
+      color: #198754;
+      font-weight: bold;
     }
 
-    .status {
+    .rejected {
+      color: #dc3545;
       font-weight: bold;
     }
 
     #loading {
       text-align: center;
-      padding: 30px;
+      margin-top: 20px;
     }
 
   </style>
@@ -117,57 +106,53 @@
 
 <body>
 
-<header>
-
-  <h2>Coordinator Dashboard</h2>
+<div class="container">
 
   <button
-    id="logoutBtn"
     class="logout"
+    onclick="logoutCoordinator()"
   >
     Logout
   </button>
 
-</header>
 
+  <h1>Coordinator Dashboard</h1>
 
-<div class="container">
+  <p id="welcome"></p>
 
-  <div class="card">
-
-    <h2>Registration Requests</h2>
-
-    <div id="loading">
-      Checking Coordinator access...
-    </div>
-
-    <table id="requestTable" style="display:none;">
-
-      <thead>
-
-        <tr>
-
-          <th>Name</th>
-
-          <th>Gmail</th>
-
-          <th>Mobile</th>
-
-          <th>Verification</th>
-
-          <th>Status</th>
-
-          <th>Action</th>
-
-        </tr>
-
-      </thead>
-
-      <tbody id="requestBody"></tbody>
-
-    </table>
-
+  <div id="loading">
+    Loading registrations...
   </div>
+
+
+  <table id="registrationTable">
+
+    <thead>
+
+      <tr>
+
+        <th>Name</th>
+
+        <th>Gmail</th>
+
+        <th>Mobile</th>
+
+        <th>Verification</th>
+
+        <th>Status</th>
+
+        <th>Action</th>
+
+      </tr>
+
+    </thead>
+
+
+    <tbody id="registrationBody">
+
+    </tbody>
+
+  </table>
 
 </div>
 
@@ -176,16 +161,14 @@
 
   import {
     initializeApp
-  }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
 
   import {
     getAuth,
     onAuthStateChanged,
     signOut
-  }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
 
   import {
@@ -195,13 +178,12 @@
     updateDoc,
     deleteDoc,
     doc
-  }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-  /* ==============================
-     FIREBASE
-  ============================== */
+  // =========================
+  // FIREBASE CONFIG
+  // =========================
 
   const firebaseConfig = {
 
@@ -238,92 +220,62 @@
     getFirestore(app);
 
 
-  /* ==============================
-     COORDINATOR EMAIL
-  ============================== */
-
   const COORDINATOR_EMAIL =
     "anujshivamshukla99359@gmail.com";
 
 
-  /* ==============================
-     CHECK LOGIN
-  ============================== */
+  // =========================
+  // AUTH CHECK
+  // =========================
 
   onAuthStateChanged(
     auth,
-    async function(user) {
+    async user => {
 
       if (!user) {
 
-        window.location.replace(
-          "index.html"
-        );
+        window.location.href =
+          "index.html";
 
         return;
-
       }
 
 
-      const loggedInEmail =
-        user.email
-          .trim()
-          .toLowerCase();
-
-
-      console.log(
-        "Dashboard user:",
-        loggedInEmail
-      );
-
-
       if (
-        loggedInEmail !==
+        user.email.toLowerCase() !==
         COORDINATOR_EMAIL
       ) {
 
         await signOut(auth);
 
-        alert(
-          "You are not authorized to access Coordinator Dashboard."
-        );
-
-        window.location.replace(
-          "index.html"
-        );
+        window.location.href =
+          "index.html";
 
         return;
-
       }
 
 
-      /* AUTHORIZED */
-
       document.getElementById(
-        "loading"
-      ).style.display = "none";
+        "welcome"
+      ).textContent =
+        "Welcome, Coordinator";
 
 
-      document.getElementById(
-        "requestTable"
-      ).style.display = "table";
-
-
-      loadRequests();
+      loadRegistrations();
 
     }
   );
 
 
-  /* ==============================
-     LOAD REQUESTS
-  ============================== */
+  // =========================
+  // LOAD REGISTRATIONS
+  // =========================
 
-  async function loadRequests() {
+  async function loadRegistrations() {
 
     const body =
       document.getElementById(
-        "requestBody"
+        "registrationBody"
       );
 
 
@@ -341,61 +293,90 @@
         );
 
 
+      document.getElementById(
+        "loading"
+      ).style.display = "none";
+
+
+      if (snapshot.empty) {
+
+        body.innerHTML = `
+          <tr>
+            <td colspan="6">
+              No registration requests found.
+            </td>
+          </tr>
+        `;
+
+        return;
+      }
+
+
       snapshot.forEach(
-        function(item) {
+        registrationDoc => {
 
           const data =
-            item.data();
+            registrationDoc.data();
+
+
+          const id =
+            registrationDoc.id;
 
 
           const row =
             document.createElement("tr");
 
 
+          let statusClass =
+            data.status || "pending";
+
+
           row.innerHTML = `
 
             <td>
-              ${data.name || ""}
+              ${escapeHTML(data.name || "")}
             </td>
 
             <td>
-              ${data.email || ""}
+              ${escapeHTML(data.email || "")}
             </td>
 
             <td>
-              ${data.mobile || ""}
+              ${escapeHTML(data.mobile || "")}
             </td>
 
             <td>
-              ${data.verifiedBy || ""}
+              ${escapeHTML(
+                data.verification ||
+                "Temporary Password"
+              )}
             </td>
 
-            <td class="status">
-              ${data.status || ""}
+            <td class="${statusClass}">
+              ${escapeHTML(
+                data.status || "pending"
+              )}
             </td>
 
             <td>
 
               <button
                 class="approve"
-                data-id="${item.id}"
-                data-action="approve"
+                onclick="approveUser('${id}')"
               >
                 Approve
               </button>
 
               <button
                 class="reject"
-                data-id="${item.id}"
-                data-action="reject"
+                onclick="rejectUser('${id}')"
               >
                 Reject
               </button>
 
               <button
                 class="delete"
-                data-id="${item.id}"
-                data-action="delete"
+                onclick="deleteUser('${id}')"
               >
                 Delete
               </button>
@@ -411,144 +392,180 @@
       );
 
 
-      /* BUTTON EVENTS */
-
-      document
-        .querySelectorAll("[data-action]")
-        .forEach(
-          function(button) {
-
-            button.onclick =
-              function() {
-
-                handleAction(
-                  button.dataset.id,
-                  button.dataset.action
-                );
-
-              };
-
-          }
-        );
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
       console.error(error);
 
-      body.innerHTML = `
-        <tr>
-          <td colspan="6">
-            Error loading requests:
-            ${error.message}
-          </td>
-        </tr>
-      `;
+      document.getElementById(
+        "loading"
+      ).textContent =
+        "Error loading registrations: " +
+        error.message;
 
     }
 
   }
 
 
-  /* ==============================
-     APPROVE / REJECT / DELETE
-  ============================== */
+  // =========================
+  // APPROVE
+  // =========================
 
-  async function handleAction(
-    id,
-    action
-  ) {
+  window.approveUser =
+    async function(id) {
 
-    try {
-
-      const requestRef =
-        doc(
-          db,
-          "registrationRequests",
-          id
-        );
-
-
-      if (action === "approve") {
+      try {
 
         await updateDoc(
-          requestRef,
+          doc(
+            db,
+            "registrationRequests",
+            id
+          ),
           {
             status: "approved"
           }
         );
 
+
+        alert(
+          "User approved successfully."
+        );
+
+
+        loadRegistrations();
+
+
+      } catch (error) {
+
+        alert(
+          "Approve failed: " +
+          error.message
+        );
+
       }
 
+    };
 
-      if (action === "reject") {
+
+  // =========================
+  // REJECT
+  // =========================
+
+  window.rejectUser =
+    async function(id) {
+
+      try {
 
         await updateDoc(
-          requestRef,
+          doc(
+            db,
+            "registrationRequests",
+            id
+          ),
           {
             status: "rejected"
           }
         );
 
-      }
+
+        alert(
+          "User rejected."
+        );
 
 
-      if (action === "delete") {
-
-        const yes =
-          confirm(
-            "Delete this registration?"
-          );
+        loadRegistrations();
 
 
-        if (!yes) {
+      } catch (error) {
 
-          return;
-
-        }
-
-
-        await deleteDoc(
-          requestRef
+        alert(
+          "Reject failed: " +
+          error.message
         );
 
       }
 
+    };
 
-      await loadRequests();
 
-    }
+  // =========================
+  // DELETE
+  // =========================
 
-    catch (error) {
+  window.deleteUser =
+    async function(id) {
 
-      console.error(error);
+      const confirmDelete =
+        confirm(
+          "Are you sure you want to delete this registration?"
+        );
 
-      alert(
-        "Action failed: " +
-        error.message
-      );
 
-    }
+      if (!confirmDelete)
+        return;
+
+
+      try {
+
+        await deleteDoc(
+          doc(
+            db,
+            "registrationRequests",
+            id
+          )
+        );
+
+
+        alert(
+          "Registration deleted."
+        );
+
+
+        loadRegistrations();
+
+
+      } catch (error) {
+
+        alert(
+          "Delete failed: " +
+          error.message
+        );
+
+      }
+
+    };
+
+
+  // =========================
+  // LOGOUT
+  // =========================
+
+  window.logoutCoordinator =
+    async function() {
+
+      await signOut(auth);
+
+      window.location.href =
+        "index.html";
+
+    };
+
+
+  // =========================
+  // SECURITY
+  // =========================
+
+  function escapeHTML(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
 
   }
-
-
-  /* ==============================
-     LOGOUT
-  ============================== */
-
-  document.getElementById(
-    "logoutBtn"
-  ).onclick = async function() {
-
-    await signOut(auth);
-
-    window.location.replace(
-      "index.html"
-    );
-
-  };
 
 </script>
 
