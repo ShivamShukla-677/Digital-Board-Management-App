@@ -22,8 +22,6 @@
       color: #172033;
     }
 
-    /* HEADER */
-
     header {
       background: rgba(255,255,255,0.92);
       backdrop-filter: blur(12px);
@@ -77,8 +75,6 @@
       font-weight: 600;
     }
 
-    /* MAIN */
-
     main {
       width: 100%;
       max-width: 1050px;
@@ -115,8 +111,6 @@
       line-height: 1.6;
     }
 
-    /* CARD */
-
     .card {
       max-width: 520px;
       margin: auto;
@@ -126,8 +120,6 @@
       padding: 28px;
       box-shadow: 0 20px 50px rgba(15,23,42,0.08);
     }
-
-    /* TABS */
 
     .tabs {
       display: grid;
@@ -155,8 +147,6 @@
       color: #2563eb;
       box-shadow: 0 2px 7px rgba(0,0,0,0.06);
     }
-
-    /* FORM */
 
     .form-title {
       margin-bottom: 5px;
@@ -199,8 +189,6 @@
       box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
     }
 
-    /* BUTTON */
-
     .primary-btn {
       width: 100%;
       border: none;
@@ -233,8 +221,6 @@
       cursor: pointer;
     }
 
-    /* MESSAGE */
-
     .message {
       margin-top: 18px;
       padding: 13px;
@@ -261,8 +247,6 @@
       color: #1d4ed8;
       border: 1px solid #bfdbfe;
     }
-
-    /* BOARD ACCESS */
 
     .board-box {
       margin-top: 20px;
@@ -309,8 +293,6 @@
       text-transform: uppercase;
     }
 
-    /* SHARE */
-
     #shareArea {
       margin-top: 20px;
     }
@@ -334,8 +316,6 @@
       display: none;
     }
 
-    /* FOOTER */
-
     footer {
       text-align: center;
       padding: 25px;
@@ -346,8 +326,6 @@
     .hidden {
       display: none !important;
     }
-
-    /* MOBILE */
 
     @media (max-width: 600px) {
 
@@ -419,8 +397,6 @@
 
 
   <div class="card">
-
-    <!-- TABS -->
 
     <div class="tabs">
 
@@ -625,6 +601,7 @@
 
 
         <button
+          id="startShareBtn"
           class="primary-btn"
           onclick="startScreenShare()"
         >
@@ -753,6 +730,10 @@
   let screenStream = null;
 
   let approvalListener = null;
+
+  let sessionListener = null;
+
+  let boardIceListener = null;
 
 
   /* =========================
@@ -920,8 +901,6 @@
 
       try {
 
-        /* Duplicate Gmail */
-
         const emailQuery =
           query(
             collection(
@@ -950,8 +929,6 @@
           return;
         }
 
-
-        /* Duplicate Mobile */
 
         const mobileQuery =
           query(
@@ -982,8 +959,6 @@
         }
 
 
-        /* Firebase Account */
-
         const userCredential =
           await createUserWithEmailAndPassword(
             auth,
@@ -995,8 +970,6 @@
         const uid =
           userCredential.user.uid;
 
-
-        /* Registration */
 
         await addDoc(
           collection(
@@ -1047,8 +1020,6 @@
           .getElementById("regMobile")
           .value = "";
 
-
-        /* Start live approval checking */
 
         startApprovalListener(
           email
@@ -1230,8 +1201,6 @@
 
       try {
 
-        /* Coordinator */
-
         if (
           email ===
           COORDINATOR_EMAIL
@@ -1250,8 +1219,6 @@
           return;
         }
 
-
-        /* Find user */
 
         const userQuery =
           query(
@@ -1297,8 +1264,6 @@
           );
 
 
-          /* Live approval */
-
           startApprovalListener(
             email
           );
@@ -1334,8 +1299,6 @@
           return;
         }
 
-
-        /* Approved → Login */
 
         await signInWithEmailAndPassword(
           auth,
@@ -1486,30 +1449,39 @@
       }
 
 
+      const startButton =
+        document.getElementById(
+          "startShareBtn"
+        );
+
+
       try {
 
-        /* Secure HTTPS context */
+        /*
+          IMPORTANT:
+          getDisplayMedia() is called directly
+          from the button click.
+        */
 
         if (!window.isSecureContext) {
 
           showMessage(
-            "Screen sharing requires a secure HTTPS connection. Please open the GitHub Pages HTTPS website.",
+            "Please open the GitHub Pages HTTPS website directly.",
             "error"
           );
 
           return;
         }
 
-
-        /* Browser support */
 
         if (
           !navigator.mediaDevices ||
-          typeof navigator.mediaDevices.getDisplayMedia !== "function"
+          typeof navigator.mediaDevices.getDisplayMedia !==
+          "function"
         ) {
 
           showMessage(
-            "Screen sharing is not available. Please open this website directly in Google Chrome.",
+            "Screen sharing is not supported on this page. Please open the GitHub Pages website directly in Chrome.",
             "error"
           );
 
@@ -1517,19 +1489,31 @@
         }
 
 
-        /* START SCREEN SHARE */
+        startButton.disabled = true;
+
+        startButton.textContent =
+          "Opening Screen Share...";
+
+
+        /*
+          START SCREEN CAPTURE
+        */
 
         screenStream =
           await navigator.mediaDevices.getDisplayMedia({
 
-            video: true,
+            video: {
+              cursor: "always"
+            },
 
             audio: false
 
           });
 
 
-        /* Video Preview */
+        /*
+          VIDEO PREVIEW
+        */
 
         const video =
           document.getElementById(
@@ -1544,6 +1528,15 @@
           "block";
 
 
+        /*
+          BUTTONS
+        */
+
+        startButton.classList.add(
+          "hidden"
+        );
+
+
         document
           .getElementById(
             "stopShareBtn"
@@ -1552,7 +1545,9 @@
           .remove("hidden");
 
 
-        /* WebRTC */
+        /*
+          WEBRTC CONNECTION
+        */
 
         peerConnection =
           new RTCPeerConnection({
@@ -1569,6 +1564,10 @@
           });
 
 
+        /*
+          ADD SCREEN TRACK
+        */
+
         screenStream
           .getTracks()
           .forEach(track => {
@@ -1581,7 +1580,9 @@
           });
 
 
-        /* Teacher ICE */
+        /*
+          TEACHER ICE
+        */
 
         peerConnection.onicecandidate =
           async event => {
@@ -1590,20 +1591,36 @@
               return;
 
 
-            await addDoc(
-              collection(
-                db,
-                "sessions",
-                currentBoardCode,
-                "teacherCandidates"
-              ),
-              event.candidate.toJSON()
-            );
+            try {
+
+              await addDoc(
+
+                collection(
+                  db,
+                  "sessions",
+                  currentBoardCode,
+                  "teacherCandidates"
+                ),
+
+                event.candidate.toJSON()
+
+              );
+
+            } catch (error) {
+
+              console.error(
+                "Teacher ICE error:",
+                error
+              );
+
+            }
 
           };
 
 
-        /* Create Offer */
+        /*
+          CREATE OFFER
+        */
 
         const offer =
           await peerConnection.createOffer();
@@ -1614,7 +1631,9 @@
         );
 
 
-        /* Session */
+        /*
+          SESSION
+        */
 
         const sessionRef =
           doc(
@@ -1648,96 +1667,145 @@
         );
 
 
-        /* Board Answer */
+        /*
+          BOARD ANSWER
+        */
 
-        onSnapshot(
-          sessionRef,
-          async snapshot => {
+        if (sessionListener) {
 
-            const data =
-              snapshot.data();
+          sessionListener();
 
-            if (!data)
-              return;
+          sessionListener = null;
+
+        }
 
 
-            if (
-              data.answer &&
-              peerConnection &&
-              !peerConnection.currentRemoteDescription
-            ) {
+        sessionListener =
+          onSnapshot(
+            sessionRef,
+            async snapshot => {
 
-              await peerConnection.setRemoteDescription(
-                new RTCSessionDescription(
-                  data.answer
-                )
-              );
+              const data =
+                snapshot.data();
+
+
+              if (!data)
+                return;
+
+
+              if (
+                data.answer &&
+                peerConnection &&
+                !peerConnection.currentRemoteDescription
+              ) {
+
+                try {
+
+                  await peerConnection.setRemoteDescription(
+
+                    new RTCSessionDescription(
+                      data.answer
+                    )
+
+                  );
+
+                } catch (error) {
+
+                  console.error(
+                    "Remote description error:",
+                    error
+                  );
+
+                }
+
+              }
+
+            }
+          );
+
+
+        /*
+          BOARD ICE
+        */
+
+        if (boardIceListener) {
+
+          boardIceListener();
+
+          boardIceListener = null;
+
+        }
+
+
+        boardIceListener =
+          onSnapshot(
+
+            collection(
+              db,
+              "sessions",
+              currentBoardCode,
+              "boardCandidates"
+            ),
+
+            snapshot => {
+
+              snapshot
+                .docChanges()
+                .forEach(
+                  async change => {
+
+                    if (
+                      change.type !==
+                      "added"
+                    )
+                      return;
+
+
+                    if (
+                      !peerConnection
+                    )
+                      return;
+
+
+                    try {
+
+                      await peerConnection.addIceCandidate(
+
+                        new RTCIceCandidate(
+                          change.doc.data()
+                        )
+
+                      );
+
+                    } catch (error) {
+
+                      console.log(
+                        "ICE error:",
+                        error
+                      );
+
+                    }
+
+                  }
+                );
 
             }
 
-          }
-        );
+          );
 
 
-        /* Board ICE */
+        /*
+          USER STOPS SHARE FROM CHROME
+        */
 
-        onSnapshot(
-
-          collection(
-            db,
-            "sessions",
-            currentBoardCode,
-            "boardCandidates"
-          ),
-
-          snapshot => {
-
-            snapshot
-              .docChanges()
-              .forEach(
-                async change => {
-
-                  if (
-                    change.type !==
-                    "added"
-                  )
-                    return;
+        const videoTrack =
+          screenStream
+            .getVideoTracks()[0];
 
 
-                  if (!peerConnection)
-                    return;
+        if (videoTrack) {
 
-
-                  try {
-
-                    await peerConnection.addIceCandidate(
-                      new RTCIceCandidate(
-                        change.doc.data()
-                      )
-                    );
-
-                  } catch (error) {
-
-                    console.log(
-                      "ICE error:",
-                      error
-                    );
-
-                  }
-
-                }
-              );
-
-          }
-
-        );
-
-
-        /* Chrome share window closed */
-
-        screenStream
-          .getVideoTracks()[0]
-          .addEventListener(
+          videoTrack.addEventListener(
             "ended",
             () => {
 
@@ -1745,6 +1813,8 @@
 
             }
           );
+
+        }
 
 
         showMessage(
@@ -1755,8 +1825,26 @@
 
       } catch (error) {
 
-        console.error(error);
+        console.error(
+          "Screen Share Error:",
+          error
+        );
 
+
+        /*
+          RESET BUTTON
+        */
+
+        startButton.disabled =
+          false;
+
+        startButton.textContent =
+          "Start Screen Share";
+
+
+        /*
+          USER CANCELLED
+        */
 
         if (
           error.name ===
@@ -1772,9 +1860,35 @@
         }
 
 
+        /*
+          NOT SUPPORTED
+        */
+
+        if (
+          error.name ===
+          "NotSupportedError"
+        ) {
+
+          showMessage(
+            "Screen sharing is not supported on this page. Please open the GitHub Pages HTTPS website directly.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        /*
+          OTHER ERROR
+        */
+
         showMessage(
           "Screen sharing failed: " +
-          error.message,
+          (
+            error.message ||
+            error.name ||
+            "Unknown error"
+          ),
           "error"
         );
 
@@ -1815,18 +1929,39 @@
         }
 
 
+        if (sessionListener) {
+
+          sessionListener();
+
+          sessionListener = null;
+
+        }
+
+
+        if (boardIceListener) {
+
+          boardIceListener();
+
+          boardIceListener = null;
+
+        }
+
+
         if (currentBoardCode) {
 
           await updateDoc(
+
             doc(
               db,
               "sessions",
               currentBoardCode
             ),
+
             {
               status:
                 "ended"
             }
+
           ).catch(
             () => {}
           );
@@ -1835,13 +1970,13 @@
 
 
         const video =
-          document
-            .getElementById(
-              "videoPreview"
-            );
+          document.getElementById(
+            "videoPreview"
+          );
 
 
-        video.srcObject = null;
+        video.srcObject =
+          null;
 
         video.style.display =
           "none";
@@ -1853,6 +1988,25 @@
           )
           .classList
           .add("hidden");
+
+
+        const startButton =
+          document.getElementById(
+            "startShareBtn"
+          );
+
+
+        startButton.classList.remove(
+          "hidden"
+        );
+
+
+        startButton.disabled =
+          false;
+
+
+        startButton.textContent =
+          "Start Screen Share";
 
 
         showMessage(
@@ -1870,7 +2024,9 @@
     };
 
 
-  /* Initial tab */
+  /* =========================
+     INITIAL TAB
+  ========================= */
 
   showLogin();
 
