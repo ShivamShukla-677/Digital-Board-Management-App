@@ -445,6 +445,21 @@
       </div>
 
 
+      <div class="input-group">
+
+        <label>
+          Password
+        </label>
+
+        <input
+          type="password"
+          id="loginPassword"
+          placeholder="Enter your password"
+        >
+
+      </div>
+
+
       <button
         class="primary-btn"
         onclick="loginUser()"
@@ -512,6 +527,21 @@
           id="regMobile"
           placeholder="10 digit mobile number"
           maxlength="10"
+        >
+
+      </div>
+
+
+      <div class="input-group">
+
+        <label>
+          Password
+        </label>
+
+        <input
+          type="password"
+          id="regPassword"
+          placeholder="Create your password"
         >
 
       </div>
@@ -716,7 +746,7 @@
      SETTINGS
   ========================= */
 
-  const TEMP_PASSWORD =
+  const COORDINATOR_PASSWORD =
     "password123456";
 
   const COORDINATOR_EMAIL =
@@ -865,8 +895,13 @@
           .value
           .trim();
 
+      const password =
+        document
+          .getElementById("regPassword")
+          .value;
 
-      if (!name || !email || !mobile) {
+
+      if (!name || !email || !mobile || !password) {
 
         showMessage(
           "Please fill all fields.",
@@ -892,6 +927,17 @@
 
         showMessage(
           "Mobile number must contain exactly 10 digits.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if (password.length < 6) {
+
+        showMessage(
+          "Password must contain at least 6 characters.",
           "error"
         );
 
@@ -963,7 +1009,7 @@
           await createUserWithEmailAndPassword(
             auth,
             email,
-            TEMP_PASSWORD
+            password
           );
 
 
@@ -985,9 +1031,6 @@
             email: email,
 
             mobile: mobile,
-
-            verification:
-              "Temporary Password",
 
             status:
               "pending",
@@ -1020,6 +1063,10 @@
           .getElementById("regMobile")
           .value = "";
 
+        document
+          .getElementById("regPassword")
+          .value = "";
+
 
         startApprovalListener(
           email
@@ -1038,6 +1085,20 @@
 
           showMessage(
             "Already exists. Please login.",
+            "error"
+          );
+
+          return;
+        }
+
+
+        if (
+          error.code ===
+          "auth/weak-password"
+        ) {
+
+          showMessage(
+            "Password is too weak. Please use at least 6 characters.",
             "error"
           );
 
@@ -1187,11 +1248,27 @@
           .trim()
           .toLowerCase();
 
+      const password =
+        document
+          .getElementById("loginPassword")
+          .value;
+
 
       if (!validGmail(email)) {
 
         showMessage(
           "Please enter a valid Gmail address.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      if (!password) {
+
+        showMessage(
+          "Please enter your password.",
           "error"
         );
 
@@ -1209,7 +1286,7 @@
           await signInWithEmailAndPassword(
             auth,
             email,
-            TEMP_PASSWORD
+            COORDINATOR_PASSWORD
           );
 
 
@@ -1303,7 +1380,7 @@
         await signInWithEmailAndPassword(
           auth,
           email,
-          TEMP_PASSWORD
+          password
         );
 
 
@@ -1325,7 +1402,7 @@
         ) {
 
           showMessage(
-            "Login failed. Please check the temporary password in Firebase Authentication.",
+            "Incorrect Gmail or password.",
             "error"
           );
 
@@ -1457,12 +1534,6 @@
 
       try {
 
-        /*
-          IMPORTANT:
-          getDisplayMedia() is called directly
-          from the button click.
-        */
-
         if (!window.isSecureContext) {
 
           showMessage(
@@ -1495,10 +1566,6 @@
           "Opening Screen Share...";
 
 
-        /*
-          START SCREEN CAPTURE
-        */
-
         screenStream =
           await navigator.mediaDevices.getDisplayMedia({
 
@@ -1510,10 +1577,6 @@
 
           });
 
-
-        /*
-          VIDEO PREVIEW
-        */
 
         const video =
           document.getElementById(
@@ -1528,10 +1591,6 @@
           "block";
 
 
-        /*
-          BUTTONS
-        */
-
         startButton.classList.add(
           "hidden"
         );
@@ -1544,10 +1603,6 @@
           .classList
           .remove("hidden");
 
-
-        /*
-          WEBRTC CONNECTION
-        */
 
         peerConnection =
           new RTCPeerConnection({
@@ -1564,10 +1619,6 @@
           });
 
 
-        /*
-          ADD SCREEN TRACK
-        */
-
         screenStream
           .getTracks()
           .forEach(track => {
@@ -1579,10 +1630,6 @@
 
           });
 
-
-        /*
-          TEACHER ICE
-        */
 
         peerConnection.onicecandidate =
           async event => {
@@ -1618,10 +1665,6 @@
           };
 
 
-        /*
-          CREATE OFFER
-        */
-
         const offer =
           await peerConnection.createOffer();
 
@@ -1630,10 +1673,6 @@
           offer
         );
 
-
-        /*
-          SESSION
-        */
 
         const sessionRef =
           doc(
@@ -1666,10 +1705,6 @@
           }
         );
 
-
-        /*
-          BOARD ANSWER
-        */
 
         if (sessionListener) {
 
@@ -1723,10 +1758,6 @@
             }
           );
 
-
-        /*
-          BOARD ICE
-        */
 
         if (boardIceListener) {
 
@@ -1794,10 +1825,6 @@
           );
 
 
-        /*
-          USER STOPS SHARE FROM CHROME
-        */
-
         const videoTrack =
           screenStream
             .getVideoTracks()[0];
@@ -1831,20 +1858,12 @@
         );
 
 
-        /*
-          RESET BUTTON
-        */
-
         startButton.disabled =
           false;
 
         startButton.textContent =
           "Start Screen Share";
 
-
-        /*
-          USER CANCELLED
-        */
 
         if (
           error.name ===
@@ -1860,10 +1879,6 @@
         }
 
 
-        /*
-          NOT SUPPORTED
-        */
-
         if (
           error.name ===
           "NotSupportedError"
@@ -1877,10 +1892,6 @@
           return;
         }
 
-
-        /*
-          OTHER ERROR
-        */
 
         showMessage(
           "Screen sharing failed: " +
