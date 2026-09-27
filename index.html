@@ -6,129 +6,111 @@
   <title>Digital Board Management</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
-
     body {
-      margin: 0;
+      font-family: Arial, sans-serif;
       background: #f4f6f8;
+      margin: 0;
+      padding: 20px;
     }
 
     .container {
-      max-width: 480px;
-      margin: 60px auto;
-      padding: 30px;
+      max-width: 500px;
+      margin: 40px auto;
       background: white;
-      border-radius: 15px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.1);
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
-    h1 {
+    h1, h2 {
       text-align: center;
-      margin-bottom: 25px;
-    }
-
-    h2 {
-      text-align: center;
-      margin-top: 10px;
-    }
-
-    .tabs {
-      display: flex;
-      margin-bottom: 20px;
-    }
-
-    .tab {
-      width: 50%;
-      padding: 12px;
-      border: 0;
-      cursor: pointer;
-      font-size: 16px;
-      background: #ddd;
-    }
-
-    .tab.active {
-      background: #007bff;
-      color: white;
-    }
-
-    .form {
-      display: none;
-    }
-
-    .form.active {
-      display: block;
     }
 
     input {
       width: 100%;
+      box-sizing: border-box;
       padding: 12px;
-      margin: 8px 0 15px;
+      margin: 8px 0;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      border-radius: 6px;
       font-size: 15px;
     }
 
-    .main-btn {
+    button {
       width: 100%;
       padding: 12px;
-      border: 0;
-      border-radius: 8px;
-      background: #007bff;
+      margin-top: 10px;
+      border: none;
+      border-radius: 6px;
+      background: #1976d2;
       color: white;
       font-size: 16px;
       cursor: pointer;
-      margin-top: 5px;
     }
 
-    .stop-btn {
-      background: #dc3545;
+    button:hover {
+      background: #125ca5;
     }
 
-    .board-section {
-      display: none;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 1px solid #ddd;
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
-    .board-section.active {
-      display: block;
+    .tabs button {
+      margin: 0;
     }
 
     .message {
-      display: none;
       margin-top: 15px;
-      padding: 12px;
-      border-radius: 8px;
+      padding: 10px;
+      border-radius: 6px;
+      text-align: center;
+      display: none;
     }
 
     .success {
-      display: block;
       background: #d4edda;
       color: #155724;
     }
 
     .error {
-      display: block;
       background: #f8d7da;
       color: #721c24;
     }
 
     .info {
-      display: block;
-      background: #d1ecf1;
-      color: #0c5460;
+      background: #dbeafe;
+      color: #1e40af;
     }
 
-    .link {
-      display: block;
+    .hidden {
+      display: none;
+    }
+
+    .board-box {
+      margin-top: 25px;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #fafafa;
+    }
+
+    #videoPreview {
+      width: 100%;
       margin-top: 15px;
-      text-align: center;
-      color: #007bff;
-      cursor: pointer;
+      border-radius: 8px;
+      background: black;
+      display: none;
+    }
+
+    #stopShareBtn {
+      background: #dc3545;
+    }
+
+    #stopShareBtn:hover {
+      background: #b52a37;
     }
   </style>
 </head>
@@ -140,13 +122,14 @@
   <h1>Digital Board Management</h1>
 
   <div class="tabs">
-    <button id="loginTab" class="tab active">Login</button>
-    <button id="registerTab" class="tab">Register</button>
+    <button onclick="showLogin()">Login</button>
+    <button onclick="showRegister()">Register</button>
   </div>
 
-
   <!-- LOGIN -->
-  <div id="loginForm" class="form active">
+  <div id="loginSection">
+
+    <h2>Login</h2>
 
     <input
       type="email"
@@ -154,84 +137,87 @@
       placeholder="Enter Gmail"
     >
 
-    <button id="loginBtn" class="main-btn">
-      Send Login Link
-    </button>
-
-    <div id="loginMessage" class="message"></div>
+    <button onclick="loginUser()">Login</button>
 
   </div>
 
 
   <!-- REGISTER -->
-  <div id="registerForm" class="form">
+  <div id="registerSection" class="hidden">
+
+    <h2>Register</h2>
 
     <input
       type="text"
-      id="name"
+      id="regName"
       placeholder="Enter Name"
     >
 
     <input
       type="email"
-      id="registerEmail"
+      id="regEmail"
       placeholder="Enter Gmail"
     >
 
     <input
-      type="tel"
-      id="mobile"
-      placeholder="10 Digit Mobile Number"
+      type="text"
+      id="regMobile"
+      placeholder="Enter 10 digit Mobile Number"
       maxlength="10"
     >
 
-    <button id="registerBtn" class="main-btn">
-      Register
-    </button>
-
-    <div id="registerMessage" class="message"></div>
-
-    <span id="goLogin" class="link">
-      Already registered? Login
-    </span>
+    <button onclick="registerUser()">Register</button>
 
   </div>
 
 
-  <!-- BOARD ACCESS -->
-  <div id="boardSection" class="board-section">
+  <!-- MESSAGE -->
+  <div id="message" class="message"></div>
+
+
+  <!-- APPROVED USER BOARD ACCESS -->
+  <div id="boardAccess" class="board-box hidden">
 
     <h2>Board Access</h2>
+
+    <p>
+      Your registration has been approved.
+    </p>
 
     <input
       type="text"
       id="boardCode"
-      placeholder="Enter 6 Character Board Code"
+      placeholder="Enter 6-character Board Code"
       maxlength="6"
-      autocomplete="off"
+      style="text-transform: uppercase;"
     >
 
-    <button id="checkBoardBtn" class="main-btn">
-      Check Board Code
+    <button onclick="checkBoardCode()">
+      Verify Board Code
     </button>
 
-    <div id="boardMessage" class="message"></div>
+    <div id="shareArea" class="hidden">
 
-    <button
-      id="shareBtn"
-      class="main-btn"
-      style="display:none;"
-    >
-      Screen Share
-    </button>
+      <button onclick="startScreenShare()">
+        Screen Share
+      </button>
 
-    <button
-      id="stopShareBtn"
-      class="main-btn stop-btn"
-      style="display:none;"
-    >
-      Stop Sharing
-    </button>
+      <button
+        id="stopShareBtn"
+        onclick="stopScreenShare()"
+        class="hidden"
+      >
+        Stop Sharing
+      </button>
+
+      <video
+        id="videoPreview"
+        autoplay
+        muted
+        playsinline
+      ></video>
+
+    </div>
 
   </div>
 
@@ -240,32 +226,37 @@
 
 <script type="module">
 
-  import { initializeApp }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import {
+    initializeApp
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
   import {
     getAuth,
-    sendSignInLinkToEmail,
-    isSignInWithEmailLink,
-    signInWithEmailLink
-  }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    createUserWithEmailAndPassword,
+    signInWithEmailAndPassword,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
 
   import {
     getFirestore,
     collection,
+    addDoc,
+    getDocs,
     query,
     where,
-    getDocs,
-    addDoc,
-    serverTimestamp
-  }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc,
+    onSnapshot,
+    serverTimestamp,
+    addDoc as addFirestoreDoc
+  } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-  /* ==============================
-     FIREBASE
-  ============================== */
+  // =========================
+  // FIREBASE CONFIG
+  // =========================
 
   const firebaseConfig = {
     apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
@@ -276,6 +267,7 @@
     appId: "1:902348932290:web:db47f1b012bf882886675b"
   };
 
+
   const app = initializeApp(firebaseConfig);
 
   const auth = getAuth(app);
@@ -283,866 +275,512 @@
   const db = getFirestore(app);
 
 
-  /* ==============================
-     IMPORTANT EMAILS / URL
-  ============================== */
+  // =========================
+  // TEMPORARY PASSWORD
+  // =========================
+
+  const TEMP_PASSWORD = "password123456";
 
   const COORDINATOR_EMAIL =
     "anujshivamshukla99359@gmail.com";
 
-  const COORDINATOR_URL =
-    "https://shivamshukla-677.github.io/Digital-Board-Management-App/coordinator.html";
 
-  const HOME_URL =
-    "https://shivamshukla-677.github.io/Digital-Board-Management-App/";
-
-  const actionCodeSettings = {
-    url: HOME_URL,
-    handleCodeInApp: true
-  };
-
-
-  /* ==============================
-     SCREEN SHARE STREAM
-  ============================== */
-
+  let currentBoardCode = null;
+  let peerConnection = null;
   let screenStream = null;
 
 
-  /* ==============================
-     MESSAGE
-  ============================== */
+  // =========================
+  // UI
+  // =========================
 
-  function message(id, text, type) {
+  window.showLogin = function () {
 
-    const box = document.getElementById(id);
+    document
+      .getElementById("loginSection")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("registerSection")
+      .classList.add("hidden");
+
+    hideMessage();
+  };
+
+
+  window.showRegister = function () {
+
+    document
+      .getElementById("registerSection")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("loginSection")
+      .classList.add("hidden");
+
+    hideMessage();
+  };
+
+
+  function showMessage(text, type = "info") {
+
+    const box = document.getElementById("message");
 
     box.textContent = text;
 
     box.className = "message " + type;
 
+    box.style.display = "block";
   }
 
 
-  /* ==============================
-     TABS
-  ============================== */
+  function hideMessage() {
 
-  document.getElementById("loginTab").onclick = function () {
+    const box = document.getElementById("message");
 
-    document.getElementById("loginTab")
-      .classList.add("active");
-
-    document.getElementById("registerTab")
-      .classList.remove("active");
-
-    document.getElementById("loginForm")
-      .classList.add("active");
-
-    document.getElementById("registerForm")
-      .classList.remove("active");
-
-  };
-
-
-  document.getElementById("registerTab").onclick = function () {
-
-    document.getElementById("registerTab")
-      .classList.add("active");
-
-    document.getElementById("loginTab")
-      .classList.remove("active");
-
-    document.getElementById("registerForm")
-      .classList.add("active");
-
-    document.getElementById("loginForm")
-      .classList.remove("active");
-
-  };
-
-
-  document.getElementById("goLogin").onclick = function () {
-
-    document.getElementById("loginTab").click();
-
-  };
-
-
-  /* ==============================
-     REGISTER
-  ============================== */
-
-  document.getElementById("registerBtn").onclick =
-    async function () {
-
-      const name =
-        document.getElementById("name")
-          .value.trim();
-
-      const email =
-        document.getElementById("registerEmail")
-          .value.trim().toLowerCase();
-
-      const mobile =
-        document.getElementById("mobile")
-          .value.trim();
-
-
-      if (!name) {
-
-        message(
-          "registerMessage",
-          "Please enter your name.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      if (!email.endsWith("@gmail.com")) {
-
-        message(
-          "registerMessage",
-          "Please use a Gmail address.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      if (!/^[0-9]{10}$/.test(mobile)) {
-
-        message(
-          "registerMessage",
-          "Mobile number must be exactly 10 digits.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      try {
-
-        message(
-          "registerMessage",
-          "Checking details...",
-          "info"
-        );
-
-
-        /* CHECK EMAIL */
-
-        const emailQuery = query(
-          collection(db, "registrationRequests"),
-          where("email", "==", email)
-        );
-
-        const emailResult =
-          await getDocs(emailQuery);
-
-
-        if (!emailResult.empty) {
-
-          message(
-            "registerMessage",
-            "Already exists. Please login.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        /* CHECK MOBILE */
-
-        const mobileQuery = query(
-          collection(db, "registrationRequests"),
-          where("mobile", "==", mobile)
-        );
-
-        const mobileResult =
-          await getDocs(mobileQuery);
-
-
-        if (!mobileResult.empty) {
-
-          message(
-            "registerMessage",
-            "Already exists. Please login.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        /* SAVE TEMP DATA */
-
-        localStorage.setItem(
-          "pendingName",
-          name
-        );
-
-        localStorage.setItem(
-          "pendingMobile",
-          mobile
-        );
-
-        localStorage.setItem(
-          "emailForSignIn",
-          email
-        );
-
-        localStorage.setItem(
-          "loginType",
-          "registration"
-        );
-
-
-        /* SEND EMAIL */
-
-        await sendSignInLinkToEmail(
-          auth,
-          email,
-          actionCodeSettings
-        );
-
-
-        message(
-          "registerMessage",
-          "Verification link sent. Open the latest email from Firebase.",
-          "success"
-        );
-
-      }
-
-      catch (error) {
-
-        console.error(error);
-
-        message(
-          "registerMessage",
-          error.message,
-          "error"
-        );
-
-      }
-
-    };
-
-
-  /* ==============================
-     LOGIN
-  ============================== */
-
-  document.getElementById("loginBtn").onclick =
-    async function () {
-
-      const email =
-        document.getElementById("loginEmail")
-          .value.trim().toLowerCase();
-
-
-      if (!email) {
-
-        message(
-          "loginMessage",
-          "Please enter your Gmail.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      if (!email.endsWith("@gmail.com")) {
-
-        message(
-          "loginMessage",
-          "Please use a valid Gmail address.",
-          "error"
-        );
-
-        return;
-      }
-
-
-      try {
-
-        /* COORDINATOR */
-
-        if (email === COORDINATOR_EMAIL) {
-
-          localStorage.setItem(
-            "emailForSignIn",
-            COORDINATOR_EMAIL
-          );
-
-          localStorage.setItem(
-            "loginType",
-            "coordinator"
-          );
-
-
-          await sendSignInLinkToEmail(
-            auth,
-            COORDINATOR_EMAIL,
-            actionCodeSettings
-          );
-
-
-          message(
-            "loginMessage",
-            "Coordinator verification link sent to Gmail.",
-            "success"
-          );
-
-          return;
-        }
-
-
-        /* NORMAL USER */
-
-        const userQuery = query(
-          collection(db, "registrationRequests"),
-          where("email", "==", email)
-        );
-
-        const result =
-          await getDocs(userQuery);
-
-
-        if (result.empty) {
-
-          message(
-            "loginMessage",
-            "You are not registered. Please register first.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        let userData;
-
-        result.forEach(function (doc) {
-
-          userData = doc.data();
-
-        });
-
-
-        if (userData.status === "pending") {
-
-          message(
-            "loginMessage",
-            "Your registration is waiting for Coordinator approval.",
-            "info"
-          );
-
-          return;
-        }
-
-
-        if (userData.status === "rejected") {
-
-          message(
-            "loginMessage",
-            "Your registration has been rejected.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        if (userData.status !== "approved") {
-
-          message(
-            "loginMessage",
-            "Your account is not approved yet.",
-            "error"
-          );
-
-          return;
-        }
-
-
-        localStorage.setItem(
-          "emailForSignIn",
-          email
-        );
-
-        localStorage.setItem(
-          "loginType",
-          "user"
-        );
-
-
-        await sendSignInLinkToEmail(
-          auth,
-          email,
-          actionCodeSettings
-        );
-
-
-        message(
-          "loginMessage",
-          "Login verification link sent to Gmail.",
-          "success"
-        );
-
-      }
-
-      catch (error) {
-
-        console.error(error);
-
-        message(
-          "loginMessage",
-          error.message,
-          "error"
-        );
-
-      }
-
-    };
-
-
-  /* ==============================
-     PROCESS EMAIL LINK
-  ============================== */
-
-  async function processEmailLink() {
-
-    if (
-      !isSignInWithEmailLink(
-        auth,
-        window.location.href
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    try {
-
-      let email =
-        localStorage.getItem(
-          "emailForSignIn"
-        );
-
-
-      if (!email) {
-
-        email = prompt(
-          "Enter the Gmail address used for verification:"
-        );
-
-      }
-
-
-      if (!email) {
-
-        alert("Gmail is required.");
-
-        return;
-
-      }
-
-
-      email =
-        email.trim().toLowerCase();
-
-
-      /* FIREBASE SIGN IN */
-
-      const result =
-        await signInWithEmailLink(
-          auth,
-          email,
-          window.location.href
-        );
-
-
-      const verifiedEmail =
-        result.user.email
-          .trim()
-          .toLowerCase();
-
-
-      console.log(
-        "VERIFIED EMAIL:",
-        verifiedEmail
-      );
-
-
-      /* ==============================
-         COORDINATOR
-      ============================== */
-
-      if (
-        verifiedEmail ===
-        COORDINATOR_EMAIL
-      ) {
-
-        localStorage.removeItem(
-          "emailForSignIn"
-        );
-
-        localStorage.removeItem(
-          "loginType"
-        );
-
-        localStorage.removeItem(
-          "pendingName"
-        );
-
-        localStorage.removeItem(
-          "pendingMobile"
-        );
-
-
-        window.location.replace(
-          COORDINATOR_URL
-        );
-
-        return;
-
-      }
-
-
-      /* ==============================
-         REGISTRATION
-      ============================== */
-
-      const loginType =
-        localStorage.getItem(
-          "loginType"
-        );
-
-
-      if (
-        loginType === "registration"
-      ) {
-
-        const name =
-          localStorage.getItem(
-            "pendingName"
-          );
-
-        const mobile =
-          localStorage.getItem(
-            "pendingMobile"
-          );
-
-
-        if (!name || !mobile) {
-
-          alert(
-            "Registration information missing. Please register again."
-          );
-
-          return;
-
-        }
-
-
-        const checkQuery = query(
-          collection(db, "registrationRequests"),
-          where("email", "==", verifiedEmail)
-        );
-
-        const checkResult =
-          await getDocs(checkQuery);
-
-
-        if (checkResult.empty) {
-
-          await addDoc(
-            collection(db, "registrationRequests"),
-            {
-              uid: result.user.uid,
-              name: name,
-              email: verifiedEmail,
-              mobile: mobile,
-              verifiedBy: "gmail",
-              status: "pending",
-              createdAt: serverTimestamp()
-            }
-          );
-
-        }
-
-
-        localStorage.removeItem(
-          "emailForSignIn"
-        );
-
-        localStorage.removeItem(
-          "loginType"
-        );
-
-        localStorage.removeItem(
-          "pendingName"
-        );
-
-        localStorage.removeItem(
-          "pendingMobile"
-        );
-
-
-        alert(
-          "Gmail verified successfully. Your registration is now pending Coordinator approval."
-        );
-
-        return;
-
-      }
-
-
-      /* ==============================
-         NORMAL USER LOGIN
-      ============================== */
-
-      const userQuery = query(
-        collection(db, "registrationRequests"),
-        where("email", "==", verifiedEmail)
-      );
-
-      const userResult =
-        await getDocs(userQuery);
-
-
-      if (userResult.empty) {
-
-        alert(
-          "Registration not found."
-        );
-
-        return;
-
-      }
-
-
-      let userData = null;
-
-      userResult.forEach(function(doc) {
-
-        userData = doc.data();
-
-      });
-
-
-      if (userData.status !== "approved") {
-
-        alert(
-          "Your account is not approved."
-        );
-
-        return;
-
-      }
-
-
-      /*
-       APPROVED USER
-       SHOW BOARD ACCESS
-      */
-
-      document.getElementById(
-        "loginForm"
-      ).style.display = "none";
-
-      document.getElementById(
-        "registerForm"
-      ).style.display = "none";
-
-      document.querySelector(
-        ".tabs"
-      ).style.display = "none";
-
-
-      document.getElementById(
-        "boardSection"
-      ).classList.add("active");
-
-
-      message(
-        "boardMessage",
-        "Login successful. Enter the 6-character Board Code.",
-        "info"
-      );
-
-
-      localStorage.setItem(
-        "approvedUserEmail",
-        verifiedEmail
-      );
-
-
-    }
-
-    catch (error) {
-
-      console.error(
-        "VERIFICATION ERROR:",
-        error
-      );
-
-
-      alert(
-        "Verification failed: " +
-        error.message
-      );
-
-    }
-
+    box.style.display = "none";
   }
 
 
-  /* ==============================
-     BOARD CODE CHECK
-  ============================== */
+  // =========================
+  // EMAIL VALIDATION
+  // =========================
 
-  document.getElementById(
-    "checkBoardBtn"
-  ).onclick = async function () {
+  function validGmail(email) {
 
-    const code =
-      document.getElementById(
-        "boardCode"
-      ).value.trim().toUpperCase();
+    return /^[a-zA-Z0-9._%+-]+@gmail\.com$/i.test(email);
+  }
 
 
-    if (!/^[A-Z0-9]{6}$/.test(code)) {
+  // =========================
+  // REGISTER
+  // =========================
 
-      message(
-        "boardMessage",
-        "Board Code must be exactly 6 characters.",
+  window.registerUser = async function () {
+
+    const name =
+      document.getElementById("regName").value.trim();
+
+    const email =
+      document.getElementById("regEmail").value.trim().toLowerCase();
+
+    const mobile =
+      document.getElementById("regMobile").value.trim();
+
+
+    if (!name || !email || !mobile) {
+
+      showMessage(
+        "Please fill all fields.",
         "error"
       );
 
       return;
+    }
 
+
+    if (!validGmail(email)) {
+
+      showMessage(
+        "Please enter a valid Gmail address.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    if (!/^\d{10}$/.test(mobile)) {
+
+      showMessage(
+        "Mobile number must be exactly 10 digits.",
+        "error"
+      );
+
+      return;
     }
 
 
     try {
 
-      message(
-        "boardMessage",
-        "Checking Board Code...",
-        "info"
+      // Check duplicate Gmail
+
+      const emailQuery = query(
+        collection(db, "registrationRequests"),
+        where("email", "==", email)
       );
 
-
-      const boardQuery = query(
-        collection(db, "boards"),
-        where("boardCode", "==", code)
-      );
+      const emailSnapshot =
+        await getDocs(emailQuery);
 
 
-      const boardResult =
-        await getDocs(boardQuery);
+      if (!emailSnapshot.empty) {
 
-
-      if (boardResult.empty) {
-
-        message(
-          "boardMessage",
-          "Invalid Board Code. Please enter the code shown on the board.",
+        showMessage(
+          "Already exists. Please login.",
           "error"
         );
 
-        document.getElementById(
-          "shareBtn"
-        ).style.display = "none";
-
         return;
-
       }
 
 
-      let validBoard = false;
+      // Check duplicate mobile
+
+      const mobileQuery = query(
+        collection(db, "registrationRequests"),
+        where("mobile", "==", mobile)
+      );
+
+      const mobileSnapshot =
+        await getDocs(mobileQuery);
 
 
-      boardResult.forEach(function(doc) {
+      if (!mobileSnapshot.empty) {
 
-        const data = doc.data();
+        showMessage(
+          "Already exists. Please login.",
+          "error"
+        );
 
-        if (
-          data.boardCode === code &&
-          data.status === "available"
-        ) {
+        return;
+      }
 
-          validBoard = true;
 
+      // Create Firebase account
+
+      let userCredential;
+
+      try {
+
+        userCredential =
+          await createUserWithEmailAndPassword(
+            auth,
+            email,
+            TEMP_PASSWORD
+          );
+
+      } catch (error) {
+
+        if (error.code === "auth/email-already-in-use") {
+
+          showMessage(
+            "Already exists. Please login.",
+            "error"
+          );
+
+          return;
         }
 
-      });
-
-
-      if (!validBoard) {
-
-        message(
-          "boardMessage",
-          "This Board Code is not available.",
-          "error"
-        );
-
-        document.getElementById(
-          "shareBtn"
-        ).style.display = "none";
-
-        return;
-
+        throw error;
       }
 
 
-      message(
-        "boardMessage",
-        "Board Code matched successfully.",
+      const uid = userCredential.user.uid;
+
+
+      // Registration request
+
+      await addDoc(
+        collection(db, "registrationRequests"),
+        {
+          uid: uid,
+          name: name,
+          email: email,
+          mobile: mobile,
+
+          verification:
+            "Temporary Password",
+
+          status: "pending",
+
+          createdAt: serverTimestamp()
+        }
+      );
+
+
+      await signOut(auth);
+
+
+      showMessage(
+        "Registration successful. Coordinator approval pending.",
         "success"
       );
 
 
-      document.getElementById(
-        "shareBtn"
-      ).style.display = "block";
+      document.getElementById("regName").value = "";
+      document.getElementById("regEmail").value = "";
+      document.getElementById("regMobile").value = "";
 
-
-    }
-
-    catch (error) {
+    } catch (error) {
 
       console.error(error);
 
-      message(
-        "boardMessage",
-        "Error checking Board Code: " + error.message,
+      showMessage(
+        "Registration failed: " + error.message,
         "error"
       );
-
     }
 
   };
 
 
-  /* ==============================
-     SCREEN SHARE
-  ============================== */
+  // =========================
+  // LOGIN
+  // =========================
 
-  document.getElementById(
-    "shareBtn"
-  ).onclick = async function () {
+  window.loginUser = async function () {
+
+    const email =
+      document.getElementById("loginEmail")
+        .value
+        .trim()
+        .toLowerCase();
+
+
+    if (!validGmail(email)) {
+
+      showMessage(
+        "Please enter a valid Gmail address.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    try {
+
+      // =========================
+      // COORDINATOR LOGIN
+      // =========================
+
+      if (email === COORDINATOR_EMAIL) {
+
+        await signInWithEmailAndPassword(
+          auth,
+          email,
+          TEMP_PASSWORD
+        );
+
+
+        window.location.href =
+          "coordinator.html";
+
+        return;
+      }
+
+
+      // =========================
+      // NORMAL USER
+      // =========================
+
+      const userQuery = query(
+        collection(db, "registrationRequests"),
+        where("email", "==", email)
+      );
+
+
+      const snapshot =
+        await getDocs(userQuery);
+
+
+      if (snapshot.empty) {
+
+        showMessage(
+          "You are not registered. Please register first.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      const userData =
+        snapshot.docs[0].data();
+
+
+      // Pending
+
+      if (userData.status === "pending") {
+
+        showMessage(
+          "Your registration is pending coordinator approval.",
+          "info"
+        );
+
+        return;
+      }
+
+
+      // Rejected
+
+      if (userData.status === "rejected") {
+
+        showMessage(
+          "Your registration has been rejected.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      // Deleted / unknown
+
+      if (userData.status !== "approved") {
+
+        showMessage(
+          "You are not authorized to access the board.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      // Login
+
+      await signInWithEmailAndPassword(
+        auth,
+        email,
+        TEMP_PASSWORD
+      );
+
+
+      showMessage(
+        "Login successful.",
+        "success"
+      );
+
+
+      document
+        .getElementById("boardAccess")
+        .classList.remove("hidden");
+
+
+      document
+        .getElementById("loginSection")
+        .classList.add("hidden");
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      if (
+        error.code === "auth/invalid-credential" ||
+        error.code === "auth/wrong-password" ||
+        error.code === "auth/user-not-found"
+      ) {
+
+        showMessage(
+          "Login failed. This account needs the temporary password set in Firebase Authentication.",
+          "error"
+        );
+
+      } else {
+
+        showMessage(
+          "Login failed: " + error.message,
+          "error"
+        );
+      }
+    }
+
+  };
+
+
+  // =========================
+  // BOARD CODE CHECK
+  // =========================
+
+  window.checkBoardCode = async function () {
+
+    const code =
+      document.getElementById("boardCode")
+        .value
+        .trim()
+        .toUpperCase();
+
+
+    if (code.length !== 6) {
+
+      showMessage(
+        "Board code must be exactly 6 characters.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    try {
+
+      const boardRef =
+        doc(db, "boards", code);
+
+      const boardSnap =
+        await getDoc(boardRef);
+
+
+      if (
+        !boardSnap.exists() ||
+        boardSnap.data().status !== "available"
+      ) {
+
+        showMessage(
+          "Invalid or inactive board code.",
+          "error"
+        );
+
+        return;
+      }
+
+
+      currentBoardCode = code;
+
+
+      showMessage(
+        "Board code verified. Screen Share is available.",
+        "success"
+      );
+
+
+      document
+        .getElementById("shareArea")
+        .classList.remove("hidden");
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Board code verification failed: " + error.message,
+        "error"
+      );
+    }
+
+  };
+
+
+  // =========================
+  // SCREEN SHARE
+  // =========================
+
+  window.startScreenShare = async function () {
+
+    if (!currentBoardCode) {
+
+      showMessage(
+        "Please verify the board code first.",
+        "error"
+      );
+
+      return;
+    }
+
 
     try {
 
@@ -1153,104 +791,266 @@
         });
 
 
-      message(
-        "boardMessage",
-        "Screen sharing started.",
-        "success"
-      );
+      const video =
+        document.getElementById("videoPreview");
 
 
-      document.getElementById(
-        "shareBtn"
-      ).style.display = "none";
+      video.srcObject = screenStream;
+
+      video.style.display = "block";
 
 
-      document.getElementById(
-        "stopShareBtn"
-      ).style.display = "block";
+      document
+        .getElementById("stopShareBtn")
+        .classList.remove("hidden");
 
 
-      const videoTrack =
-        screenStream.getVideoTracks()[0];
+      peerConnection =
+        new RTCPeerConnection({
+          iceServers: [
+            {
+              urls:
+                "stun:stun.l.google.com:19302"
+            }
+          ]
+        });
 
 
-      videoTrack.onended = function () {
-
-        stopScreenShare();
-
-      };
-
-    }
-
-    catch (error) {
-
-      console.error(error);
-
-      message(
-        "boardMessage",
-        "Screen sharing was cancelled or could not start.",
-        "error"
-      );
-
-    }
-
-  };
-
-
-  /* ==============================
-     STOP SCREEN SHARE
-  ============================== */
-
-  function stopScreenShare() {
-
-    if (screenStream) {
+      // Add screen tracks
 
       screenStream
         .getTracks()
-        .forEach(function(track) {
+        .forEach(track => {
 
-          track.stop();
+          peerConnection.addTrack(
+            track,
+            screenStream
+          );
 
         });
 
-      screenStream = null;
 
+      // Teacher ICE candidates
+
+      peerConnection.onicecandidate =
+        async event => {
+
+          if (!event.candidate) return;
+
+
+          await addDoc(
+            collection(
+              db,
+              "sessions",
+              currentBoardCode,
+              "teacherCandidates"
+            ),
+            event.candidate.toJSON()
+          );
+
+        };
+
+
+      // Create offer
+
+      const offer =
+        await peerConnection.createOffer();
+
+
+      await peerConnection.setLocalDescription(
+        offer
+      );
+
+
+      const sessionRef =
+        doc(
+          db,
+          "sessions",
+          currentBoardCode
+        );
+
+
+      await setDoc(
+        sessionRef,
+        {
+          offer: {
+            type: offer.type,
+            sdp: offer.sdp
+          },
+
+          status: "active",
+
+          createdAt:
+            serverTimestamp()
+        }
+      );
+
+
+      // Listen for board answer
+
+      onSnapshot(
+        sessionRef,
+        async snapshot => {
+
+          const data = snapshot.data();
+
+          if (!data) return;
+
+
+          if (
+            data.answer &&
+            !peerConnection.currentRemoteDescription
+          ) {
+
+            await peerConnection.setRemoteDescription(
+              new RTCSessionDescription(
+                data.answer
+              )
+            );
+
+          }
+
+        }
+      );
+
+
+      // Board ICE candidates
+
+      onSnapshot(
+        collection(
+          db,
+          "sessions",
+          currentBoardCode,
+          "boardCandidates"
+        ),
+        snapshot => {
+
+          snapshot.docChanges().forEach(
+            async change => {
+
+              if (change.type !== "added")
+                return;
+
+              try {
+
+                await peerConnection.addIceCandidate(
+                  new RTCIceCandidate(
+                    change.doc.data()
+                  )
+                );
+
+              } catch (e) {
+
+                console.log(
+                  "ICE error:",
+                  e
+                );
+
+              }
+
+            }
+          );
+
+        }
+      );
+
+
+      // Stop if browser stops sharing
+
+      screenStream
+        .getVideoTracks()[0]
+        .addEventListener(
+          "ended",
+          () => {
+
+            stopScreenShare();
+
+          }
+        );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Screen sharing failed: " + error.message,
+        "error"
+      );
     }
-
-
-    document.getElementById(
-      "stopShareBtn"
-    ).style.display = "none";
-
-
-    document.getElementById(
-      "shareBtn"
-    ).style.display = "block";
-
-
-    message(
-      "boardMessage",
-      "Screen sharing stopped.",
-      "info"
-    );
-
-  }
-
-
-  document.getElementById(
-    "stopShareBtn"
-  ).onclick = function () {
-
-    stopScreenShare();
 
   };
 
 
-  /* ==============================
-     START
-  ============================== */
+  // =========================
+  // STOP SCREEN SHARE
+  // =========================
 
-  processEmailLink();
+  window.stopScreenShare = async function () {
+
+    try {
+
+      if (screenStream) {
+
+        screenStream
+          .getTracks()
+          .forEach(track => track.stop());
+
+        screenStream = null;
+      }
+
+
+      if (peerConnection) {
+
+        peerConnection.close();
+
+        peerConnection = null;
+      }
+
+
+      if (currentBoardCode) {
+
+        await updateDoc(
+          doc(
+            db,
+            "sessions",
+            currentBoardCode
+          ),
+          {
+            status: "ended"
+          }
+        ).catch(() => {});
+
+      }
+
+
+      const video =
+        document.getElementById("videoPreview");
+
+
+      video.srcObject = null;
+
+      video.style.display = "none";
+
+
+      document
+        .getElementById("stopShareBtn")
+        .classList.add("hidden");
+
+
+      showMessage(
+        "Screen sharing stopped.",
+        "info"
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+    }
+
+  };
 
 </script>
 
