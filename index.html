@@ -157,6 +157,7 @@
   <div class="form active" id="loginForm">
 
     <label>Gmail</label>
+
     <input
       type="email"
       id="loginEmail"
@@ -176,6 +177,7 @@
   <div class="form" id="registerForm">
 
     <label>Name</label>
+
     <input
       type="text"
       id="name"
@@ -183,6 +185,7 @@
     >
 
     <label>Gmail</label>
+
     <input
       type="email"
       id="email"
@@ -190,6 +193,7 @@
     >
 
     <label>Mobile Number</label>
+
     <input
       type="tel"
       id="mobile"
@@ -215,9 +219,9 @@
 
 <script type="module">
 
-  /* =====================================================
+  /* ===============================
      FIREBASE IMPORTS
-  ===================================================== */
+  =============================== */
 
   import {
     initializeApp
@@ -228,8 +232,7 @@
     sendSignInLinkToEmail,
     isSignInWithEmailLink,
     signInWithEmailLink,
-    onAuthStateChanged,
-    signOut
+    onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
   import {
@@ -243,9 +246,9 @@
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 
-  /* =====================================================
+  /* ===============================
      FIREBASE CONFIG
-  ===================================================== */
+  =============================== */
 
   const firebaseConfig = {
     apiKey: "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
@@ -264,21 +267,20 @@
   const db = getFirestore(app);
 
 
-  /* =====================================================
-     IMPORTANT:
+  /* ===============================
      COORDINATOR EMAIL
      
-     EXACTLY AS YOU PROVIDED:
-     @gamil.com
-  ===================================================== */
+     EXACT EMAIL:
+     anujshivamshukla99359@gmail.com
+  =============================== */
 
   const COORDINATOR_EMAIL =
-    "anujshivamshukla99359@gamil.com";
+    "anujshivamshukla99359@gmail.com";
 
 
-  /* =====================================================
+  /* ===============================
      EMAIL LINK SETTINGS
-  ===================================================== */
+  =============================== */
 
   const actionCodeSettings = {
 
@@ -291,9 +293,9 @@
   };
 
 
-  /* =====================================================
+  /* ===============================
      ELEMENTS
-  ===================================================== */
+  =============================== */
 
   const loginTab =
     document.getElementById("loginTab");
@@ -317,16 +319,18 @@
     document.getElementById("goLogin");
 
 
-  /* =====================================================
+  /* ===============================
      TAB SWITCHING
-  ===================================================== */
+  =============================== */
 
   loginTab.addEventListener("click", () => {
 
     loginTab.classList.add("active");
+
     registerTab.classList.remove("active");
 
     loginForm.classList.add("active");
+
     registerForm.classList.remove("active");
 
   });
@@ -335,9 +339,11 @@
   registerTab.addEventListener("click", () => {
 
     registerTab.classList.add("active");
+
     loginTab.classList.remove("active");
 
     registerForm.classList.add("active");
+
     loginForm.classList.remove("active");
 
   });
@@ -350,9 +356,9 @@
   });
 
 
-  /* =====================================================
+  /* ===============================
      MESSAGE FUNCTION
-  ===================================================== */
+  =============================== */
 
   function showMessage(id, text, type) {
 
@@ -367,16 +373,13 @@
   }
 
 
-  /* =====================================================
+  /* =================================================
      LOGIN
      
-     VERY IMPORTANT:
+     COORDINATOR CHECK HAPPENS FIRST.
      
-     COORDINATOR CHECK IS DONE FIRST.
-     
-     FIRESTORE REGISTRATION CHECK WILL NOT RUN
-     FOR COORDINATOR.
-  ===================================================== */
+     NO FIRESTORE CHECK FOR COORDINATOR.
+  ================================================= */
 
   loginBtn.addEventListener("click", async () => {
 
@@ -400,21 +403,13 @@
     }
 
 
-    /* =================================================
-       COORDINATOR DIRECT FLOW
-       
-       THIS RUNS BEFORE ANY FIRESTORE CHECK.
-    ================================================= */
+    /* ===============================================
+       COORDINATOR LOGIN
+    =============================================== */
 
     if (email === COORDINATOR_EMAIL) {
 
       try {
-
-        /*
-          Save coordinator email so Firebase can
-          complete passwordless sign-in when the
-          verification link is opened.
-        */
 
         localStorage.setItem(
           "emailForSignIn",
@@ -427,10 +422,6 @@
         );
 
 
-        /*
-          SEND VERIFICATION LINK
-        */
-
         await sendSignInLinkToEmail(
           auth,
           email,
@@ -440,7 +431,7 @@
 
         showMessage(
           "loginMessage",
-          "Coordinator verification link sent. Please check your email and open the link.",
+          "Coordinator verification link sent. Please check your Gmail.",
           "success"
         );
 
@@ -458,20 +449,13 @@
 
       }
 
-      /*
-        VERY IMPORTANT:
-        STOP HERE.
-        
-        Firestore registration check will NOT happen.
-      */
-
       return;
     }
 
 
-    /* =================================================
+    /* ===============================================
        NORMAL USER LOGIN
-    ================================================= */
+    =============================================== */
 
     try {
 
@@ -547,10 +531,6 @@
       }
 
 
-      /*
-        Approved user
-      */
-
       localStorage.setItem(
         "emailForSignIn",
         email
@@ -591,9 +571,9 @@
   });
 
 
-  /* =====================================================
+  /* =================================================
      REGISTER
-  ===================================================== */
+  ================================================= */
 
   registerBtn.addEventListener("click", async () => {
 
@@ -619,8 +599,6 @@
         .trim();
 
 
-    /* NAME */
-
     if (!name) {
 
       showMessage(
@@ -633,8 +611,6 @@
     }
 
 
-    /* GMAIL */
-
     if (!email.endsWith("@gmail.com")) {
 
       showMessage(
@@ -646,8 +622,6 @@
       return;
     }
 
-
-    /* MOBILE */
 
     if (!/^[0-9]{10}$/.test(mobile)) {
 
@@ -663,16 +637,14 @@
 
     try {
 
-      /* ===============================================
-         CHECK DUPLICATE EMAIL
-      =============================================== */
-
       const usersRef =
         collection(
           db,
           "registrationRequests"
         );
 
+
+      /* CHECK EMAIL */
 
       const emailQuery =
         query(
@@ -701,9 +673,7 @@
       }
 
 
-      /* ===============================================
-         CHECK DUPLICATE MOBILE
-      =============================================== */
+      /* CHECK MOBILE */
 
       const mobileQuery =
         query(
@@ -732,9 +702,7 @@
       }
 
 
-      /* ===============================================
-         SAVE TEMP DATA
-      =============================================== */
+      /* SAVE TEMP DATA */
 
       localStorage.setItem(
         "pendingName",
@@ -757,9 +725,7 @@
       );
 
 
-      /* ===============================================
-         SEND GMAIL VERIFICATION LINK
-      =============================================== */
+      /* SEND VERIFICATION LINK */
 
       await sendSignInLinkToEmail(
         auth,
@@ -790,21 +756,18 @@
   });
 
 
-  /* =====================================================
+  /* =================================================
      PROCESS EMAIL VERIFICATION LINK
-  ===================================================== */
+  ================================================= */
 
   async function processEmailLink() {
 
-    /*
-      If current URL is not a Firebase email
-      sign-in link, do nothing.
-    */
-
-    if (!isSignInWithEmailLink(
-      auth,
-      window.location.href
-    )) {
+    if (
+      !isSignInWithEmailLink(
+        auth,
+        window.location.href
+      )
+    ) {
 
       return;
 
@@ -816,10 +779,6 @@
         "emailForSignIn"
       );
 
-
-    /*
-      If email is missing, ask user.
-    */
 
     if (!email) {
 
@@ -849,10 +808,6 @@
 
     try {
 
-      /*
-        COMPLETE FIREBASE EMAIL LINK LOGIN
-      */
-
       const result =
         await signInWithEmailLink(
           auth,
@@ -867,26 +822,18 @@
           .toLowerCase();
 
 
-      /* =================================================
-         MOST IMPORTANT PART
+      /* ===============================================
+         COORDINATOR
          
-         COORDINATOR IS CHECKED FIRST.
+         DIRECT DASHBOARD
          
-         NO FIRESTORE QUERY.
-         
-         NO REGISTRATION CHECK.
-         
-         DIRECT DASHBOARD.
-      ================================================= */
+         NO FIRESTORE CHECK
+      =============================================== */
 
       if (
         verifiedEmail ===
         COORDINATOR_EMAIL
       ) {
-
-        /*
-          Clean temporary data
-        */
 
         localStorage.removeItem(
           "emailForSignIn"
@@ -905,10 +852,6 @@
         );
 
 
-        /*
-          DIRECT COORDINATOR DASHBOARD
-        */
-
         window.location.replace(
           "coordinator.html"
         );
@@ -917,9 +860,9 @@
       }
 
 
-      /* =================================================
+      /* ===============================================
          REGISTRATION VERIFICATION
-      ================================================= */
+      =============================================== */
 
       const pendingName =
         localStorage.getItem(
@@ -931,17 +874,11 @@
           "pendingMobile"
         );
 
-
       const loginType =
         localStorage.getItem(
           "loginType"
         );
 
-
-      /*
-        If this was a new registration,
-        create pending request.
-      */
 
       if (
         loginType === "registration" &&
@@ -1004,15 +941,11 @@
           "success"
         );
 
-
         return;
       }
 
 
-      /*
-        Normal approved user login.
-        Board page can be connected here later.
-      */
+      /* NORMAL USER */
 
       if (loginType === "user") {
 
@@ -1030,7 +963,6 @@
           "Gmail verified successfully.",
           "success"
         );
-
 
         return;
       }
@@ -1052,22 +984,12 @@
   }
 
 
-  /* =====================================================
+  /* ===============================
      START EMAIL LINK PROCESSING
-  ===================================================== */
+  =============================== */
 
   processEmailLink();
 
-
-  /* =====================================================
-     AUTH STATE
-     
-     Do NOT automatically redirect coordinator merely
-     because Firebase remembers a previous login.
-     
-     Dashboard redirect happens after the email link
-     is actually processed above.
-  ===================================================== */
 
   onAuthStateChanged(
     auth,
