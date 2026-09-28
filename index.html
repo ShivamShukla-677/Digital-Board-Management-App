@@ -348,6 +348,7 @@
       .hero h1 {
         font-size: 32px;
       }
+
     }
 
   </style>
@@ -712,22 +713,25 @@
   const firebaseConfig = {
 
     apiKey:
-      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+      "AIzaSyDhyeoTkwTSqQztltEcOZG0iNNsLt0Vgdg",
 
     authDomain:
-      "digital-board-acces-management.firebaseapp.com",
+      "digital-board-management.firebaseapp.com",
 
     projectId:
-      "digital-board-acces-management",
+      "digital-board-management",
 
     storageBucket:
-      "digital-board-acces-management.firebasestorage.app",
+      "digital-board-management.firebasestorage.app",
 
     messagingSenderId:
-      "902348932290",
+      "1097078453513",
 
     appId:
-      "1:902348932290:web:db47f1b012bf882886675b"
+      "1:1097078453513:web:82469a3b6fb88006b34fd8",
+
+    measurementId:
+      "G-V93HY51BCY"
 
   };
 
@@ -764,6 +768,16 @@
   let sessionListener = null;
 
   let boardIceListener = null;
+
+
+  /*
+     ICE candidates received before
+     remote description is ready.
+  */
+
+  let pendingBoardCandidates = [];
+
+  let remoteDescriptionReady = false;
 
 
   /* =========================
@@ -1534,10 +1548,6 @@
 
       try {
 
-        /* =========================
-           HTTPS CHECK
-        ========================= */
-
         if (!window.isSecureContext) {
 
           showMessage(
@@ -1549,10 +1559,6 @@
         }
 
 
-        /* =========================
-           SCREEN SHARE SUPPORT
-        ========================= */
-
         if (
           !navigator.mediaDevices ||
           typeof navigator.mediaDevices.getDisplayMedia !==
@@ -1560,7 +1566,7 @@
         ) {
 
           showMessage(
-            "Screen sharing is not supported by this mobile browser. Please use a supported Chrome browser or desktop browser.",
+            "Screen sharing is not supported by this browser. Please use a supported Chrome browser or desktop browser.",
             "error"
           );
 
@@ -1574,9 +1580,38 @@
           "Opening Screen Share...";
 
 
-        /* =========================
-           MOBILE + DESKTOP CAPTURE
-        ========================= */
+        /*
+          Clean old WebRTC connection
+        */
+
+        if (sessionListener) {
+
+          sessionListener();
+          sessionListener = null;
+
+        }
+
+        if (boardIceListener) {
+
+          boardIceListener();
+          boardIceListener = null;
+
+        }
+
+        if (peerConnection) {
+
+          peerConnection.close();
+          peerConnection = null;
+
+        }
+
+        pendingBoardCandidates = [];
+        remoteDescriptionReady = false;
+
+
+        /*
+          Screen capture
+        */
 
         screenStream =
           await navigator.mediaDevices.getDisplayMedia({
@@ -1588,9 +1623,9 @@
           });
 
 
-        /* =========================
-           LOCAL PREVIEW
-        ========================= */
+        /*
+          Local preview
+        */
 
         const video =
           document.getElementById(
@@ -1603,6 +1638,20 @@
 
         video.style.display =
           "block";
+
+
+        try {
+
+          await video.play();
+
+        } catch (e) {
+
+          console.log(
+            "Local preview play:",
+            e
+          );
+
+        }
 
 
         startButton.classList.add(
@@ -1618,9 +1667,9 @@
           .remove("hidden");
 
 
-        /* =========================
-           WEBRTC CONNECTION
-        ========================= */
+        /*
+          WebRTC
+        */
 
         peerConnection =
           new RTCPeerConnection({
@@ -1637,6 +1686,10 @@
           });
 
 
+        /*
+          Add screen tracks
+        */
+
         screenStream
           .getTracks()
           .forEach(track => {
@@ -1649,9 +1702,54 @@
           });
 
 
-        /* =========================
-           TEACHER ICE
-        ========================= */
+        /*
+          Connection state
+        */
+
+        peerConnection.onconnectionstatechange =
+          () => {
+
+            if (!peerConnection)
+              return;
+
+
+            console.log(
+              "WebRTC connection state:",
+              peerConnection.connectionState
+            );
+
+
+            if (
+              peerConnection.connectionState ===
+              "connected"
+            ) {
+
+              showMessage(
+                "✓ Screen connected to the digital board.",
+                "success"
+              );
+
+            }
+
+
+            if (
+              peerConnection.connectionState ===
+              "failed"
+            ) {
+
+              showMessage(
+                "Board connection failed. Please refresh the board and try again.",
+                "error"
+              );
+
+            }
+
+          };
+
+
+        /*
+          Teacher ICE
+        */
 
         peerConnection.onicecandidate =
           async event => {
@@ -1687,9 +1785,21 @@
           };
 
 
-        /* =========================
-           CREATE OFFER
-        ========================= */
+        /*
+          Session reference
+        */
+
+        const sessionRef =
+          doc(
+            db,
+            "sessions",
+            currentBoardCode
+          );
+
+
+        /*
+          Create offer
+        */
 
         const offer =
           await peerConnection.createOffer();
@@ -1700,13 +1810,9 @@
         );
 
 
-        const sessionRef =
-          doc(
-            db,
-            "sessions",
-            currentBoardCode
-          );
-
+        /*
+          Create active session
+        */
 
         await setDoc(
           sessionRef,
@@ -1732,18 +1838,9 @@
         );
 
 
-        /* =========================
-           BOARD ANSWER
-        ========================= */
-
-        if (sessionListener) {
-
-          sessionListener();
-
-          sessionListener = null;
-
-        }
-
+        /*
+          Board answer listener
+        */
 
         sessionListener =
           onSnapshot(
@@ -1761,7 +1858,7 @@
               if (
                 data.answer &&
                 peerConnection &&
-                !peerConnection.currentRemoteDescription
+                !remoteDescriptionReady
               ) {
 
                 try {
@@ -1773,6 +1870,46 @@
                     )
 
                   );
+
+
+                  remoteDescriptionReady =
+                    true;
+
+
+                  console.log(
+                    "Board answer received."
+                  );
+
+
+                  /*
+                    Add queued ICE candidates
+                  */
+
+                  for (
+                    const candidate
+                    of pendingBoardCandidates
+                  ) {
+
+                    try {
+
+                      await peerConnection.addIceCandidate(
+                        candidate
+                      );
+
+                    } catch (error) {
+
+                      console.error(
+                        "Queued ICE error:",
+                        error
+                      );
+
+                    }
+
+                  }
+
+
+                  pendingBoardCandidates = [];
+
 
                 } catch (error) {
 
@@ -1789,18 +1926,9 @@
           );
 
 
-        /* =========================
-           BOARD ICE
-        ========================= */
-
-        if (boardIceListener) {
-
-          boardIceListener();
-
-          boardIceListener = null;
-
-        }
-
+        /*
+          Board ICE listener
+        */
 
         boardIceListener =
           onSnapshot(
@@ -1812,56 +1940,67 @@
               "boardCandidates"
             ),
 
-            snapshot => {
+            async snapshot => {
 
-              snapshot
-                .docChanges()
-                .forEach(
-                  async change => {
+              for (
+                const change
+                of snapshot.docChanges()
+              ) {
 
-                    if (
-                      change.type !==
-                      "added"
-                    )
-                      return;
-
-
-                    if (
-                      !peerConnection
-                    )
-                      return;
+                if (
+                  change.type !==
+                  "added"
+                )
+                  continue;
 
 
-                    try {
+                if (!peerConnection)
+                  continue;
 
-                      await peerConnection.addIceCandidate(
 
-                        new RTCIceCandidate(
-                          change.doc.data()
-                        )
+                const candidate =
+                  new RTCIceCandidate(
+                    change.doc.data()
+                  );
 
-                      );
 
-                    } catch (error) {
+                if (
+                  remoteDescriptionReady
+                ) {
 
-                      console.log(
-                        "ICE error:",
-                        error
-                      );
+                  try {
 
-                    }
+                    await peerConnection.addIceCandidate(
+                      candidate
+                    );
+
+                  } catch (error) {
+
+                    console.error(
+                      "Board ICE error:",
+                      error
+                    );
 
                   }
-                );
+
+                } else {
+
+                  pendingBoardCandidates.push(
+                    candidate
+                  );
+
+                }
+
+              }
 
             }
 
           );
 
 
-        /* =========================
-           SCREEN SHARE ENDED
-        ========================= */
+        /*
+          Screen ended
+        */
 
         const videoTrack =
           screenStream
@@ -1883,7 +2022,7 @@
 
 
         showMessage(
-          "✓ Screen sharing started successfully.",
+          "✓ Screen sharing started successfully. Connecting to board...",
           "success"
         );
 
@@ -1937,7 +2076,7 @@
         ) {
 
           showMessage(
-            "This mobile browser does not support screen sharing.",
+            "This browser does not support screen sharing.",
             "error"
           );
 
@@ -2022,6 +2161,12 @@
           boardIceListener = null;
 
         }
+
+
+        pendingBoardCandidates = [];
+
+        remoteDescriptionReady =
+          false;
 
 
         if (currentBoardCode) {
@@ -2111,4 +2256,3 @@
 
 </body>
 </html>
-ye raha index ka code isma kewl screen sharing ka part hi edit karna or pura code likh kar dena
