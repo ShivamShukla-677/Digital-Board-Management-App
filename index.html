@@ -710,13 +710,25 @@
   ========================= */
 
   const firebaseConfig = {
-    apiKey: "AIzaSyDhyeoTkwTSqQztltEcOZG0iNNsLt0Vgdg",
-    authDomain: "digital-board-management.firebaseapp.com",
-    projectId: "digital-board-management",
-    storageBucket: "digital-board-management.firebasestorage.app",
-    messagingSenderId: "1097078453513",
-    appId: "1:1097078453513:web:82469a3b6fb88006b34fd8",
-    measurementId: "G-V93HY51BCY"
+
+    apiKey:
+      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+
+    authDomain:
+      "digital-board-acces-management.firebaseapp.com",
+
+    projectId:
+      "digital-board-acces-management",
+
+    storageBucket:
+      "digital-board-acces-management.firebasestorage.app",
+
+    messagingSenderId:
+      "902348932290",
+
+    appId:
+      "1:902348932290:web:db47f1b012bf882886675b"
+
   };
 
 
@@ -752,10 +764,6 @@
   let sessionListener = null;
 
   let boardIceListener = null;
-
-  let pendingBoardCandidates = [];
-
-  let remoteDescriptionSet = false;
 
 
   /* =========================
@@ -1110,7 +1118,7 @@
 
 
   /* =========================
-     APPROVAL LISTENER
+     LIVE APPROVAL LISTENER
   ========================= */
 
   function startApprovalListener(email) {
@@ -1189,7 +1197,7 @@
 
 
   /* =========================
-     APPROVED ACCESS
+     SHOW BOARD ACCESS
   ========================= */
 
   function showApprovedBoardAccess() {
@@ -1202,9 +1210,11 @@
       .getElementById("registerSection")
       .classList.add("hidden");
 
+
     document
       .querySelector(".tabs")
       .classList.add("hidden");
+
 
     document
       .getElementById("boardAccess")
@@ -1487,7 +1497,6 @@
 
         console.error(error);
 
-
         showMessage(
           "Board verification failed: " +
           error.message,
@@ -1499,9 +1508,9 @@
     };
 
 
-  /* =========================================================
-     SCREEN SHARING — UPDATED WEBRTC CODE ONLY
-  ========================================================= */
+  /* =========================
+     SCREEN SHARE
+  ========================= */
 
   window.startScreenShare =
     async function () {
@@ -1526,7 +1535,7 @@
       try {
 
         /* =========================
-           SECURE CONTEXT
+           HTTPS CHECK
         ========================= */
 
         if (!window.isSecureContext) {
@@ -1541,7 +1550,7 @@
 
 
         /* =========================
-           SUPPORT CHECK
+           SCREEN SHARE SUPPORT
         ========================= */
 
         if (
@@ -1551,7 +1560,7 @@
         ) {
 
           showMessage(
-            "Screen sharing is not supported by this browser or device.",
+            "Screen sharing is not supported by this mobile browser. Please use a supported Chrome browser or desktop browser.",
             "error"
           );
 
@@ -1559,59 +1568,14 @@
         }
 
 
-        /* =========================
-           CLEAN OLD CONNECTION
-        ========================= */
-
-        if (peerConnection) {
-
-          try {
-            peerConnection.close();
-          } catch (e) {}
-
-          peerConnection =
-            null;
-        }
-
-
-        if (sessionListener) {
-
-          sessionListener();
-
-          sessionListener =
-            null;
-        }
-
-
-        if (boardIceListener) {
-
-          boardIceListener();
-
-          boardIceListener =
-            null;
-        }
-
-
-        pendingBoardCandidates =
-          [];
-
-        remoteDescriptionSet =
-          false;
-
-
-        /* =========================
-           BUTTON
-        ========================= */
-
-        startButton.disabled =
-          true;
+        startButton.disabled = true;
 
         startButton.textContent =
           "Opening Screen Share...";
 
 
         /* =========================
-           CAPTURE SCREEN
+           MOBILE + DESKTOP CAPTURE
         ========================= */
 
         screenStream =
@@ -1637,14 +1601,8 @@
         video.srcObject =
           screenStream;
 
-
         video.style.display =
           "block";
-
-
-        try {
-          await video.play();
-        } catch (e) {}
 
 
         startButton.classList.add(
@@ -1661,7 +1619,7 @@
 
 
         /* =========================
-           RTCPeerConnection
+           WEBRTC CONNECTION
         ========================= */
 
         peerConnection =
@@ -1679,10 +1637,6 @@
           });
 
 
-        /* =========================
-           ADD SCREEN TRACK
-        ========================= */
-
         screenStream
           .getTracks()
           .forEach(track => {
@@ -1696,56 +1650,11 @@
 
 
         /* =========================
-           CONNECTION STATE
-        ========================= */
-
-        peerConnection.onconnectionstatechange =
-          function () {
-
-            if (!peerConnection)
-              return;
-
-
-            console.log(
-              "Teacher WebRTC state:",
-              peerConnection.connectionState
-            );
-
-
-            if (
-              peerConnection.connectionState ===
-              "connected"
-            ) {
-
-              showMessage(
-                "✓ Screen is connected to the digital board.",
-                "success"
-              );
-
-            }
-
-
-            if (
-              peerConnection.connectionState ===
-              "failed"
-            ) {
-
-              showMessage(
-                "WebRTC connection failed. Please start screen sharing again.",
-                "error"
-              );
-
-            }
-
-          };
-
-
-        /* =========================
            TEACHER ICE
         ========================= */
 
         peerConnection.onicecandidate =
-          async function (event) {
+          async event => {
 
             if (!event.candidate)
               return;
@@ -1766,9 +1675,7 @@
 
               );
 
-            }
-
-            catch (error) {
+            } catch (error) {
 
               console.error(
                 "Teacher ICE error:",
@@ -1785,23 +1692,13 @@
         ========================= */
 
         const offer =
-          await peerConnection.createOffer({
-
-            offerToReceiveVideo: false,
-
-            offerToReceiveAudio: false
-
-          });
+          await peerConnection.createOffer();
 
 
         await peerConnection.setLocalDescription(
           offer
         );
 
-
-        /* =========================
-           CREATE SESSION
-        ========================= */
 
         const sessionRef =
           doc(
@@ -1836,14 +1733,21 @@
 
 
         /* =========================
-           LISTEN FOR BOARD ANSWER
+           BOARD ANSWER
         ========================= */
+
+        if (sessionListener) {
+
+          sessionListener();
+
+          sessionListener = null;
+
+        }
+
 
         sessionListener =
           onSnapshot(
-
             sessionRef,
-
             async snapshot => {
 
               const data =
@@ -1862,78 +1766,19 @@
 
                 try {
 
-                  await peerConnection
-                    .setRemoteDescription(
+                  await peerConnection.setRemoteDescription(
 
-                      new RTCSessionDescription(
-                        data.answer
-                      )
+                    new RTCSessionDescription(
+                      data.answer
+                    )
 
-                    );
-
-
-                  remoteDescriptionSet =
-                    true;
-
-
-                  /* =====================
-                     ADD QUEUED BOARD ICE
-                  ===================== */
-
-                  const candidates =
-                    [
-                      ...pendingBoardCandidates
-                    ];
-
-
-                  pendingBoardCandidates =
-                    [];
-
-
-                  for (
-                    const candidate
-                    of candidates
-                  ) {
-
-                    try {
-
-                      await peerConnection
-                        .addIceCandidate(
-                          candidate
-                        );
-
-                    }
-
-                    catch (iceError) {
-
-                      console.log(
-                        "Queued board ICE error:",
-                        iceError
-                      );
-
-                    }
-
-                  }
-
-
-                  showMessage(
-                    "✓ Digital Board connected. Screen is being shared.",
-                    "success"
                   );
 
-
-                }
-
-                catch (error) {
+                } catch (error) {
 
                   console.error(
-                    "Remote answer error:",
+                    "Remote description error:",
                     error
-                  );
-
-                  showMessage(
-                    "Could not establish connection with the board.",
-                    "error"
                   );
 
                 }
@@ -1941,13 +1786,21 @@
               }
 
             }
-
           );
 
 
         /* =========================
-           LISTEN FOR BOARD ICE
+           BOARD ICE
         ========================= */
+
+        if (boardIceListener) {
+
+          boardIceListener();
+
+          boardIceListener = null;
+
+        }
+
 
         boardIceListener =
           onSnapshot(
@@ -1959,68 +1812,47 @@
               "boardCandidates"
             ),
 
-            async snapshot => {
+            snapshot => {
 
-              for (
-                const change
-                of snapshot.docChanges()
-              ) {
+              snapshot
+                .docChanges()
+                .forEach(
+                  async change => {
 
-                if (
-                  change.type !==
-                  "added"
-                ) {
-
-                  continue;
-
-                }
+                    if (
+                      change.type !==
+                      "added"
+                    )
+                      return;
 
 
-                const candidate =
-                  new RTCIceCandidate(
-                    change.doc.data()
-                  );
+                    if (
+                      !peerConnection
+                    )
+                      return;
 
 
-                /*
-                   Board ICE answer se pehle
-                   aa sakta hai.
-                */
+                    try {
 
-                if (
-                  !remoteDescriptionSet ||
-                  !peerConnection ||
-                  !peerConnection.currentRemoteDescription
-                ) {
+                      await peerConnection.addIceCandidate(
 
-                  pendingBoardCandidates.push(
-                    candidate
-                  );
+                        new RTCIceCandidate(
+                          change.doc.data()
+                        )
 
-                  continue;
+                      );
 
-                }
+                    } catch (error) {
 
+                      console.log(
+                        "ICE error:",
+                        error
+                      );
 
-                try {
+                    }
 
-                  await peerConnection
-                    .addIceCandidate(
-                      candidate
-                    );
-
-                }
-
-                catch (error) {
-
-                  console.log(
-                    "Board ICE error:",
-                    error
-                  );
-
-                }
-
-              }
+                  }
+                );
 
             }
 
@@ -2028,7 +1860,7 @@
 
 
         /* =========================
-           SCREEN TRACK ENDED
+           SCREEN SHARE ENDED
         ========================= */
 
         const videoTrack =
@@ -2040,7 +1872,7 @@
 
           videoTrack.addEventListener(
             "ended",
-            function () {
+            () => {
 
               stopScreenShare();
 
@@ -2051,14 +1883,12 @@
 
 
         showMessage(
-          "✓ Screen sharing started. Waiting for the digital board...",
+          "✓ Screen sharing started successfully.",
           "success"
         );
 
 
-      }
-
-      catch (error) {
+      } catch (error) {
 
         console.error(
           "Screen Share Error:",
@@ -2093,7 +1923,7 @@
         ) {
 
           showMessage(
-            "Please start screen sharing directly from this page.",
+            "Please tap Start Screen Share directly from this page.",
             "error"
           );
 
@@ -2107,7 +1937,7 @@
         ) {
 
           showMessage(
-            "This browser or device does not support screen sharing.",
+            "This mobile browser does not support screen sharing.",
             "error"
           );
 
@@ -2121,7 +1951,7 @@
         ) {
 
           showMessage(
-            "No screen source was available.",
+            "No screen source is available on this device.",
             "error"
           );
 
@@ -2144,18 +1974,14 @@
     };
 
 
-  /* =========================================================
-     STOP SCREEN SHARING
-  ========================================================= */
+  /* =========================
+     STOP SHARE
+  ========================= */
 
   window.stopScreenShare =
     async function () {
 
       try {
-
-        /* =========================
-           STOP MEDIA
-        ========================= */
 
         if (screenStream) {
 
@@ -2166,38 +1992,25 @@
                 track.stop()
             );
 
-          screenStream =
-            null;
+          screenStream = null;
 
         }
 
-
-        /* =========================
-           CLOSE PEER
-        ========================= */
 
         if (peerConnection) {
 
-          try {
-            peerConnection.close();
-          } catch (e) {}
+          peerConnection.close();
 
-          peerConnection =
-            null;
+          peerConnection = null;
 
         }
 
-
-        /* =========================
-           REMOVE LISTENERS
-        ========================= */
 
         if (sessionListener) {
 
           sessionListener();
 
-          sessionListener =
-            null;
+          sessionListener = null;
 
         }
 
@@ -2206,59 +2019,32 @@
 
           boardIceListener();
 
-          boardIceListener =
-            null;
+          boardIceListener = null;
 
         }
 
-
-        pendingBoardCandidates =
-          [];
-
-        remoteDescriptionSet =
-          false;
-
-
-        /* =========================
-           END SESSION
-        ========================= */
 
         if (currentBoardCode) {
 
-          try {
+          await updateDoc(
 
-            await updateDoc(
+            doc(
+              db,
+              "sessions",
+              currentBoardCode
+            ),
 
-              doc(
-                db,
-                "sessions",
-                currentBoardCode
-              ),
+            {
+              status:
+                "ended"
+            }
 
-              {
-                status:
-                  "ended"
-              }
-
-            );
-
-          }
-
-          catch (error) {
-
-            console.log(
-              "Session end update:",
-              error
-            );
-
-          }
+          ).catch(
+            () => {}
+          );
 
         }
 
-
-        /* =========================
-           RESET VIDEO
-        ========================= */
 
         const video =
           document.getElementById(
@@ -2266,18 +2052,12 @@
           );
 
 
-        video.pause();
-
         video.srcObject =
           null;
 
         video.style.display =
           "none";
 
-
-        /* =========================
-           RESET BUTTONS
-        ========================= */
 
         document
           .getElementById(
@@ -2312,14 +2092,9 @@
         );
 
 
-      }
+      } catch (error) {
 
-      catch (error) {
-
-        console.error(
-          "Stop sharing error:",
-          error
-        );
+        console.error(error);
 
       }
 
@@ -2336,3 +2111,4 @@
 
 </body>
 </html>
+ye raha index ka code isma kewl screen sharing ka part hi edit karna or pura code likh kar dena
