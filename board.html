@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
@@ -58,6 +57,11 @@
       padding: 30px;
     }
 
+
+    /* =====================================
+       MAIN BOARD
+    ===================================== */
+
     .board {
       width: 100%;
       max-width: 760px;
@@ -76,6 +80,11 @@
         0 25px 70px rgba(15,23,42,0.12);
     }
 
+
+    /* =====================================
+       HEADER
+    ===================================== */
+
     .brand {
       display: flex;
 
@@ -87,6 +96,7 @@
 
       margin-bottom: 12px;
     }
+
 
     .brand-icon {
       width: 46px;
@@ -114,15 +124,18 @@
       font-weight: 800;
     }
 
+
     .brand-title {
       text-align: left;
     }
+
 
     .brand-title h1 {
       margin: 0;
 
       font-size: 21px;
     }
+
 
     .brand-title span {
       display: block;
@@ -133,6 +146,7 @@
 
       margin-top: 3px;
     }
+
 
     .badge {
       display: inline-block;
@@ -154,9 +168,15 @@
       letter-spacing: 0.5px;
     }
 
+
+    /* =====================================
+       BOARD CODE
+    ===================================== */
+
     .code-section {
       margin-top: 30px;
     }
+
 
     .code-label {
       color: #64748b;
@@ -167,6 +187,7 @@
 
       margin-bottom: 10px;
     }
+
 
     .code {
       display: inline-block;
@@ -198,9 +219,15 @@
         inset 0 1px 0 rgba(255,255,255,0.8);
     }
 
+
+    /* =====================================
+       QR
+    ===================================== */
+
     .qr-section {
       margin-top: 28px;
     }
+
 
     #qrcode {
       width: 240px;
@@ -226,10 +253,12 @@
         0 10px 30px rgba(15,23,42,0.08);
     }
 
+
     #qrcode img {
       width: 220px !important;
       height: 220px !important;
     }
+
 
     .qr-title {
       margin-top: 14px;
@@ -241,6 +270,7 @@
       color: #334155;
     }
 
+
     .qr-description {
       margin-top: 5px;
 
@@ -248,6 +278,11 @@
 
       font-size: 12px;
     }
+
+
+    /* =====================================
+       STATUS
+    ===================================== */
 
     .status-box {
       margin-top: 25px;
@@ -273,6 +308,7 @@
       font-weight: 700;
     }
 
+
     .status-dot {
       width: 9px;
       height: 9px;
@@ -285,6 +321,11 @@
         0 0 0 4px rgba(16,185,129,0.12);
     }
 
+
+    /* =====================================
+       FOOTER
+    ===================================== */
+
     .footer {
       margin-top: 25px;
 
@@ -292,6 +333,11 @@
 
       font-size: 11px;
     }
+
+
+    /* =====================================
+       LIVE SCREEN
+    ===================================== */
 
     #screenContainer {
 
@@ -311,6 +357,11 @@
 
       overflow: hidden;
     }
+
+
+    /* =====================================
+       FULL SCREEN SHARED VIDEO
+    ===================================== */
 
     #remoteVideo {
 
@@ -335,6 +386,11 @@
       display: block;
     }
 
+
+    /* =====================================
+       LIVE HEADER
+    ===================================== */
+
     .live-header {
 
       position: absolute;
@@ -353,6 +409,7 @@
 
       align-items: center;
     }
+
 
     .live-brand {
 
@@ -377,6 +434,7 @@
       font-weight: 700;
     }
 
+
     .live-indicator {
 
       display: flex;
@@ -398,6 +456,7 @@
       font-weight: 800;
     }
 
+
     .live-dot {
 
       width: 8px;
@@ -408,6 +467,11 @@
 
       background: white;
     }
+
+
+    /* =====================================
+       WAITING
+    ===================================== */
 
     #waiting {
 
@@ -432,6 +496,7 @@
       gap: 12px;
     }
 
+
     .waiting-icon {
 
       width: 60px;
@@ -451,6 +516,7 @@
       font-size: 27px;
     }
 
+
     .waiting-small {
 
       font-size: 13px;
@@ -460,17 +526,24 @@
       font-weight: normal;
     }
 
+
+    /* =====================================
+       MOBILE
+    ===================================== */
+
     @media (max-width: 600px) {
 
       body {
         padding: 15px;
       }
 
+
       .board {
         padding: 28px 18px;
 
         border-radius: 20px;
       }
+
 
       .code {
 
@@ -483,12 +556,14 @@
         letter-spacing: 6px;
       }
 
+
       #qrcode {
 
         width: 220px;
 
         height: 220px;
       }
+
 
       #qrcode img {
 
@@ -503,7 +578,9 @@
 
 </head>
 
+
 <body>
+
 
   <div
     class="board"
@@ -515,6 +592,7 @@
       <div class="brand-icon">
         DB
       </div>
+
 
       <div class="brand-title">
 
@@ -530,9 +608,11 @@
 
     </div>
 
+
     <div class="badge">
       DIGITAL CLASSROOM • SECURE BOARD
     </div>
+
 
     <div class="code-section">
 
@@ -549,6 +629,7 @@
 
     </div>
 
+
     <div class="qr-section">
 
       <div id="qrcode"></div>
@@ -564,6 +645,7 @@
 
     </div>
 
+
     <div
       class="status-box"
       id="statusBox"
@@ -577,11 +659,17 @@
 
     </div>
 
+
     <div class="footer">
       Digital Board Management System • College Project
     </div>
 
   </div>
+
+
+  <!-- =====================================
+       LIVE SCREEN
+  ====================================== -->
 
   <div
     id="screenContainer"
@@ -594,6 +682,7 @@
       muted
     ></video>
 
+
     <div class="live-header">
 
       <div class="live-brand">
@@ -604,6 +693,7 @@
 
       </div>
 
+
       <div class="live-indicator">
 
         <span class="live-dot"></span>
@@ -613,6 +703,7 @@
       </div>
 
     </div>
+
 
     <div id="waiting">
 
@@ -632,7 +723,13 @@
 
   </div>
 
+
 <script type="module">
+
+
+/* =====================================
+   FIREBASE
+===================================== */
 
 import {
   initializeApp
@@ -659,32 +756,25 @@ from
 "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-/* =====================================
-   FIREBASE
-===================================== */
-
 const firebaseConfig = {
 
   apiKey:
-    "AIzaSyDhyeoTkwTSqQztltEcOZG0iNNsLt0Vgdg",
+    "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZ",
 
   authDomain:
-    "digital-board-management.firebaseapp.com",
+    "digital-board-acces-management.firebaseapp.com",
 
   projectId:
-    "digital-board-management",
+    "digital-board-acces-management",
 
   storageBucket:
-    "digital-board-management.firebasestorage.app",
+    "digital-board-acces-management.firebasestorage.app",
 
   messagingSenderId:
-    "1097078453513",
+    "902348932290",
 
   appId:
-    "1:1097078453513:web:82469a3b6fb88006b34fd8",
-
-  measurementId:
-    "G-V93HY51BCY"
+    "1:902348932290:web:db47f1b012bf882886675b"
 
 };
 
@@ -1159,6 +1249,7 @@ function startBoardListener(
 
     sessionUnsubscribe();
 
+
     sessionUnsubscribe =
       null;
 
@@ -1196,6 +1287,10 @@ function startBoardListener(
         const data =
           snapshot.data();
 
+
+        /* =========================
+           NEW SCREEN SHARE
+        ========================= */
 
         if (
 
@@ -1235,6 +1330,10 @@ function startBoardListener(
 
         }
 
+
+        /* =========================
+           SCREEN SHARE ENDED
+        ========================= */
 
         if (
           data.status ===
@@ -1319,6 +1418,10 @@ async function receiveOffer(
 
   try {
 
+    /* =========================
+       CLOSE OLD CONNECTION
+    ========================= */
+
     if (
       peerConnection
     ) {
@@ -1345,6 +1448,10 @@ async function receiveOffer(
       [];
 
 
+    /* =========================
+       CREATE CONNECTION
+    ========================= */
+
     peerConnection =
       new RTCPeerConnection(
         rtcConfig
@@ -1356,6 +1463,10 @@ async function receiveOffer(
         "remoteVideo"
       );
 
+
+    /* =========================
+       RECEIVE SCREEN TRACK
+    ========================= */
 
     peerConnection.ontrack =
       async function(event) {
@@ -1386,6 +1497,7 @@ async function receiveOffer(
 
           stream =
             new MediaStream();
+
 
           stream.addTrack(
             event.track
@@ -1452,6 +1564,10 @@ async function receiveOffer(
       };
 
 
+    /* =========================
+       TEACHER CANDIDATES
+    ========================= */
+
     const candidateQuery =
       collection(
 
@@ -1471,6 +1587,7 @@ async function receiveOffer(
     ) {
 
       candidateUnsubscribe();
+
 
       candidateUnsubscribe =
         null;
@@ -1550,6 +1667,10 @@ async function receiveOffer(
       );
 
 
+    /* =========================
+       BOARD ICE
+    ========================= */
+
     peerConnection.onicecandidate =
       async function(event) {
 
@@ -1595,6 +1716,10 @@ async function receiveOffer(
 
       };
 
+
+    /* =========================
+       CONNECTION STATE
+    ========================= */
 
     peerConnection.onconnectionstatechange =
       function() {
@@ -1642,6 +1767,10 @@ async function receiveOffer(
       };
 
 
+    /* =========================
+       REMOTE DESCRIPTION
+    ========================= */
+
     setStatus(
       "Connecting to teacher screen..."
     );
@@ -1661,8 +1790,16 @@ async function receiveOffer(
       true;
 
 
+    /* =========================
+       PENDING ICE
+    ========================= */
+
     await addPendingCandidates();
 
+
+    /* =========================
+       CREATE ANSWER
+    ========================= */
 
     const answer =
       await peerConnection
@@ -1674,6 +1811,10 @@ async function receiveOffer(
         answer
       );
 
+
+    /* =========================
+       SEND ANSWER
+    ========================= */
 
     await updateDoc(
 
@@ -1811,6 +1952,7 @@ function stopBoardScreen() {
   ) {
 
     candidateUnsubscribe();
+
 
     candidateUnsubscribe =
       null;
