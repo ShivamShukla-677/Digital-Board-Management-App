@@ -1,302 +1,564 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<meta charset="UTF-8">
+  <title>Digital Board | College Management System</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
-<title>Digital Board</title>
+  <style>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    * {
+      box-sizing: border-box;
+      font-family: Inter, Arial, sans-serif;
+    }
 
-<style>
+    html,
+    body {
+      width: 100%;
+      min-height: 100%;
+      margin: 0;
+    }
 
-*{
-  box-sizing:border-box;
-  font-family:Inter,Arial,sans-serif;
-}
+    body {
+      min-height: 100vh;
+      background:
+        radial-gradient(
+          circle at top left,
+          #dbeafe 0%,
+          transparent 35%
+        ),
+        radial-gradient(
+          circle at bottom right,
+          #e0e7ff 0%,
+          transparent 35%
+        ),
+        #f5f7fb;
 
-html,body{
-  width:100%;
-  min-height:100%;
-  margin:0;
-}
+      color: #172033;
 
-body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at top left,#dbeafe 0%,transparent 35%),
-    radial-gradient(circle at bottom right,#e0e7ff 0%,transparent 35%),
-    #f5f7fb;
-  color:#172033;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  padding:30px;
-}
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-.board{
-  width:100%;
-  max-width:760px;
-  background:rgba(255,255,255,.97);
-  border:1px solid #e5e7eb;
-  border-radius:26px;
-  padding:42px;
-  text-align:center;
-  box-shadow:0 25px 70px rgba(15,23,42,.12);
-}
+      padding: 30px;
+    }
 
-.brand{
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:12px;
-  margin-bottom:12px;
-}
 
-.brand-icon{
-  width:46px;
-  height:46px;
-  border-radius:13px;
-  background:linear-gradient(135deg,#2563eb,#4f46e5);
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-  font-weight:800;
-}
+    /* =====================================
+       MAIN BOARD
+    ===================================== */
 
-.brand-title{
-  text-align:left;
-}
+    .board {
+      width: 100%;
+      max-width: 760px;
 
-.brand-title h1{
-  margin:0;
-  font-size:21px;
-}
+      background: rgba(255,255,255,0.97);
 
-.brand-title span{
-  display:block;
-  color:#64748b;
-  font-size:12px;
-  margin-top:3px;
-}
+      border: 1px solid #e5e7eb;
 
-.badge{
-  display:inline-block;
-  margin-top:15px;
-  padding:7px 14px;
-  border-radius:20px;
-  background:#dbeafe;
-  color:#1d4ed8;
-  font-size:11px;
-  font-weight:800;
-  letter-spacing:.5px;
-}
+      border-radius: 26px;
 
-.code-section{
-  margin-top:30px;
-}
+      padding: 42px;
 
-.code-label{
-  color:#64748b;
-  font-size:13px;
-  font-weight:600;
-  margin-bottom:10px;
-}
+      text-align: center;
 
-.code{
-  display:inline-block;
-  min-width:320px;
-  padding:18px 28px;
-  border-radius:16px;
-  background:linear-gradient(145deg,#f8fafc,#eef2ff);
-  border:1px solid #dbe4f0;
-  color:#172033;
-  font-size:44px;
-  font-weight:800;
-  letter-spacing:9px;
-}
+      box-shadow:
+        0 25px 70px rgba(15,23,42,0.12);
+    }
 
-.qr-section{
-  margin-top:28px;
-}
 
-#qrcode{
-  width:240px;
-  height:240px;
-  margin:0 auto;
-  padding:10px;
-  background:white;
-  border-radius:16px;
-  border:1px solid #e5e7eb;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-}
+    /* =====================================
+       HEADER
+    ===================================== */
 
-#qrcode img{
-  width:220px !important;
-  height:220px !important;
-}
+    .brand {
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
-.qr-title{
-  margin-top:14px;
-  font-size:14px;
-  font-weight:700;
-  color:#334155;
-}
+      gap: 12px;
 
-.qr-description{
-  margin-top:5px;
-  color:#64748b;
-  font-size:12px;
-}
+      margin-bottom: 12px;
+    }
 
-.status-box{
-  margin-top:25px;
-  display:inline-flex;
-  align-items:center;
-  gap:9px;
-  padding:10px 16px;
-  border-radius:30px;
-  background:#ecfdf5;
-  border:1px solid #a7f3d0;
-  color:#047857;
-  font-size:13px;
-  font-weight:700;
-}
 
-.status-dot{
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#10b981;
-}
+    .brand-icon {
+      width: 46px;
+      height: 46px;
 
-.footer{
-  margin-top:25px;
-  color:#94a3b8;
-  font-size:11px;
-}
+      border-radius: 13px;
 
-/* LIVE SCREEN */
+      background:
+        linear-gradient(
+          135deg,
+          #2563eb,
+          #4f46e5
+        );
 
-#screenContainer{
-  display:none;
-  position:fixed;
-  inset:0;
-  width:100vw;
-  height:100vh;
-  background:#000;
-  z-index:9999;
-  overflow:hidden;
-}
+      color: white;
 
-#remoteVideo{
-  position:absolute;
-  top:0;
-  left:0;
-  width:100vw;
-  height:100vh;
-  max-width:none;
-  max-height:none;
-  object-fit:contain;
-  background:#000;
-  display:block;
-}
+      display: flex;
+      align-items: center;
+      justify-content: center;
 
-.live-header{
-  position:absolute;
-  top:20px;
-  left:20px;
-  right:20px;
-  z-index:5;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  pointer-events:none;
-}
+      font-size: 20px;
+      font-weight: 800;
+    }
 
-.live-brand{
-  padding:9px 14px;
-  border-radius:12px;
-  background:rgba(15,23,42,.78);
-  color:white;
-  font-size:13px;
-  font-weight:700;
-}
 
-.live-indicator{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:9px 14px;
-  border-radius:12px;
-  background:rgba(16,185,129,.9);
-  color:white;
-  font-size:12px;
-  font-weight:800;
-}
+    .brand-title {
+      text-align: left;
+    }
 
-.live-dot{
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:white;
-}
 
-#waiting{
-  color:white;
-  font-size:22px;
-  font-weight:600;
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:12px;
-}
+    .brand-title h1 {
+      margin: 0;
 
-.waiting-small{
-  font-size:13px;
-  color:#94a3b8;
-  font-weight:normal;
-}
+      font-size: 21px;
+    }
 
-@media(max-width:600px){
 
-  body{
-    padding:15px;
-  }
+    .brand-title span {
+      display: block;
 
-  .board{
-    padding:28px 18px;
-  }
+      color: #64748b;
 
-  .code{
-    min-width:0;
-    width:100%;
-    font-size:34px;
-    letter-spacing:6px;
-  }
+      font-size: 12px;
 
-  #qrcode{
-    width:220px;
-    height:220px;
-  }
+      margin-top: 3px;
+    }
 
-}
 
-</style>
+    .badge {
+      display: inline-block;
+
+      margin-top: 15px;
+
+      padding: 7px 14px;
+
+      border-radius: 20px;
+
+      background: #dbeafe;
+
+      color: #1d4ed8;
+
+      font-size: 11px;
+
+      font-weight: 800;
+
+      letter-spacing: 0.5px;
+    }
+
+
+    /* =====================================
+       BOARD CODE
+    ===================================== */
+
+    .code-section {
+      margin-top: 30px;
+    }
+
+
+    .code-label {
+      color: #64748b;
+
+      font-size: 13px;
+
+      font-weight: 600;
+
+      margin-bottom: 10px;
+    }
+
+
+    .code {
+      display: inline-block;
+
+      min-width: 320px;
+
+      padding: 18px 28px;
+
+      border-radius: 16px;
+
+      background:
+        linear-gradient(
+          145deg,
+          #f8fafc,
+          #eef2ff
+        );
+
+      border: 1px solid #dbe4f0;
+
+      color: #172033;
+
+      font-size: 44px;
+
+      font-weight: 800;
+
+      letter-spacing: 9px;
+
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+
+    /* =====================================
+       QR
+    ===================================== */
+
+    .qr-section {
+      margin-top: 28px;
+    }
+
+
+    #qrcode {
+      width: 240px;
+      height: 240px;
+
+      margin: 0 auto;
+
+      padding: 10px;
+
+      background: white;
+
+      border-radius: 16px;
+
+      border: 1px solid #e5e7eb;
+
+      display: flex;
+
+      justify-content: center;
+
+      align-items: center;
+
+      box-shadow:
+        0 10px 30px rgba(15,23,42,0.08);
+    }
+
+
+    #qrcode img {
+      width: 220px !important;
+      height: 220px !important;
+    }
+
+
+    .qr-title {
+      margin-top: 14px;
+
+      font-size: 14px;
+
+      font-weight: 700;
+
+      color: #334155;
+    }
+
+
+    .qr-description {
+      margin-top: 5px;
+
+      color: #64748b;
+
+      font-size: 12px;
+    }
+
+
+    /* =====================================
+       STATUS
+    ===================================== */
+
+    .status-box {
+      margin-top: 25px;
+
+      display: inline-flex;
+
+      align-items: center;
+
+      gap: 9px;
+
+      padding: 10px 16px;
+
+      border-radius: 30px;
+
+      background: #ecfdf5;
+
+      border: 1px solid #a7f3d0;
+
+      color: #047857;
+
+      font-size: 13px;
+
+      font-weight: 700;
+    }
+
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+
+      border-radius: 50%;
+
+      background: #10b981;
+
+      box-shadow:
+        0 0 0 4px rgba(16,185,129,0.12);
+    }
+
+
+    /* =====================================
+       FOOTER
+    ===================================== */
+
+    .footer {
+      margin-top: 25px;
+
+      color: #94a3b8;
+
+      font-size: 11px;
+    }
+
+
+    /* =====================================
+       LIVE SCREEN
+    ===================================== */
+
+    #screenContainer {
+
+      display: none;
+
+      position: fixed;
+
+      inset: 0;
+
+      width: 100vw;
+      height: 100vh;
+
+      background: #000;
+
+      z-index: 9999;
+
+      overflow: hidden;
+    }
+
+
+    /* =====================================
+       FULL SCREEN SHARED VIDEO
+    ===================================== */
+
+    #remoteVideo {
+
+      position: absolute;
+
+      top: 0;
+      left: 0;
+
+      width: 100vw;
+      height: 100vh;
+
+      max-width: none;
+      max-height: none;
+
+      object-fit: cover;
+
+      background: #000;
+
+      display: block;
+    }
+
+
+    /* =====================================
+       LIVE HEADER
+    ===================================== */
+
+    .live-header {
+
+      position: absolute;
+
+      top: 20px;
+
+      left: 20px;
+
+      right: 20px;
+
+      z-index: 5;
+
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+    }
+
+
+    .live-brand {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+
+      padding: 9px 14px;
+
+      border-radius: 12px;
+
+      background: rgba(15,23,42,0.78);
+
+      color: white;
+
+      backdrop-filter: blur(10px);
+
+      font-size: 13px;
+
+      font-weight: 700;
+    }
+
+
+    .live-indicator {
+
+      display: flex;
+
+      align-items: center;
+
+      gap: 7px;
+
+      padding: 9px 14px;
+
+      border-radius: 12px;
+
+      background: rgba(16,185,129,0.9);
+
+      color: white;
+
+      font-size: 12px;
+
+      font-weight: 800;
+    }
+
+
+    .live-dot {
+
+      width: 8px;
+
+      height: 8px;
+
+      border-radius: 50%;
+
+      background: white;
+    }
+
+
+    /* =====================================
+       WAITING
+    ===================================== */
+
+    #waiting {
+
+      color: white;
+
+      font-size: 22px;
+
+      font-weight: 600;
+
+      position: absolute;
+
+      inset: 0;
+
+      display: flex;
+
+      flex-direction: column;
+
+      align-items: center;
+
+      justify-content: center;
+
+      gap: 12px;
+    }
+
+
+    .waiting-icon {
+
+      width: 60px;
+
+      height: 60px;
+
+      border-radius: 18px;
+
+      background: rgba(255,255,255,0.08);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: center;
+
+      font-size: 27px;
+    }
+
+
+    .waiting-small {
+
+      font-size: 13px;
+
+      color: #94a3b8;
+
+      font-weight: normal;
+    }
+
+
+    /* =====================================
+       MOBILE
+    ===================================== */
+
+    @media (max-width: 600px) {
+
+      body {
+        padding: 15px;
+      }
+
+
+      .board {
+        padding: 28px 18px;
+        border-radius: 20px;
+      }
+
+
+      .code {
+        min-width: 0;
+
+        width: 100%;
+
+        font-size: 34px;
+
+        letter-spacing: 6px;
+      }
+
+
+      #qrcode {
+        width: 220px;
+        height: 220px;
+      }
+
+
+      #qrcode img {
+        width: 200px !important;
+        height: 200px !important;
+      }
+
+    }
+
+  </style>
 </head>
+
 
 <body>
 
-<div class="board" id="mainBoard">
+
+<div
+  class="board"
+  id="mainBoard"
+>
 
   <div class="brand">
 
@@ -306,7 +568,9 @@ body{
 
     <div class="brand-title">
 
-      <h1>Digital Board</h1>
+      <h1>
+        Digital Board
+      </h1>
 
       <span>
         College Management System
@@ -316,9 +580,11 @@ body{
 
   </div>
 
+
   <div class="badge">
     DIGITAL CLASSROOM • SECURE BOARD
   </div>
+
 
   <div class="code-section">
 
@@ -326,11 +592,15 @@ body{
       CURRENT BOARD CODE
     </div>
 
-    <div id="boardCode" class="code">
+    <div
+      id="boardCode"
+      class="code"
+    >
       ------
     </div>
 
   </div>
+
 
   <div class="qr-section">
 
@@ -341,12 +611,17 @@ body{
     </div>
 
     <div class="qr-description">
-      Scan the QR code and enter the Board Code shown above.
+      Scan the QR code and enter the Board Code
+      shown above.
     </div>
 
   </div>
 
-  <div class="status-box" id="statusBox">
+
+  <div
+    class="status-box"
+    id="statusBox"
+  >
 
     <span class="status-dot"></span>
 
@@ -356,6 +631,7 @@ body{
 
   </div>
 
+
   <div class="footer">
     Digital Board Management System • College Project
   </div>
@@ -363,22 +639,24 @@ body{
 </div>
 
 
-<!-- LIVE SCREEN -->
-
-<div id="screenContainer">
+<div
+  id="screenContainer"
+>
 
   <video
     id="remoteVideo"
     autoplay
     playsinline
-    muted>
-  </video>
+  ></video>
+
 
   <div class="live-header">
 
     <div class="live-brand">
-      ▣ Digital Board
+      <span>▣</span>
+      Digital Board
     </div>
+
 
     <div class="live-indicator">
 
@@ -390,7 +668,12 @@ body{
 
   </div>
 
+
   <div id="waiting">
+
+    <div class="waiting-icon">
+      ▣
+    </div>
 
     <div>
       Waiting for Screen Share...
@@ -407,687 +690,538 @@ body{
 
 <script type="module">
 
-import {
-  initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
-
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  addDoc,
-  onSnapshot,
-  serverTimestamp
-}
-from
-"https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+  import {
+    initializeApp
+  } from
+  "https://www.gstatic.com/firebasejs/12.2.1/firebase-app.js";
 
 
-const firebaseConfig = {
-
-  apiKey:
-    "AIzaSyCDVZ3SSw8IqMNhrv4B_p4v2OOtP-lFxqZ",
-
-  authDomain:
-    "digital-board-acces-management.firebaseapp.com",
-
-  projectId:
-    "digital-board-acces-management",
-
-  storageBucket:
-    "digital-board-acces-management.firebasestorage.app",
-
-  messagingSenderId:
-    "902348932290",
-
-  appId:
-    "1:902348932290:web:db47f1b012bf882886675b"
-
-};
+  import {
+    getFirestore,
+    doc,
+    getDoc,
+    setDoc,
+    updateDoc,
+    collection,
+    query,
+    where,
+    getDocs,
+    addDoc,
+    onSnapshot,
+    serverTimestamp
+  } from
+  "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 
-const app =
-  initializeApp(firebaseConfig);
+  const firebaseConfig = {
 
-const db =
-  getFirestore(app);
+    apiKey:
+      "AIzaSyCDVZ3SSw8IqMNhrv_b4Pv2OOtP-lFxqZQ",
+
+    authDomain:
+      "digital-board-acces-management.firebaseapp.com",
+
+    projectId:
+      "digital-board-acces-management",
+
+    storageBucket:
+      "digital-board-acces-management.firebasestorage.app",
+
+    messagingSenderId:
+      "902348932290",
+
+    appId:
+      "1:902348932290:web:db47f1b012bf882886675b"
+
+  };
 
 
-const CHARACTERS =
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-
-const CODE_LENGTH = 6;
-
-
-let currentBoardCode = null;
-let peerConnection = null;
-
-let sessionListener = null;
-let teacherCandidateListener = null;
-
-let remoteDescriptionSet = false;
-let pendingCandidates = [];
+  const app =
+    initializeApp(
+      firebaseConfig
+    );
 
 
+  const db =
+    getFirestore(app);
 
-function setStatus(
-  message,
-  type="waiting"
-){
 
-  const status =
-    document.getElementById("status");
+  const CHARACTERS =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
-  const box =
-    document.getElementById("statusBox");
 
-  status.textContent =
-    message;
+  const CODE_LENGTH = 6;
 
-  if(type === "live"){
 
-    box.style.background =
-      "#ecfdf5";
+  let currentBoardCode = null;
 
-    box.style.color =
-      "#047857";
+  let peerConnection = null;
 
-    box.style.borderColor =
-      "#a7f3d0";
+  let candidateUnsubscribe = null;
+
+  let sessionUnsubscribe = null;
+
+  let remoteDescriptionSet = false;
+
+  let pendingCandidates = [];
+
+
+  function setStatus(
+    message,
+    type = "waiting"
+  ) {
+
+    const status =
+      document.getElementById(
+        "status"
+      );
+
+
+    const box =
+      document.getElementById(
+        "statusBox"
+      );
+
+
+    status.textContent =
+      message;
+
+
+    if (type === "live") {
+
+      box.style.background =
+        "#ecfdf5";
+
+      box.style.color =
+        "#047857";
+
+      box.style.borderColor =
+        "#a7f3d0";
+
+    }
+
+    else if (type === "error") {
+
+      box.style.background =
+        "#fef2f2";
+
+      box.style.color =
+        "#b91c1c";
+
+      box.style.borderColor =
+        "#fecaca";
+
+    }
+
+    else {
+
+      box.style.background =
+        "#eff6ff";
+
+      box.style.color =
+        "#1d4ed8";
+
+      box.style.borderColor =
+        "#bfdbfe";
+
+    }
 
   }
 
-  else if(type === "error"){
 
-    box.style.background =
-      "#fef2f2";
+  function generateRandomCode() {
 
-    box.style.color =
-      "#b91c1c";
-
-    box.style.borderColor =
-      "#fecaca";
-
-  }
-
-  else{
-
-    box.style.background =
-      "#eff6ff";
-
-    box.style.color =
-      "#1d4ed8";
-
-    box.style.borderColor =
-      "#bfdbfe";
-
-  }
-
-}
+    let code = "";
 
 
+    for (
+      let i = 0;
+      i < CODE_LENGTH;
+      i++
+    ) {
 
-function generateRandomCode(){
-
-  let code = "";
-
-  for(
-    let i=0;
-    i<CODE_LENGTH;
-    i++
-  ){
-
-    code +=
-      CHARACTERS[
+      const randomIndex =
         Math.floor(
           Math.random() *
           CHARACTERS.length
-        )
-      ];
-
-  }
-
-  return code;
-
-}
-
-
-
-async function codeExists(code){
-
-  const boardRef =
-    doc(
-      db,
-      "boards",
-      code
-    );
-
-  const boardSnapshot =
-    await getDoc(boardRef);
-
-  if(boardSnapshot.exists()){
-    return true;
-  }
-
-  const usedQuery =
-    query(
-      collection(
-        db,
-        "usedBoardCodes"
-      ),
-      where(
-        "boardCode",
-        "==",
-        code
-      )
-    );
-
-  const usedSnapshot =
-    await getDocs(usedQuery);
-
-  return !usedSnapshot.empty;
-
-}
-
-
-
-async function createUniqueCode(){
-
-  while(true){
-
-    const code =
-      generateRandomCode();
-
-    if(
-      !(await codeExists(code))
-    ){
-
-      return code;
-
-    }
-
-  }
-
-}
-
-
-
-async function createBoardCode(){
-
-  try{
-
-    setStatus(
-      "Creating secure board code..."
-    );
-
-    const newCode =
-      await createUniqueCode();
-
-    const oldCode =
-      localStorage.getItem(
-        "currentBoardCode"
-      );
-
-
-    if(oldCode){
-
-      const oldBoardRef =
-        doc(
-          db,
-          "boards",
-          oldCode
         );
 
-      const oldBoard =
-        await getDoc(
-          oldBoardRef
-        );
 
-      if(oldBoard.exists()){
-
-        await updateDoc(
-          oldBoardRef,
-          {
-            status:
-              "inactive"
-          }
-        );
-
-      }
-
-      await setDoc(
-        doc(
-          db,
-          "usedBoardCodes",
-          oldCode
-        ),
-        {
-          boardCode:
-            oldCode,
-
-          usedAt:
-            serverTimestamp()
-        }
-      );
+      code +=
+        CHARACTERS[randomIndex];
 
     }
 
 
-    await setDoc(
+    return code;
+
+  }
+
+
+  async function codeExists(
+    code
+  ) {
+
+    const boardRef =
       doc(
         db,
         "boards",
-        newCode
-      ),
-      {
-
-        boardCode:
-          newCode,
-
-        status:
-          "available",
-
-        createdAt:
-          serverTimestamp()
-
-      }
-    );
-
-
-    currentBoardCode =
-      newCode;
-
-    localStorage.setItem(
-      "currentBoardCode",
-      newCode
-    );
-
-
-    document
-      .getElementById("boardCode")
-      .textContent =
-      newCode;
-
-
-    setStatus(
-      "Board ready • Waiting for Screen Share"
-    );
-
-
-    startBoardListener(
-      newCode
-    );
-
-  }
-
-  catch(error){
-
-    console.error(error);
-
-    document
-      .getElementById("boardCode")
-      .textContent =
-      "ERROR";
-
-    setStatus(
-      "Board setup failed. Check Firestore rules.",
-      "error"
-    );
-
-  }
-
-}
-
-
-
-function createQRCode(){
-
-  const container =
-    document.getElementById(
-      "qrcode"
-    );
-
-  container.innerHTML = "";
-
-  new QRCode(
-    container,
-    {
-      text:
-        "https://shivamshukla-677.github.io/Digital-Board-Management-App/",
-
-      width:
-        220,
-
-      height:
-        220,
-
-      correctLevel:
-        QRCode.CorrectLevel.H
-    }
-  );
-
-}
-
-
-
-const rtcConfig = {
-
-  iceServers: [
-
-    {
-      urls:
-        "stun:stun.l.google.com:19302"
-    }
-
-  ]
-
-};
-
-
-
-function startBoardListener(code){
-
-  if(sessionListener){
-
-    sessionListener();
-
-    sessionListener = null;
-
-  }
-
-
-  const sessionRef =
-    doc(
-      db,
-      "sessions",
-      code
-    );
-
-
-  sessionListener =
-    onSnapshot(
-      sessionRef,
-      async snapshot => {
-
-        if(!snapshot.exists()){
-
-          return;
-
-        }
-
-
-        const data =
-          snapshot.data();
-
-
-        if(
-          data.status === "ended"
-        ){
-
-          stopBoardScreen();
-
-          return;
-
-        }
-
-
-        if(
-          data.offer &&
-          (
-            data.status === "active" ||
-            data.status === "connected"
-          ) &&
-          !peerConnection
-        ){
-
-          await receiveOffer(
-            code,
-            data.offer
-          );
-
-        }
-
-      }
-    );
-
-}
-
-
-
-async function receiveOffer(
-  code,
-  offerData
-){
-
-  try{
-
-    setStatus(
-      "Connecting to teacher screen..."
-    );
-
-
-    peerConnection =
-      new RTCPeerConnection(
-        rtcConfig
+        code
       );
 
 
-    remoteDescriptionSet =
-      false;
-
-    pendingCandidates = [];
-
-
-    const remoteVideo =
-      document.getElementById(
-        "remoteVideo"
+    const boardSnap =
+      await getDoc(
+        boardRef
       );
 
 
-    peerConnection.ontrack =
-      async event => {
-
-        const stream =
-          event.streams[0];
-
-        if(!stream){
-
-          return;
-
-        }
+    if (boardSnap.exists()) {
+      return true;
+    }
 
 
-        remoteVideo.srcObject =
-          stream;
+    const usedQuery =
+      query(
+        collection(
+          db,
+          "usedBoardCodes"
+        ),
+        where(
+          "boardCode",
+          "==",
+          code
+        )
+      );
 
 
-        document
-          .getElementById(
-            "screenContainer"
-          )
-          .style.display =
-          "block";
+    const usedSnapshot =
+      await getDocs(
+        usedQuery
+      );
 
 
-        document
-          .getElementById(
-            "mainBoard"
-          )
-          .style.display =
-          "none";
+    return !usedSnapshot.empty;
+
+  }
 
 
-        document
-          .getElementById(
-            "waiting"
-          )
-          .style.display =
-          "none";
+  async function createUniqueCode() {
+
+    while (true) {
+
+      const code =
+        generateRandomCode();
 
 
-        setStatus(
-          "Live Screen Sharing Connected",
-          "live"
+      const exists =
+        await codeExists(
+          code
         );
 
 
-        try{
+      if (!exists) {
 
-          await remoteVideo.play();
+        return code;
 
-        }
+      }
 
-        catch(error){
+    }
 
-          console.log(
-            "Video play:",
-            error
+  }
+
+
+  async function createBoardCode() {
+
+    try {
+
+      setStatus(
+        "Creating secure board code..."
+      );
+
+
+      const newCode =
+        await createUniqueCode();
+
+
+      const oldCode =
+        localStorage.getItem(
+          "currentBoardCode"
+        );
+
+
+      if (oldCode) {
+
+        const oldBoardRef =
+          doc(
+            db,
+            "boards",
+            oldCode
+          );
+
+
+        const oldBoard =
+          await getDoc(
+            oldBoardRef
+          );
+
+
+        if (oldBoard.exists()) {
+
+          await updateDoc(
+            oldBoardRef,
+            {
+              status:
+                "inactive"
+            }
           );
 
         }
 
-      };
+
+        await setDoc(
+
+          doc(
+            db,
+            "usedBoardCodes",
+            oldCode
+          ),
+
+          {
+
+            boardCode:
+              oldCode,
+
+            usedAt:
+              serverTimestamp()
+
+          }
+
+        );
+
+      }
 
 
-    const teacherCandidates =
-      collection(
-        db,
-        "sessions",
-        code,
-        "teacherCandidates"
+      await setDoc(
+
+        doc(
+          db,
+          "boards",
+          newCode
+        ),
+
+        {
+
+          boardCode:
+            newCode,
+
+          status:
+            "available",
+
+          createdAt:
+            serverTimestamp()
+
+        }
+
       );
 
 
-    teacherCandidateListener =
+      currentBoardCode =
+        newCode;
+
+
+      localStorage.setItem(
+        "currentBoardCode",
+        newCode
+      );
+
+
+      document.getElementById(
+        "boardCode"
+      ).textContent =
+        newCode;
+
+
+      setStatus(
+        "Board ready • Waiting for Screen Share"
+      );
+
+
+      startBoardListener(
+        newCode
+      );
+
+    }
+
+
+    catch (error) {
+
+      console.error(
+        "Board code error:",
+        error
+      );
+
+
+      document.getElementById(
+        "boardCode"
+      ).textContent =
+        "ERROR";
+
+
+      setStatus(
+        "Board setup failed. Please check Firestore rules.",
+        "error"
+      );
+
+    }
+
+  }
+
+
+  function createQRCode() {
+
+    const qrContainer =
+      document.getElementById(
+        "qrcode"
+      );
+
+
+    qrContainer.innerHTML =
+      "";
+
+
+    new QRCode(
+
+      qrContainer,
+
+      {
+
+        text:
+          "https://shivamshukla-677.github.io/Digital-Board-Management-App/",
+
+        width:
+          220,
+
+        height:
+          220,
+
+        correctLevel:
+          QRCode.CorrectLevel.H
+
+      }
+
+    );
+
+  }
+
+
+  const rtcConfig = {
+
+    iceServers: [
+
+      {
+        urls:
+          "stun:stun.l.google.com:19302"
+      }
+
+    ]
+
+  };
+
+
+  function startBoardListener(
+    code
+  ) {
+
+    if (sessionUnsubscribe) {
+
+      sessionUnsubscribe();
+
+      sessionUnsubscribe =
+        null;
+
+    }
+
+
+    const sessionRef =
+      doc(
+        db,
+        "sessions",
+        code
+      );
+
+
+    sessionUnsubscribe =
       onSnapshot(
-        teacherCandidates,
+
+        sessionRef,
+
         async snapshot => {
 
-          for(
-            const change
-            of snapshot.docChanges()
-          ){
+          if (!snapshot.exists()) {
 
-            if(
-              change.type !== "added"
-            ){
+            setStatus(
+              "Board ready • Waiting for Screen Share"
+            );
 
-              continue;
+            return;
 
-            }
+          }
 
 
-            const candidate =
-              new RTCIceCandidate(
-                change.doc.data()
-              );
+          const data =
+            snapshot.data();
 
 
-            if(
-              !remoteDescriptionSet
-            ){
+          if (
+            data.offer &&
+            (
+              data.status === "active" ||
+              data.status === "connected"
+            )
+          ) {
 
-              pendingCandidates.push(
-                candidate
-              );
+            await receiveOffer(
+              code,
+              data.offer
+            );
 
-            }
+          }
 
-            else{
 
-              try{
+          if (
+            data.status === "ended"
+          ) {
 
-                await peerConnection
-                  .addIceCandidate(
-                    candidate
-                  );
-
-              }
-
-              catch(error){
-
-                console.log(
-                  "ICE error:",
-                  error
-                );
-
-              }
-
-            }
+            stopBoardScreen();
 
           }
 
         }
-      );
-
-
-    peerConnection.onicecandidate =
-      async event => {
-
-        if(!event.candidate){
-
-          return;
-
-        }
-
-
-        try{
-
-          await addDoc(
-
-            collection(
-              db,
-              "sessions",
-              code,
-              "boardCandidates"
-            ),
-
-            event.candidate.toJSON()
-
-          );
-
-        }
-
-        catch(error){
-
-          console.error(
-            "Board ICE error:",
-            error
-          );
-
-        }
-
-      };
-
-
-    await peerConnection
-      .setRemoteDescription(
-
-        new RTCSessionDescription(
-          offerData
-        )
 
       );
 
-
-    remoteDescriptionSet =
-      true;
+  }
 
 
-    for(
+  async function addPendingCandidates() {
+
+    if (
+      !peerConnection ||
+      !remoteDescriptionSet
+    ) {
+
+      return;
+
+    }
+
+
+    for (
       const candidate
       of pendingCandidates
-    ){
+    ) {
 
-      try{
+      try {
 
         await peerConnection
           .addIceCandidate(
@@ -1096,7 +1230,7 @@ async function receiveOffer(
 
       }
 
-      catch(error){
+      catch (error) {
 
         console.log(
           "Pending ICE error:",
@@ -1110,62 +1244,352 @@ async function receiveOffer(
 
     pendingCandidates = [];
 
-
-    const answer =
-      await peerConnection
-        .createAnswer();
+  }
 
 
-    await peerConnection
-      .setLocalDescription(
-        answer
-      );
+  async function receiveOffer(
+    code,
+    offerData
+  ) {
 
+    try {
 
-    await updateDoc(
+      if (
+        peerConnection &&
+        remoteDescriptionSet
+      ) {
 
-      doc(
-        db,
-        "sessions",
-        code
-      ),
-
-      {
-
-        answer: {
-
-          type:
-            answer.type,
-
-          sdp:
-            answer.sdp
-
-        },
-
-        status:
-          "connected"
+        return;
 
       }
 
-    );
+
+      if (peerConnection) {
+
+        peerConnection.close();
+
+        peerConnection =
+          null;
+
+      }
 
 
-    setStatus(
-      "Connected • Live Screen",
-      "live"
-    );
+      remoteDescriptionSet =
+        false;
+
+
+      pendingCandidates =
+        [];
+
+
+      peerConnection =
+        new RTCPeerConnection(
+          rtcConfig
+        );
+
+
+      const remoteVideo =
+        document.getElementById(
+          "remoteVideo"
+        );
+
+
+      peerConnection.ontrack =
+        function(event) {
+
+          if (
+            event.streams &&
+            event.streams[0]
+          ) {
+
+            remoteVideo.srcObject =
+              event.streams[0];
+
+
+            document.getElementById(
+              "screenContainer"
+            ).style.display =
+              "block";
+
+
+            document.getElementById(
+              "waiting"
+            ).style.display =
+              "none";
+
+
+            document.getElementById(
+              "mainBoard"
+            ).style.display =
+              "none";
+
+
+            setStatus(
+              "Live Screen Sharing Connected",
+              "live"
+            );
+
+          }
+
+        };
+
+
+      const candidateQuery =
+        collection(
+          db,
+          "sessions",
+          code,
+          "teacherCandidates"
+        );
+
+
+      if (candidateUnsubscribe) {
+
+        candidateUnsubscribe();
+
+        candidateUnsubscribe =
+          null;
+
+      }
+
+
+      candidateUnsubscribe =
+        onSnapshot(
+
+          candidateQuery,
+
+          async snapshot => {
+
+            for (
+              const change
+              of snapshot.docChanges()
+            ) {
+
+              if (
+                change.type !==
+                "added"
+              ) {
+
+                continue;
+
+              }
+
+
+              const candidate =
+                new RTCIceCandidate(
+                  change.doc.data()
+                );
+
+
+              if (
+                !remoteDescriptionSet
+              ) {
+
+                pendingCandidates.push(
+                  candidate
+                );
+
+              }
+
+              else {
+
+                try {
+
+                  await peerConnection
+                    .addIceCandidate(
+                      candidate
+                    );
+
+                }
+
+                catch (error) {
+
+                  console.log(
+                    "ICE candidate error:",
+                    error
+                  );
+
+                }
+
+              }
+
+            }
+
+          }
+
+        );
+
+
+      peerConnection.onicecandidate =
+        async function(event) {
+
+          if (!event.candidate) {
+
+            return;
+
+          }
+
+
+          try {
+
+            await addDoc(
+
+              collection(
+                db,
+                "sessions",
+                code,
+                "boardCandidates"
+              ),
+
+              event.candidate.toJSON()
+
+            );
+
+          }
+
+          catch (error) {
+
+            console.error(
+              "Board ICE error:",
+              error
+            );
+
+          }
+
+        };
+
+
+      setStatus(
+        "Connecting to teacher screen..."
+      );
+
+
+      await peerConnection
+        .setRemoteDescription(
+
+          new RTCSessionDescription(
+            offerData
+          )
+
+        );
+
+
+      remoteDescriptionSet =
+        true;
+
+
+      await addPendingCandidates();
+
+
+      const answer =
+        await peerConnection
+          .createAnswer();
+
+
+      await peerConnection
+        .setLocalDescription(
+          answer
+        );
+
+
+      await updateDoc(
+
+        doc(
+          db,
+          "sessions",
+          code
+        ),
+
+        {
+
+          answer: {
+
+            type:
+              answer.type,
+
+            sdp:
+              answer.sdp
+
+          },
+
+          status:
+            "connected"
+
+        }
+
+      );
+
+
+      setStatus(
+        "Connected • Waiting for screen video...",
+        "live"
+      );
+
+    }
+
+
+    catch (error) {
+
+      console.error(
+        "WebRTC board error:",
+        error
+      );
+
+
+      setStatus(
+        "Unable to connect to Screen Share.",
+        "error"
+      );
+
+    }
 
   }
 
-  catch(error){
 
-    console.error(
-      "WebRTC error:",
-      error
+  function stopBoardScreen() {
+
+    const video =
+      document.getElementById(
+        "remoteVideo"
+      );
+
+
+    video.srcObject =
+      null;
+
+
+    document.getElementById(
+      "screenContainer"
+    ).style.display =
+      "none";
+
+
+    document.getElementById(
+      "waiting"
+    ).style.display =
+      "flex";
+
+
+    document.getElementById(
+      "mainBoard"
+    ).style.display =
+      "block";
+
+
+    setStatus(
+      "Board ready • Waiting for Screen Share"
     );
 
 
-    if(peerConnection){
+    remoteDescriptionSet =
+      false;
+
+
+    pendingCandidates =
+      [];
+
+
+    if (peerConnection) {
 
       peerConnection.close();
 
@@ -1175,92 +1599,21 @@ async function receiveOffer(
     }
 
 
-    setStatus(
-      "Unable to connect to Screen Share.",
-      "error"
-    );
+    if (candidateUnsubscribe) {
 
-  }
+      candidateUnsubscribe();
 
-}
+      candidateUnsubscribe =
+        null;
 
-
-
-function stopBoardScreen(){
-
-  const video =
-    document.getElementById(
-      "remoteVideo"
-    );
-
-
-  video.pause();
-
-  video.srcObject =
-    null;
-
-
-  document
-    .getElementById(
-      "screenContainer"
-    )
-    .style.display =
-    "none";
-
-
-  document
-    .getElementById(
-      "mainBoard"
-    )
-    .style.display =
-    "block";
-
-
-  document
-    .getElementById(
-      "waiting"
-    )
-    .style.display =
-    "flex";
-
-
-  if(peerConnection){
-
-    peerConnection.close();
-
-    peerConnection =
-      null;
+    }
 
   }
 
 
-  if(teacherCandidateListener){
+  createQRCode();
 
-    teacherCandidateListener();
-
-    teacherCandidateListener =
-      null;
-
-  }
-
-
-  remoteDescriptionSet =
-    false;
-
-  pendingCandidates = [];
-
-
-  setStatus(
-    "Board ready • Waiting for Screen Share"
-  );
-
-}
-
-
-
-createQRCode();
-
-createBoardCode();
+  createBoardCode();
 
 </script>
 
